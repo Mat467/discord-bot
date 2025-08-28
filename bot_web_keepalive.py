@@ -51,7 +51,7 @@ async def on_message(message):
     
     # jeśli ktoś pisze PRIV do bota
     if isinstance(message.channel, discord.DMChannel):
-        await message.channel.send("Cześć! Ja reaguję tylko na komendy zaczynające się od `?`. Spróbuj np. `?ping` 🙂")
+        await message.channel.send("Cześć! Ja reaguję tylko na komendy zaczynające się od `?`. Spróbuj np. `?ping`")
         return
     
     # jeśli to normalna wiadomość na serwerze – sprawdzamy komendy
@@ -66,9 +66,9 @@ async def warn(ctx, member: discord.Member, *, reason="Brak powodu"):
     if ctx.author.id not in MODERATORS:
         await ctx.send("Nie masz uprawnień do tej komendy!")
         return
-    await ctx.send(f"⚠️ {member.mention} otrzymał ostrzeżenie: {reason}")
+    await ctx.send(f"{member.mention} otrzymał ostrzeżenie: {reason}")
     try:
-        await member.send(f"⚠️ Otrzymałeś ostrzeżenie na serwerze {ctx.guild.name}: {reason}")
+        await member.send(f"Otrzymałeś ostrzeżenie na serwerze {ctx.guild.name}: {reason}")
     except:
         await ctx.send("Nie mogę wysłać DM do tego użytkownika.")
 
@@ -97,7 +97,7 @@ async def unmute(ctx, member: discord.Member):
         return
     try:
         await member.remove_roles(muted_role)
-        await ctx.send(f"🔊 {member.name} został odciszony.")
+        await ctx.send(f" {member.name} został odciszony.")
     except:
         await ctx.send("Nie mogę odciszyć tego użytkownika.")
 
@@ -113,7 +113,7 @@ async def important(ctx, members: commands.Greedy[discord.Member], *, message):
     notified = []
     for member in members:
         try:
-            await member.send(f"🔔 Masz nową ważną wiadomość: {message}")
+            await member.send(f"Masz nową ważną wiadomość: {message}")
             notified.append(member.name)
         except:
             await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
@@ -132,8 +132,8 @@ async def roll(ctx, sides: int = 100):
 
 @bot.command()
 async def coinflip(ctx):
-    result = random.choice(["orzeł 🦅", "reszka 💰"])
-    await ctx.send(f"🪙 {ctx.author.name} rzucił monetą: **{result}**")
+    result = random.choice(["orzeł ", "reszka "])
+    await ctx.send(f"{ctx.author.name} rzucił monetą: **{result}**")
 
 
 @bot.command(name="8ball")
@@ -143,7 +143,7 @@ async def eight_ball(ctx, *, question: str):
         "Zdecydowanie!", "Lepiej nie pytaj.", "Ciężko powiedzieć."
     ]
     answer = random.choice(responses)
-    await ctx.send(f"🔮 Pytanie: {question}\nOdpowiedź: **{answer}**")
+    await ctx.send(f"Pytanie: {question}\nOdpowiedź: **{answer}**")
 
 
 # --- Pomoc i zasady ---
@@ -152,27 +152,27 @@ async def eight_ball(ctx, *, question: str):
 @bot.command()
 async def help(ctx):
     help_text = """
-📜 **Lista komend bota**
+**Lista komend bota**
 
 
-🛡 Moderacja:
+Moderacja:
 - `?warn @user [powód]` – ostrzeżenie
 - `?mute @user [powód]` – wycisza użytkownika
 - `?unmute @user` – cofa wyciszenie
 
 
-📌 Informacyjne:
+ Informacyjne:
 - `?important @user [wiadomość]` – wysyła ważną wiadomość
 - `?rules` – pokazuje zasady serwera
 
 
-🎲 Zabawa:
+Zabawa:
 - `?roll [sides]` – rzut kostką (domyślnie 1–100)
 - `?coinflip` – rzut monetą
 - `?8ball [pytanie]` – magiczna kula
 
 
-⚡ Narzędzia:
+ Narzędzia:
 - `?ping` – sprawdza czy bot działa
 """
     await ctx.send(help_text)
@@ -181,19 +181,19 @@ async def help(ctx):
 @bot.command()
 async def rules(ctx):
     rules_text = """
-📜 **Zasady serwera:**
+**Zasady serwera:**
 
 
-1️⃣ Szanuj innych – zero obrażania i wyzwisk.  
-2️⃣ Brak polityki i religii – to nie miejsce na takie dyskusje.  
-3️⃣ Nie spamuj i nie flooduj wiadomości.  
-4️⃣ Zakaz reklamowania innych serwerów/stron.  
-5️⃣ Nie używaj cheatów ani exploitów w grach.  
-6️⃣ Trzymaj się tematów kanałów.  
-7️⃣ Słuchaj administracji i moderatorów.  
-8️⃣ Zakaz udostępniania treści NSFW i nielegalnych.  
-9️⃣ Używaj języka polskiego lub angielskiego (jeśli ustalono).  
-🔟 Pamiętaj – baw się dobrze i wspieraj klimat serwera!
+1️ Szanuj innych – zero obrażania i wyzwisk.  
+2️ Brak polityki i religii – to nie miejsce na takie dyskusje.  
+3️ Nie spamuj i nie flooduj wiadomości.  
+4️ Zakaz reklamowania innych serwerów/stron.  
+5️ Nie używaj cheatów ani exploitów w grach.  
+6️ Trzymaj się tematów kanałów.  
+7️ Słuchaj administracji i moderatorów.  
+8️ Zakaz udostępniania treści NSFW i nielegalnych.  
+9️ Używaj języka polskiego lub angielskiego (jeśli ustalono).  
+10 Pamiętaj – baw się dobrze i wspieraj klimat serwera!
 """
     await ctx.send(rules_text)
 
@@ -203,8 +203,9 @@ async def rules(ctx):
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send("🏓 Pong! Bot działa.")
+    await ctx.send(" Pong! Bot działa.")
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 
 bot.run(TOKEN)
+
