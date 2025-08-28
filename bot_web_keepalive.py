@@ -102,7 +102,17 @@ async def unmute(ctx, member: discord.Member):
     except:
         await ctx.send("Nie mogę odciszyć tego użytkownika.")
 
-
+# ?kick - wyrzucenie (tylko moderatorzy)
+@bot.command()
+async def kick(ctx, member: discord.Member, *, reason="No reason provided"):
+    if ctx.author.id not in MODERATORS:
+        await ctx.send("Nie wolno używać tego polecenia!")
+        return
+    try:
+        await member.kick(reason=reason)
+        await ctx.send(f"{member.name} został wyrzucony. ({reason})")
+    except:
+        await ctx.send("Nie mogę wyrzucić tego użytkownika.")
 # --- Ważne wiadomości ---
 
 
@@ -121,6 +131,14 @@ async def important(ctx, members: commands.Greedy[discord.Member], *, message):
     if notified:
         await ctx.send(f"Gracze {', '.join(notified)} zostali powiadomieni jako ważne.")
 
+# ?shield - dostępne dla wszystkich
+@bot.command()
+async def shield(ctx, member: discord.Member):
+    try:
+        await ctx.send(f"{member.mention} gracz został poinformowany o braku tarczy")
+        await member.send("Użyj tarczy! Wróg już nadciąga!")
+    except:
+        await ctx.send("Nie mogę wysłać PW do tego użytkownika.")
 
 # --- Zabawa ---
 
@@ -157,15 +175,15 @@ async def help(ctx):
 
 
 Moderacja:
-- `?warn @user [powód]` – ostrzeżenie
+- `?warn @user [powód]` – wysyła ostrzeżenie
 - `?mute @user [powód]` – wycisza użytkownika
 - `?unmute @user` – cofa wyciszenie
-
+- `?kick @user` – usuwa z serwera
 
  Informacyjne:
 - `?important @user [wiadomość]` – wysyła ważną wiadomość
 - `?rules` – pokazuje zasady serwera
-
+- `?shield` – informuje o braku tarczy
 
 Zabawa:
 - `?roll [sides]` – rzut kostką (domyślnie 1–100)
@@ -208,6 +226,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
