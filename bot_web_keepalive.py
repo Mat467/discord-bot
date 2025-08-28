@@ -1,5 +1,6 @@
 import os
 import discord
+import random
 from discord.ext import commands
 from flask import Flask
 from threading import Thread
@@ -206,7 +207,7 @@ async def ping(ctx):
     await ctx.send(" Pong! Bot działa.")
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
-keep_alive()
 bot.run(TOKEN)
+
 
 
