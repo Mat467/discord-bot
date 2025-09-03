@@ -244,11 +244,24 @@ async def rules(ctx):
 @bot.command()
 async def kontrlist(ctx):
     kontr = [
-        "Przeciwko 659 użyj 569",
-        "przeciwko 884 użyj 848",
+    	"Kontry standardowe",
+	"przeciwko 884 użyj 848",
+        "przeciwko 488 użyj 884",
         "przeciwko 569 użyj 848", 
         "przeciwko 848 użyj 659",
         "przeciwko 488 użyj 659",
+	"Kontry specjalne",
+        "przeciwko 488 użyj 13 5 2", 
+        "przeciwko 569 użyj 13 5 2",
+        "przeciwko 659 użyj 848",
+	"przeciwko 848 użyj 848",
+        "przeciwko 884 użyj 13 5 2",
+        "przeciwko 677 użyj 13 5 2", 
+        "przeciwko 767 użyj 13 5 2",
+        "przeciwko 776 użyj 11 7 2",
+	"przeciwko 13 5 2 użyj 13 5 2",
+        "przeciwko 5 11 4 użyj 11 7 2",
+        "przeciwko 11 7 2 użyj 13 5 2", 
     ]
 
     embed = discord.Embed(
@@ -269,6 +282,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
