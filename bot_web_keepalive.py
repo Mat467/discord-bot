@@ -21,7 +21,32 @@ intents.message_content = True
 
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
+# ------------------------------
+# Podmiana ctx.send globalnie, aby wszystkie wiadomości były embedami z czerwoną ramką
+# ------------------------------
+original_send = commands.Context.send  # zachowujemy oryginalną funkcję
 
+
+async def new_send(ctx, *args, **kwargs):
+    # Jeśli wysyłany jest embed, ustawiamy kolor czerwony
+    if "embed" in kwargs and kwargs["embed"]:
+        kwargs["embed"].color = discord.Color.red()
+        return await original_send(ctx, *args, **kwargs)
+
+
+    # Jeśli wysyłany jest zwykły tekst, pakujemy go do embedu z czerwoną ramką
+    if args:
+        text = args[0]
+        embed = discord.Embed(description=text, color=discord.Color.red())
+        return await original_send(ctx, embed=embed, **kwargs)
+
+
+    # Jeżeli nie ma nic do wysłania, wywołujemy oryginalne ctx.send
+    return await original_send(ctx, *args, **kwargs)
+
+
+# Podmieniamy globalnie ctx.send
+commands.Context.send = new_send
 
 app = Flask("")
 
@@ -244,6 +269,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
