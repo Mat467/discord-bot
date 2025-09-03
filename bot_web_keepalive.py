@@ -216,7 +216,25 @@ async def rules(ctx):
 """
     await ctx.send(rules_text)
 
+@bot.command()
+async def kontrlist(ctx):
+    kontr = [
+        "Przeciwko 659 użyj 569",
+        "przeciwko 884 użyj 848",
+        "przeciwko 569 użyj 848", 
+        "przeciwko 848 użyj 659",
+        "przeciwko 488 użyj 659",
+    ]
 
+    embed = discord.Embed(
+        title="📜 Lista konter",
+        description="\n".join(kontr),
+        color=discord.Color.blue()  # możesz zmienić np. na .green(), .red()
+    )
+
+
+    await ctx.send(embed=embed)
+    
 # --- Ping ---
 
 
@@ -226,6 +244,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
