@@ -1,6 +1,7 @@
 import os
 import discord
 import random
+import aiohttp
 from discord.ext import commands
 from flask import Flask
 from threading import Thread
@@ -69,6 +70,14 @@ Thread(target=run_flask).start()
 async def on_ready():
     print(f'Bot logged in as {bot.user}')
 
+# 🟢 AUTO-POWITANIE
+@bot.event
+async def on_member_join(member):
+    # znajdź kanał powitań po nazwie
+    channel = discord.utils.get(member.guild.text_channels, name="powitania")
+    if channel:
+        await channel.send(f"🎉 Witamy nowego członka: {member.mention}! Dajcie mu serduszko ❤️")
+
 @bot.event
 async def on_message(message):
     # ignorujemy własne wiadomości
@@ -110,7 +119,24 @@ async def mute(ctx, member: discord.Member, *, reason="Brak powodu"):
         return
     await member.add_roles(muted_role)
     await ctx.send(f"🔇 {member.name} został wyciszony. Powód: {reason}")
-
+	
+@bot.command()
+async def spamshield(ctx, member: discord.Member, times: int = 5):
+    """Spamuje DM o tarczy do wskazanego gracza (domyślnie 5 razy, max 10)."""
+    
+    # ograniczenie, żeby nie przesadzić
+    times = max(1, min(times, 10))  
+    
+    sent = 0
+    for i in range(times):
+        try:
+            await member.send("🛡️ Użyj tarczy! Wróg nadciąga!")
+            sent += 1
+        except:
+            await ctx.send(f"❌ Nie mogę wysłać wiadomości do {member.name}.")
+            return
+    
+    await ctx.send(f"✅ Wysłałem {sent} ostrzeżeń do {member.mention} na priv.")
 
 @bot.command()
 async def unmute(ctx, member: discord.Member):
@@ -190,9 +216,53 @@ async def eight_ball(ctx, *, question: str):
     await ctx.send(f"Pytanie: {question}\nOdpowiedź: **{answer}**")
 
 
+# ✊✋✌️ RPS – Kamień papier nożyce
+@bot.command()
+async def rps(ctx, choice: str):
+    choices = ["kamień", "papier", "nożyce"]
+    bot_choice = random.choice(choices)
+    choice = choice.lower()
+
+    if choice not in choices:
+        await ctx.send("Użyj: `?rps kamień`, `?rps papier` albo `?rps nożyce`.")
+        return
+
+    # logika gry
+    if choice == bot_choice:
+        result = "Remis!"
+    elif (choice == "kamień" and bot_choice == "nożyce") or \
+         (choice == "papier" and bot_choice == "kamień") or \
+         (choice == "nożyce" and bot_choice == "papier"):
+        result = "Wygrałeś! 🎉"
+    else:
+        result = "Przegrałeś! 😢"
+
+    await ctx.send(f"Ty: **{choice}** | Bot: **{bot_choice}** → {result}")
+
+
+# 🐱 Losowy kotek z podpisem
+@bot.command()
+async def cat(ctx):
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://api.thecatapi.com/v1/images/search") as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                await ctx.send(f"Znalazłem jednego! 🐾\n{data[0]['url']}")
+            else:
+                await ctx.send("😿 Nie udało się pobrać kotka.")
 # --- Pomoc i zasady ---
 
+@bot.command()
+async def print(ctx, *, text: str):
+    # usuń wiadomość użytkownika (opcjonalnie)
+    try:
+        await ctx.message.delete()
+    except:
+        pass  # jeśli bot nie ma uprawnień, po prostu pomija
 
+    # wyślij treść
+    await ctx.send(text)
+	
 @bot.command()
 async def help(ctx):
     help_text = """
@@ -208,13 +278,17 @@ Moderacja:
  Informacyjne:
 - `?important @user [wiadomość]` – wysyła ważną wiadomość
 - `?rules` – pokazuje zasady serwera
-- `?shield` – informuje o braku tarczy
+- `?shield @user` – informuje o braku tarczy
+- `?spamshield @user [ilość max 10]` – wysyła spam tarczy do użytkownika 
+- `?kontrlist` – wysyła listę konter 
+- `?print [wiadomość]` – wysyła wiadomość o podanej treści 
 
 Zabawa:
 - `?roll [sides]` – rzut kostką (domyślnie 1–100)
 - `?coinflip` – rzut monetą
 - `?8ball [pytanie]` – magiczna kula
-
+- `?cat` - wysyła losowego kotka
+- `?rps [wybór]` – gra w Kamień papier nożyce
 
  Narzędzia:
 - `?ping` – sprawdza czy bot działa
@@ -282,6 +356,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
