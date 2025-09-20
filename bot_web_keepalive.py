@@ -164,23 +164,53 @@ async def kick(ctx, member: discord.Member, *, reason="No reason provided"):
         await ctx.send(f"{member.name} został wyrzucony. ({reason})")
     except:
         await ctx.send("Nie mogę wyrzucić tego użytkownika.")
+
 # --- Ważne wiadomości ---
 
 
 @bot.command()
-async def important(ctx, members: commands.Greedy[discord.Member], *, message):
-    if not members:
-        await ctx.send("Musisz oznaczyć przynajmniej jednego gracza.")
+async def important(ctx, *, message):
+    if not ctx.message.mentions and not ctx.message.role_mentions and "@everyone" not in ctx.message.content:
+        await ctx.send("Musisz oznaczyć gracza, rolę lub @everyone.")
         return
+
+
     notified = []
-    for member in members:
+
+
+    # oznaczeni użytkownicy
+    for member in ctx.message.mentions:
         try:
-            await member.send(f"Masz nową ważną wiadomość: {message}")
+            await member.send(f"🔔 Masz nową ważną wiadomość: {message}")
             notified.append(member.name)
         except:
             await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
+
+
+    # oznaczone role
+    for role in ctx.message.role_mentions:
+        for member in role.members:
+            try:
+                await member.send(f"🔔 Masz nową ważną wiadomość dla roli {role.name}: {message}")
+                notified.append(member.name)
+            except:
+                await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
+
+
+    # @everyone
+    if "@everyone" in ctx.message.content:
+        for member in ctx.guild.members:
+            if member.bot:
+                continue
+            try:
+                await member.send(f"🔔 Masz nową ważną wiadomość: {message}")
+                notified.append(member.name)
+            except:
+                pass  # wielu userów może mieć zablokowane DM
+
+
     if notified:
-        await ctx.send(f"Gracze {', '.join(notified)} zostali powiadomieni jako ważne.")
+        await ctx.send(f"Powiadomiłem {len(notified)} graczy jako ważne.")
 
 # ?shield - dostępne dla wszystkich
 @bot.command()
@@ -214,6 +244,22 @@ async def eight_ball(ctx, *, question: str):
     ]
     answer = random.choice(responses)
     await ctx.send(f"Pytanie: {question}\nOdpowiedź: **{answer}**")
+
+@bot.command()
+async def eightballfun(ctx, *, question: str):
+    responses = [
+        "😂 Hahaha, dobre pytanie!",
+        "🔮 Zapytaj jutro, dziś nie wróżę.",
+        "🍕 Może tak, może nie. A może pizza?",
+        "🙃 Czemu pytasz mnie, skoro masz Google?",
+        "💔 Nie chcę łamać Ci serca, ale… nope.",
+        "😏 Zastanów się jeszcze raz i udawaj, że nigdy nie pytałeś.",
+        "🤡 To najgłupsze pytanie jakie dziś usłyszałem.",
+        "🔥 Jasne! A teraz wracaj do roboty.",
+        "🌚 Powiedzmy, że odpowiedź brzmi: meh.",
+        "🦄 42. Zawsze 42."
+    ]
+    await ctx.send(f"**{ctx.author.display_name} pyta:** {question}\n🎱 {random.choice(responses)}")
 
 
 # ✊✋✌️ RPS – Kamień papier nożyce
@@ -287,6 +333,7 @@ Zabawa:
 - `?roll [sides]` – rzut kostką (domyślnie 1–100)
 - `?coinflip` – rzut monetą
 - `?8ball [pytanie]` – magiczna kula
+- `?8ballfun [pytanie]` – rozbudowana magiczna kula
 - `?cat` - wysyła losowego kotka
 - `?rps [wybór]` – gra w Kamień papier nożyce
 
@@ -356,6 +403,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
