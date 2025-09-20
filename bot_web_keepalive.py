@@ -285,17 +285,20 @@ async def rps(ctx, choice: str):
 
     await ctx.send(f"Ty: **{choice}** | Bot: **{bot_choice}** → {result}")
 
-
-# 🐱 Losowy kotek z podpisem
 @bot.command()
 async def cat(ctx):
+    url = "https://api.thecatapi.com/v1/images/search"
     async with aiohttp.ClientSession() as session:
-        async with session.get("https://api.thecatapi.com/v1/images/search") as resp:
+        async with session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
-                await ctx.send(f"Znalazłem jednego! 🐾\n{data[0]['url']}")
+                image_url = data[0]["url"]  # bezpośredni link do jpg/png
+                embed = discord.Embed(title="🐱 Twój losowy kotek!", color=0xFF9900)
+                embed.set_image(url=image_url)
+                await ctx.send(embed=embed)
             else:
-                await ctx.send("😿 Nie udało się pobrać kotka.")
+                await ctx.send("😿 Nie udało się znaleźć kota, spróbuj ponownie!")
+				
 # --- Pomoc i zasady ---
 
 @bot.command()
@@ -403,6 +406,7 @@ async def ping(ctx):
 
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
