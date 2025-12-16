@@ -77,14 +77,18 @@ CHRISTMAS_THEMES = {
     "🔥 Ogień": {"query": "fireplace,winter", "color": 0xCB4335, "texts": ["🔥 Idealne tło do ignorowania obowiązków","🔥 Ogień trzaska, czat żyje","🔥 Legalne źródło ciepła","🔥 Klimat zatwierdzony"]},
     "🌌 Noc": {"query": "christmas,night", "color": 0x1F618D, "texts": ["🌌 Nocna wersja świąt","🌌 Cisza, spokój, Discord","🌌 Idealna pora na memy","🌌 Bot nadal czuwa. Niestety."]}
 }
-
-# ZMIANA: nowa funkcja, która pobiera obraz i wysyła embed
 async def send_christmas_embed(ctx_or_channel):
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
     url = f"https://source.unsplash.com/1200x600/?{data['query']}&sig={random.randint(1,10000)}"
-    embed = discord.Embed(title=title, description=text, color=data["color"])
-async with aiohttp.ClientSession() as session:
+
+    embed = discord.Embed(
+        title=title,
+        description=text,
+        color=data["color"]
+    )
+
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:
                 image_data = await resp.read()
@@ -452,6 +456,7 @@ async def swieta(ctx):
     await send_christmas_embed(ctx)  # ZMIANA: użycie nowej funkcji
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
