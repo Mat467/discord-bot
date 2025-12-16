@@ -65,10 +65,11 @@ def run_flask():
 # uruchom serwer HTTP w osobnym wątku (Render poda PORT automatycznie)
 Thread(target=run_flask).start()
 
-
 @bot.event
 async def on_ready():
     print(f'Bot logged in as {bot.user}')
+    if not christmas_loop.is_running():
+        christmas_loop.start()
 
 # 🟢 AUTO-POWITANIE
 @bot.event
@@ -441,12 +442,9 @@ async def christmas_loop():
     if channel:
         await channel.send(embed=get_christmas_embed())
 
-# Start loopa w on_ready – jeśli masz już on_ready, dodaj tylko:
-if not christmas_loop.is_running():
-    christmas_loop.start()
-
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
