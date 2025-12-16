@@ -84,16 +84,18 @@ async def send_christmas_embed(ctx_or_channel):
     text = random.choice(data["texts"])
     url = f"https://source.unsplash.com/1200x600/?{data['query']}&sig={random.randint(1,10000)}"
     embed = discord.Embed(title=title, description=text, color=data["color"])
-
-    async with aiohttp.ClientSession() as session:
+async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:
                 image_data = await resp.read()
-                file = discord.File(fp=io.BytesIO(image_data), filename="image.png")
+                file = discord.File(
+                    fp=io.BytesIO(image_data),
+                    filename="image.png"
+                )
                 embed.set_image(url="attachment://image.png")
-				ctx_or_channel.send(embed=embed, file=file)
+                await ctx_or_channel.send(embed=embed, file=file)
             else:
-				await ctx_or_channel.send(f"{title}\n{text}")  # fallback, jeśli pobranie się nie uda# --- ID kanału ---
+                await ctx_or_channel.send(f"{title}\n{text}")
 CHANNEL_ID = 1437924798645928106  # <-- wstaw swoje ID kanału
 
 # --- Loop świąteczny ---
@@ -450,6 +452,7 @@ async def swieta(ctx):
     await send_christmas_embed(ctx)  # ZMIANA: użycie nowej funkcji
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
