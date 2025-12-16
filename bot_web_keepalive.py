@@ -7,6 +7,8 @@ from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
 
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # wstaw swój key do env na Renderze
+session = aiohttp.ClientSession()  # globalna sesja dla szybkości
 
 # --- konfiguracja z ENV ---
 TOKEN = os.environ.get("DISCORD_TOKEN")
@@ -80,26 +82,41 @@ CHRISTMAS_THEMES = {
 async def send_christmas_embed(ctx_or_channel):
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
-    url = f"https://source.unsplash.com/1200x600/?{data['query']}&sig={random.randint(1,10000)}"
-
-    embed = discord.Embed(
-        title=title,
-        description=text,
-        color=data["color"]
-    )
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
+    
+    # Przygotuj zapytanie do Pexels
+    query = data["query"].replace(",", "+").replace(" ", "+") + "+christmas"
+    
+    url = f"https://api.pexels.com/v1/search?query={query}&per_page=15&page={random.randint(1,10)}"
+    
+    headers = {"Authorization": PEXELS_API_KEY}
+    
+    embed = discord.Embed(title=title, description=text, color=data["color"])
+    
+    try:
+        async with session.get(url, headers=headers) as resp:
             if resp.status == 200:
-                image_data = await resp.read()
-                file = discord.File(
-                    fp=io.BytesIO(image_data),
-                    filename="image.png"
-                )
-                embed.set_image(url="attachment://image.png")
-                await ctx_or_channel.send(embed=embed, file=file)
-            else:
-                await ctx_or_channel.send(f"{title}\n{text}")
+                json_data = await resp.json()
+                if json_data.get("photos"):
+                    photo = random.choice(json_data["photos"])
+                    image_url = photo["src"]["large2x"]  # duża jakość, ładne zdjęcie
+                    
+                    async with session.get(image_url) as img_resp:
+                        if img_resp.status == 200:
+                            image_data = await img_resp.read()
+                            file = discord.File(fp=io.BytesIO(image_data), filename="swieta.jpg")
+                            embed.set_image(url="attachment://swieta.jpg")
+                            await ctx_or_channel.send(embed=embed, file=file)
+                            return  # sukces – wychodzimy
+        
+        # Jeśli coś nie wyszło – fallback jako embed bez obrazka (ładny!)
+        embed.description += "\n\n❄️ Obrazek się ładuje... ale klimat świąteczny trwa!"
+        await ctx_or_channel.send(embed=embed)
+        
+    except Exception as e:
+        # Na wszelki wypadek – jeśli błąd sieci itp.
+        fallback_embed = discord.Embed(title=title, description=text, color=data["color"])
+        await ctx_or_channel.send(embed=fallback_embed)
+		
 CHANNEL_ID = 1437924798645928106  # <-- wstaw swoje ID kanału
 
 # --- Loop świąteczny ---
@@ -455,7 +472,11 @@ async def ping(ctx):
 async def swieta(ctx):
     await send_christmas_embed(ctx)  # ZMIANA: użycie nowej funkcji
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
+@bot.event
+async def on_disconnect():
+    await session.close()
 bot.run(TOKEN)
+
 
 
 
