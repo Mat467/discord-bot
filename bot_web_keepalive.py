@@ -8,7 +8,7 @@ from flask import Flask
 from threading import Thread
 
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # wstaw swój key do env na Renderze
-session = aiohttp.ClientSession()  # globalna sesja dla szybkości
+session = None  # będzie utworzona później
 
 # --- konfiguracja z ENV ---
 TOKEN = os.environ.get("DISCORD_TOKEN")
@@ -130,10 +130,15 @@ async def christmas_loop():
             
 @bot.event
 async def on_ready():
+    global session  # <-- dodaj to, żeby modyfikować globalną zmienną
     print(f'Bot logged in as {bot.user}')
+    
+    if session is None:  # <-- dodaj to – tworzy sesję tylko raz, gdy potrzeba
+        session = aiohttp.ClientSession()
+    
     if not christmas_loop.is_running():
         christmas_loop.start()
-
+		
 # 🟢 AUTO-POWITANIE
 @bot.event
 async def on_member_join(member):
@@ -474,8 +479,11 @@ async def swieta(ctx):
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 @bot.event
 async def on_disconnect():
-    await session.close()
+    global session  # <-- dodaj to
+    if session and not session.closed:  # <-- dodaj sprawdzenie, żeby nie crashować
+        await session.close()
 bot.run(TOKEN)
+
 
 
 
