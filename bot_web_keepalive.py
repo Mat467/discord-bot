@@ -2,7 +2,7 @@ import os
 import discord
 import random
 import aiohttp
-from discord.ext import commands
+from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
 
@@ -436,14 +436,15 @@ async def swieta(ctx):
 
 # Automatyczny loop (3x dziennie)
 CHANNEL_ID = 1437924798645928106  # tu wstaw ID kanału
+
 @tasks.loop(hours=8)
 async def christmas_loop():
-    channel = bot.get_channel(1437924798645928106)
+    channel = bot.get_channel(CHANNEL_ID)
     if channel:
         await channel.send(embed=get_christmas_embed())
-
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
