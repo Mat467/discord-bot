@@ -404,8 +404,50 @@ async def kontrlist(ctx):
 async def ping(ctx):
     await ctx.send(" Pong! Bot działa.")
 
+# ------------------------------
+# Tu wklejamy świąteczne motywy
+# ------------------------------
+
+CHRISTMAS_THEMES = {
+    "🎄 Choinka": {"query": "christmas,tree", "color": 0x2ECC71, "texts": ["🎄 Świąteczna propaganda obowiązkowa","🎄 Choinka stoi. Regulamin też.","🎄 Ten moment, gdy drzewko ma więcej ozdób niż role","🎄 Administracja potwierdza: to jest choinka"]},
+    "🎅 Mikołaj": {"query": "santa,claus,christmas", "color": 0xE74C3C, "texts": ["🎅 Ho ho ho. Logi były sprawdzane.","🎅 Mikołaj widzi więcej niż moderator","🎅 Prezentów brak, ale klimat jest","🎅 Regulamin grzecznych obowiązuje cały rok"]},
+    "🦌 Renifery": {"query": "reindeer,christmas,winter", "color": 0xA04000, "texts": ["🦌 Renifer na służbie. Zaprzęg w gotowości.","🦌 Rudolf twierdzi, że to nie jego wina","🦌 Bez reniferów nie ma logistyki świąt","🦌 Ten gość ciągnie cały projekt"]},
+    "❄️ Zima": {"query": "winter,snow", "color": 0x5DADE2, "texts": ["❄️ Zima przyszła. Produktywność wyszła.","❄️ Śnieg pada, serwer nadal żyje","❄️ Idealna pogoda na nieodpisywanie","❄️ Mróz na zewnątrz, ciepło na czacie"]},
+    "🎁 Prezenty": {"query": "christmas,gifts", "color": 0xF4D03F, "texts": ["🎁 Najlepszy prezent to brak pingów","🎁 Administracja nic nie obiecuje","🎁 Opakowanie ładniejsze niż zawartość","🎁 Tak, to też się liczy"]},
+    "☕ Klimat": {"query": "christmas,cozy", "color": 0xAF7AC5, "texts": ["☕ Tryb koc + herbata aktywny","☕ Oficjalnie: nic nie musisz","☕ To nie lenistwo, to święta","☕ Discord, cisza i zero planów"]},
+    "🏠 Dom": {"query": "christmas,home", "color": 0xDC7633, "texts": ["🏠 Domowy tryb serwera","🏠 Bez pośpiechu, bez dram","🏠 Nawet bot zwalnia tempo","🏠 Tu się odpoczywa"]},
+    "🔥 Ogień": {"query": "fireplace,winter", "color": 0xCB4335, "texts": ["🔥 Idealne tło do ignorowania obowiązków","🔥 Ogień trzaska, czat żyje","🔥 Legalne źródło ciepła","🔥 Klimat zatwierdzony"]},
+    "🌌 Noc": {"query": "christmas,night", "color": 0x1F618D, "texts": ["🌌 Nocna wersja świąt","🌌 Cisza, spokój, Discord","🌌 Idealna pora na memy","🌌 Bot nadal czuwa. Niestety."]}
+}
+
+def get_christmas_embed():
+    title, data = random.choice(list(CHRISTMAS_THEMES.items()))
+    text = random.choice(data["texts"])
+    url = f"https://source.unsplash.com/featured/1200x600/?{data['query']}&sig={random.randint(1,10000)}"
+    embed = discord.Embed(title=title, description=text, color=data["color"])
+    embed.set_image(url=url)
+    return embed
+
+# Komenda ręczna
+@bot.command()
+async def swieta(ctx):
+    await ctx.send(embed=get_christmas_embed())
+
+# Automatyczny loop (3x dziennie)
+CHANNEL_ID = 123456789012345678  # tu wstaw ID kanału
+@tasks.loop(hours=8)
+async def christmas_loop():
+    channel = bot.get_channel(CHANNEL_ID)
+    if channel:
+        await channel.send(embed=get_christmas_embed())
+
+# Start loopa w on_ready – jeśli masz już on_ready, dodaj tylko:
+if not christmas_loop.is_running():
+    christmas_loop.start()
+
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 bot.run(TOKEN)
+
 
 
 
