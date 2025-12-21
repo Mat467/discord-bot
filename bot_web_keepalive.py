@@ -2,6 +2,7 @@ import os
 import discord
 import random
 import io
+import asyncio
 import aiohttp
 from discord.ext import commands, tasks
 from flask import Flask
@@ -79,15 +80,12 @@ CHRISTMAS_THEMES = {
     "🔥 Ogień": {"query": "fireplace,winter", "color": 0xCB4335, "texts": ["🔥 Idealne tło do ignorowania obowiązków","🔥 Ogień trzaska, czat żyje","🔥 Legalne źródło ciepła","🔥 Klimat zatwierdzony"]},
     "🌌 Noc": {"query": "christmas,night", "color": 0x1F618D, "texts": ["🌌 Nocna wersja świąt","🌌 Cisza, spokój, Discord","🌌 Idealna pora na memy","🌌 Bot nadal czuwa. Niestety."]}
 }
-async def send_christmas_embed(ctx_or_channel):
+async def send_christmas_embed(ctx_or_channel, attempt=1):
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
 
-    # Przygotuj zapytanie do Pexels
     query = data["query"].replace(",", "+").replace(" ", "+") + "+christmas"
-
     url = f"https://api.pexels.com/v1/search?query={query}&per_page=15&page={random.randint(1,10)}"
-
     headers = {"Authorization": PEXELS_API_KEY}
 
     embed = discord.Embed(title=title, description=text, color=data["color"])
@@ -97,43 +95,78 @@ async def send_christmas_embed(ctx_or_channel):
             print("PEXELS STATUS:", resp.status)
 
             if resp.status != 200:
-                text = await resp.text()
-                print("PEXELS BODY:", text)
-                raise RuntimeError("Pexels API error")
+                body = await resp.text()
+                print("PEXELS BODY:", body)
+
+                if attempt < 3:
+                    print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
+                    asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
+                else:
+                    error_embed = discord.Embed(
+                        title="❌ Błąd Pexels",
+                        description=f"Błąd {resp.status}. Nie udało się wysłać obrazka! Ale moja administracja już pilnie pracuje nad rozwiązaniem tego problemu...",
+                        color=0xE74C3C
+                    )
+                    await ctx_or_channel.send(embed=error_embed)
+                return
 
             json_data = await resp.json()
 
             if not json_data.get("photos"):
                 print("PEXELS: brak zdjęć dla query:", query)
-                raise RuntimeError("No photos")
+                if attempt < 3:
+                    print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
+                    asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
+                else:
+                    error_embed = discord.Embed(
+                        title="❌ Błąd Pexels",
+                        description=f"Brak zdjęć dla zapytania. Nie udało się wysłać obrazka po 3 próbach!",
+                        color=0xE74C3C
+                    )
+                    await ctx_or_channel.send(embed=error_embed)
+                return
 
             photo = random.choice(json_data["photos"])
             image_url = photo["src"]["large2x"]
 
             async with session.get(image_url) as img_resp:
-                if img_resp.status == 200:
-                    image_data = await img_resp.read()
-                    file = discord.File(
-                        fp=io.BytesIO(image_data),
-                        filename="swieta.jpg"
-                    )
-                    embed.set_image(url="attachment://swieta.jpg")
-                    await ctx_or_channel.send(embed=embed, file=file)
-                    return  # sukces – wychodzimy
+                if img_resp.status != 200:
+                    print("IMAGE STATUS:", img_resp.status)
+                    if attempt < 3:
+                        print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
+                        asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
+                    else:
+                        error_embed = discord.Embed(
+                            title="❌ Błąd pobierania obrazka",
+                            description=f"Błąd {img_resp.status}. Nie udało się wysłać obrazka po 3 próbach!",
+                            color=0xE74C3C
+                        )
+                        await ctx_or_channel.send(embed=error_embed)
+                    return
 
-        # Jeśli coś nie wyszło – fallback jako embed bez obrazka (ładny!)
-        embed.description += "\n\n❄️ Obrazek się ładuje... ale klimat świąteczny trwa!"
-        await ctx_or_channel.send(embed=embed)
+                image_data = await img_resp.read()
+                file = discord.File(
+                    fp=io.BytesIO(image_data),
+                    filename="swieta.jpg"
+                )
+                embed.set_image(url="attachment://swieta.jpg")
+                await ctx_or_channel.send(embed=embed, file=file)
+                return  # sukces
 
     except Exception as e:
-        # Na wszelki wypadek – jeśli błąd sieci itp.
-        fallback_embed = discord.Embed(
-            title=title,
-            description=text,
-            color=data["color"]
-        )
-        await ctx_or_channel.send(embed=fallback_embed)
-		
+        print("CHRISTMAS EMBED ERROR:", e)
+        if attempt < 3:
+            print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
+            asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
+        else:
+            error_embed = discord.Embed(
+                title="❌ Błąd Pexels",
+                description=f"Nie udało się wysłać obrazka po 3 próbach! Błąd: {e}",
+                color=0xE74C3C
+            )
+            await ctx_or_channel.send(embed=error_embed)
+        return
+
 CHANNEL_ID = 1437924798645928106  # <-- wstaw swoje ID kanału
 
 # --- Loop świąteczny ---
@@ -499,7 +532,16 @@ async def on_disconnect():
     global session  # <-- dodaj to
     if session and not session.closed:  # <-- dodaj sprawdzenie, żeby nie crashować
         await session.close()
+		
+# --- retry ---
+async def retry_christmas_embed(ctx_or_channel, attempt):
+    print(f"PEXELS: retry za 10 minut (próba {attempt})")
+    await asyncio.sleep(600)  # 10 minut
+    await send_christmas_embed(ctx_or_channel, attempt)
+
+
 bot.run(TOKEN)
+
 
 
 
