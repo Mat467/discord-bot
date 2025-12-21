@@ -78,8 +78,8 @@ CHRISTMAS_THEMES = {
     "☕ Klimat": {"query": "christmas,cozy", "color": 0xAF7AC5, "texts": ["☕ Tryb koc + herbata aktywny","☕ Oficjalnie: nic nie musisz","☕ To nie lenistwo, to święta","☕ Discord, cisza i zero planów"]},
     "🏠 Dom": {"query": "christmas,home", "color": 0xDC7633, "texts": ["🏠 Domowy tryb serwera","🏠 Bez pośpiechu, bez dram","🏠 Nawet bot zwalnia tempo","🏠 Tu się odpoczywa"]},
     "🔥 Ogień": {"query": "fireplace,winter", "color": 0xCB4335, "texts": ["🔥 Idealne tło do ignorowania obowiązków","🔥 Ogień trzaska, czat żyje","🔥 Legalne źródło ciepła","🔥 Klimat zatwierdzony"]},
-    "🌌 Noc": {"query": "christmas,night", "color": 0x1F618D, "texts": ["🌌 Nocna wersja świąt","🌌 Cisza, spokój, Discord","🌌 Idealna pora na memy","🌌 Bot nadal czuwa. Niestety."]}
-}
+    "🌌 Noc": {"query": "christmas,night", "color": 0x1F618D, "texts": ["🌌 Nocna wersja świąt","🌌 Cisza, spokój, Discord","🌌 Idealna pora na memy","🌌 Bot nadal czuwa. Niestety."]},
+	"🎅 Mikołaj": {"query": "santa,claus,red-suit,beard,presents", "color": 0xE74C3C, "texts": [ "🎅 Ho ho ho. Logi były sprawdzane.", "🎅 Mikołaj widzi więcej niż moderator","🎅 Prezentów brak, ale klimat jest","🎅 Regulamin grzecznych obowiązuje cały rok","🎅 Pamiętaj: lista grzecznych jest dłuższa niż myślisz","🎅 Jeśli zostawiłeś ciasteczka, masz przewagę"]}
 async def send_christmas_embed(ctx_or_channel, attempt=1):
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
@@ -541,6 +541,7 @@ async def retry_christmas_embed(ctx_or_channel, attempt):
 
 
 bot.run(TOKEN)
+
 
 
 
