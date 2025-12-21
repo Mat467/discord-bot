@@ -93,13 +93,23 @@ async def send_christmas_embed(ctx_or_channel):
     embed = discord.Embed(title=title, description=text, color=data["color"])
     
     try:
-        async with session.get(url, headers=headers) as resp:
-            if resp.status == 200:
-                json_data = await resp.json()
-                if json_data.get("photos"):
-                    photo = random.choice(json_data["photos"])
-                    image_url = photo["src"]["large2x"]  # duża jakość, ładne zdjęcie
-                    
+   async with session.get(url, headers=headers) as resp:
+    print("PEXELS STATUS:", resp.status)
+
+ 	   if resp.status != 200:
+        text = await resp.text()
+        print("PEXELS BODY:", text)
+        raise RuntimeError("Pexels API error")
+
+  	  json_data = await resp.json()
+
+	    if not json_data.get("photos"):
+        print("PEXELS: brak zdjęć dla query:", query)
+        raise RuntimeError("No photos")
+
+	    photo = random.choice(json_data["photos"])
+	    image_url = photo["src"]["large2x"]
+          
                     async with session.get(image_url) as img_resp:
                         if img_resp.status == 200:
                             image_data = await img_resp.read()
@@ -483,6 +493,7 @@ async def on_disconnect():
     if session and not session.closed:  # <-- dodaj sprawdzenie, żeby nie crashować
         await session.close()
 bot.run(TOKEN)
+
 
 
 
