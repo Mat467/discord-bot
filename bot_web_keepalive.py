@@ -82,6 +82,10 @@ CHRISTMAS_THEMES = {
 	"🎅 Mikołaj": {"query": "santa,claus,red-suit,beard,presents", "color": 0xE74C3C, "texts": [ "🎅 Ho ho ho. Logi były sprawdzane.", "🎅 Mikołaj widzi więcej niż moderator","🎅 Prezentów brak, ale klimat jest","🎅 Regulamin grzecznych obowiązuje cały rok","🎅 Pamiętaj: lista grzecznych jest dłuższa niż myślisz","🎅 Jeśli zostawiłeś ciasteczka, masz przewagę"]}
 }
 async def send_christmas_embed(ctx_or_channel, attempt=1):
+    global session
+    if session is None or getattr(session, "closed", False):
+        session = aiohttp.ClientSession()
+
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
 
@@ -529,19 +533,18 @@ async def swieta(ctx):
     await send_christmas_embed(ctx)  # ZMIANA: użycie nowej funkcji
 # start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
 @bot.event
-async def on_disconnect():
-    global session  # <-- dodaj to
-    if session and not session.closed:  # <-- dodaj sprawdzenie, żeby nie crashować
-        await session.close()
-		
-# --- retry ---
-async def retry_christmas_embed(ctx_or_channel, attempt):
-    print(f"PEXELS: retry za 10 minut (próba {attempt})")
-    await asyncio.sleep(600)  # 10 minut
-    await send_christmas_embed(ctx_or_channel, attempt)
+async def on_ready():
+    global session
+    print(f'Bot logged in as {bot.user}')
 
+    # jeśli sesja nie istnieje lub została zamknięta — utwórz nową
+    if session is None or getattr(session, "closed", False):
+        session = aiohttp.ClientSession()
 
+    if not christmas_loop.is_running():
+        christmas_loop.start()
 bot.run(TOKEN)
+
 
 
 
