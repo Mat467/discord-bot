@@ -512,12 +512,12 @@ async def rps(ctx, choice: str):
 @bot.command()
 async def cat(ctx):
     url = "https://api.thecatapi.com/v1/images/search"
-    async with aiohttp.ClientSession() as temp_session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
                 image_url = data[0]["url"]  # bezpośredni link do jpg/png
-                embed = discord.Embed(title="🐱 Twój losowy kotek!", color=0xFF9900)
+                embed = discord.Embed(title="🐱 Znalazłem jednego!", color=0xFF9900)
                 embed.set_image(url=image_url)
                 await ctx.send(embed=embed)
             else:
@@ -641,7 +641,13 @@ async def on_ready():
 
     if not christmas_loop.is_running():
         christmas_loop.start()
+
+@bot.event
+async def on_close():
+    if session and not session.closed:
+        await session.close()
 bot.run(TOKEN)
+
 
 
 
