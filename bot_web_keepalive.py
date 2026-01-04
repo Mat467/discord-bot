@@ -655,7 +655,8 @@ async def on_ready():
 async def on_close():
     if session and not session.closed:
         await session.close()
-bot.run(TOKEN)
+# bot.run(TOKEN)
+
 
 
 
