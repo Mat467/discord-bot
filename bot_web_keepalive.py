@@ -282,6 +282,14 @@ async def on_message(message):
         return
     await bot.process_commands(message)
 
+# --- Bezpieczne zamknięcie globalnej sesji aiohttp przy wyłączeniu bota ---
+@bot.event
+async def on_disconnect():
+    global session
+    if session and not session.closed:
+        await session.close()
+        print("🌐 Globalna sesja aiohttp została zamknięta.")
+
 # -------- Komendy moderacji i narzędzi --------
 @bot.command()
 async def warn(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
@@ -579,6 +587,7 @@ async def swieta(ctx):
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
