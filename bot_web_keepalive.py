@@ -33,6 +33,15 @@ original_send = commands.Context.send  # zachowujemy oryginalną funkcję
 
 
 async def new_send(ctx, *args, **kwargs):
+	    try:
+        return await original_send(ctx, *args, **kwargs)
+    except discord.errors.HTTPException as e:
+        if e.status == 429:
+            print(f"GLOBAL RATE LIMIT! Czekaj {getattr(e, 'retry_after', '??')} sekund")
+            await asyncio.sleep(getattr(e, 'retry_after', 5))  # fallback 5s
+            return await new_send(ctx, *args, **kwargs)  # retry po czasie
+        raise  # inne wyjątki przekaż dalej
+
     # Jeśli wysyłany jest embed, ustawiamy kolor czerwony
     if "embed" in kwargs and kwargs["embed"]:
         kwargs["embed"].color = discord.Color.red()
@@ -647,6 +656,7 @@ async def on_close():
     if session and not session.closed:
         await session.close()
 bot.run(TOKEN)
+
 
 
 
