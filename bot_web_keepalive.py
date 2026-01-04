@@ -8,91 +8,49 @@ from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
 
-PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # wstaw swój key do env na Renderze
-session = None  # będzie utworzona później
-
 # --- konfiguracja z ENV ---
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")
 TOKEN = os.environ.get("DISCORD_TOKEN")
 MODERATORS = [int(x) for x in os.environ.get("MODERATORS", "").split(",") if x.strip()]
 
-
 if not TOKEN:
-    raise RuntimeError("Missing DISCORD_TOKEN environment variable")
-
+    raise RuntimeError("Brak DISCORD_TOKEN w zmiennych środowiskowych")
 
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
-# ------------------------------
-# Podmiana ctx.send globalnie, aby wszystkie wiadomości były embedami z czerwoną ramką
-# ------------------------------
-original_send = commands.Context.send  # zachowujemy oryginalną funkcję
 
-
-async def new_send(ctx, *args, **kwargs):
-    try:
-        return await original_send(ctx, *args, **kwargs)
-    except discord.errors.HTTPException as e:
-        if e.status == 429:
-            print(f"GLOBAL RATE LIMIT! Czekaj {getattr(e, 'retry_after', '??')} sekund")
-            await asyncio.sleep(getattr(e, 'retry_after', 5))  # fallback 5s
-            return await new_send(ctx, *args, **kwargs)  # retry po czasie
-        raise  # inne wyjątki przekaż dalej
-
-    # Jeśli wysyłany jest embed, ustawiamy kolor czerwony
-    if "embed" in kwargs and kwargs["embed"]:
-        kwargs["embed"].color = discord.Color.red()
-        return await original_send(ctx, *args, **kwargs)
-
-
-    # Jeśli wysyłany jest zwykły tekst, pakujemy go do embedu z czerwoną ramką
-    if args:
-        text = args[0]
-        embed = discord.Embed(description=text, color=discord.Color.red())
-        return await original_send(ctx, embed=embed, **kwargs)
-
-
-    # Jeżeli nie ma nic do wysłania, wywołujemy oryginalne ctx.send
-    return await original_send(ctx, *args, **kwargs)
-
-
-# Podmieniamy globalnie ctx.send
-commands.Context.send = new_send
-
+# ---- Flask ping ----
 app = Flask("")
-
 
 @app.route("/")
 def home():
     return "Bot alive"
 
-
 def run_flask():
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
 
+Thread(target=run_flask, daemon=True).start()
 
-# uruchom serwer HTTP w osobnym wątku (Render poda PORT automatycznie)
-Thread(target=run_flask).start()
-
+# ---- Tematy świąteczne ----
 CHRISTMAS_THEMES = {
     "🎄 Choinka": {
-        "query": "christmas,tree,christmas-tree,ornaments,lights",
+        "query": "christmas+tree+ornaments+lights",
         "color": 0x2ECC71,
         "texts": [
             "🎄 Świąteczna propaganda obowiązkowa",
             "🎄 Choinka stoi. Regulamin też.",
-            "🎄 Ten moment, gdy drzewko ma więcej ozdób niż role",
+            "🎄 Ten moment, gdy drzewko ma więcej ozdób niż rola",
             "🎄 Administracja potwierdza: to jest choinka",
             "🎄 Lampki zapalone = tryb chill on",
             "🎄 Gałązka sztuki, odgłos lampek i dramaty w tle"
         ]
     },
     "🎅 Mikołaj": {
-        "query": "santa,claus,red-suit,beard,presents,workshop,helper",
+        "query": "santa+claus+red+suit+beard+presents+workshop+helper",
         "color": 0xE74C3C,
         "texts": [
             "🎅 Ho ho ho. Logi były sprawdzane.",
@@ -104,7 +62,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "🦌 Renifery": {
-        "query": "reindeer,rudolph,sleigh,antlers,winter-animals",
+        "query": "reindeer+rudolph+sleigh+antlers+winter-animals",
         "color": 0xA04000,
         "texts": [
             "🦌 Renifer na służbie. Zaprzęg w gotowości.",
@@ -116,7 +74,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "❄️ Zima": {
-        "query": "winter,snow,snowy,ice,frost",
+        "query": "winter+snow+snowy+ice+frost",
         "color": 0x5DADE2,
         "texts": [
             "❄️ Zima przyszła. Produktywność wyszła.",
@@ -128,7 +86,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "🎁 Prezenty": {
-        "query": "christmas,gifts,presents,wrapping,boxes",
+        "query": "christmas+gifts+presents+wrapping+boxes",
         "color": 0xF4D03F,
         "texts": [
             "🎁 Najlepszy prezent to brak pingów",
@@ -140,7 +98,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "☕ Klimat": {
-        "query": "christmas,cozy,hot-chocolate,blanket,fireplace",
+        "query": "christmas+cozy+hot-chocolate+blanket+fireplace",
         "color": 0xAF7AC5,
         "texts": [
             "☕ Tryb koc + herbata aktywny",
@@ -152,7 +110,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "🏠 Dom": {
-        "query": "christmas,home,cozy-home,family,decor",
+        "query": "christmas+home+cozy-home+family+decor",
         "color": 0xDC7633,
         "texts": [
             "🏠 Domowy tryb serwera",
@@ -164,7 +122,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "🔥 Ogień": {
-        "query": "fireplace,winter,cozy-fire,embers,hearth",
+        "query": "fireplace+winter+cozy-fire+embers+hearth",
         "color": 0xCB4335,
         "texts": [
             "🔥 Idealne tło do ignorowania obowiązków",
@@ -176,7 +134,7 @@ CHRISTMAS_THEMES = {
         ]
     },
     "🌌 Noc": {
-        "query": "christmas,night,stars,night-sky,twilight",
+        "query": "christmas+night+stars+night-sky+twilight",
         "color": 0x1F618D,
         "texts": [
             "🌌 Nocna wersja świąt",
@@ -189,187 +147,164 @@ CHRISTMAS_THEMES = {
     }
 }
 
+session: aiohttp.ClientSession = None  # globalna sesja HTTP
 
-async def send_christmas_embed(ctx_or_channel, attempt=1):
+async def send_christmas_embed(channel):
+    """Wysyła losowy embed świąteczny do danego kanału z Pexels."""
     global session
-    if session is None or getattr(session, "closed", False):
+    if session is None or session.closed:
         session = aiohttp.ClientSession()
 
     title, data = random.choice(list(CHRISTMAS_THEMES.items()))
     text = random.choice(data["texts"])
-
-    query = data["query"].replace(",", "+").replace(" ", "+") + "+christmas"
+    query = data["query"] + "+christmas"
     url = f"https://api.pexels.com/v1/search?query={query}&per_page=15&page={random.randint(1,10)}"
     headers = {"Authorization": PEXELS_API_KEY}
-
     embed = discord.Embed(title=title, description=text, color=data["color"])
 
-    try:
-        async with session.get(url, headers=headers) as resp:
-            print("PEXELS STATUS:", resp.status)
+    for attempt in range(1, 4):
+        try:
+            async with session.get(url, headers=headers) as resp:
+                status = resp.status
+                if status != 200:
+                    print(f"PEXELS: HTTP {status}. Próba {attempt}/3.")
+                    # Po 3 próbach rezygnujemy
+                    if attempt == 3:
+                        await channel.send(embed=discord.Embed(
+                            title="❌ Błąd Pexels",
+                            description=f"Pexels zwrócił status {status}. Nie udało się pobrać zdjęcia.",
+                            color=0xE74C3C))
+                        return
+                    else:
+                        # czekamy 10 minut i spróbujemy ponownie
+                        await asyncio.sleep(600)
+                        continue
 
-            if resp.status != 200:
-                body = await resp.text()
-                print("PEXELS BODY:", body)
-
-                if attempt < 3:
-                    print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
-                    asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
-                else:
-                    error_embed = discord.Embed(
-                        title="❌ Błąd Pexels",
-                        description=f"Błąd {resp.status}. Nie udało się wysłać obrazka! Ale moja administracja już pilnie pracuje nad rozwiązaniem tego problemu...",
-                        color=0xE74C3C
-                    )
-                    await ctx_or_channel.send(embed=error_embed)
+                data_json = await resp.json()
+        except aiohttp.ClientError as e:
+            print(f"PEXELS: wyjątek {e}. Próba {attempt}/3.")
+            if attempt == 3:
+                await channel.send(embed=discord.Embed(
+                    title="❌ Błąd Pexels",
+                    description=f"Nie udało się połączyć się z Pexels. {e}",
+                    color=0xE74C3C))
                 return
+            else:
+                await asyncio.sleep(600)
+                continue
 
-            json_data = await resp.json()
-
-            if not json_data.get("photos"):
-                print("PEXELS: brak zdjęć dla query:", query)
-                if attempt < 3:
-                    print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
-                    asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
-                else:
-                    error_embed = discord.Embed(
-                        title="❌ Błąd Pexels",
-                        description=f"Brak zdjęć dla zapytania. Nie udało się wysłać obrazka po 3 próbach!",
-                        color=0xE74C3C
-                    )
-                    await ctx_or_channel.send(embed=error_embed)
+        photos = data_json.get("photos", [])
+        if not photos:
+            print("PEXELS: brak zdjęć dla zapytania.")
+            if attempt == 3:
+                await channel.send(embed=discord.Embed(
+                    title="❌ Błąd Pexels",
+                    description="Brak zdjęć dla danego zapytania. Operacja przerwana po 3 próbach.",
+                    color=0xE74C3C))
                 return
+            else:
+                await asyncio.sleep(600)
+                continue
 
-            photo = random.choice(json_data["photos"])
-            image_url = photo["src"]["large2x"]
-
+        # Wybieramy jedno zdjęcie i pobieramy obrazek
+        photo = random.choice(photos)
+        image_url = photo["src"]["large2x"]
+        try:
             async with session.get(image_url) as img_resp:
                 if img_resp.status != 200:
-                    print("IMAGE STATUS:", img_resp.status)
-                    if attempt < 3:
-                        print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
-                        asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
-                    else:
-                        error_embed = discord.Embed(
+                    print(f"IMAGE: HTTP {img_resp.status}.")
+                    if attempt == 3:
+                        await channel.send(embed=discord.Embed(
                             title="❌ Błąd pobierania obrazka",
-                            description=f"Błąd {img_resp.status}. Nie udało się wysłać obrazka po 3 próbach!",
-                            color=0xE74C3C
-                        )
-                        await ctx_or_channel.send(embed=error_embed)
-                    return
-
+                            description=f"Pexels zwrócił status {img_resp.status} przy pobieraniu obrazka.",
+                            color=0xE74C3C))
+                        return
+                    else:
+                        await asyncio.sleep(600)
+                        continue
                 image_data = await img_resp.read()
-                file = discord.File(
-                    fp=io.BytesIO(image_data),
-                    filename="swieta.jpg"
-                )
-                embed.set_image(url="attachment://swieta.jpg")
-                await ctx_or_channel.send(embed=embed, file=file)
-                return  # sukces
+        except aiohttp.ClientError as e:
+            print(f"IMAGE: wyjątek {e}.")
+            if attempt == 3:
+                await channel.send(embed=discord.Embed(
+                    title="❌ Błąd pobierania obrazka",
+                    description=f"Nie udało się pobrać obrazka: {e}",
+                    color=0xE74C3C))
+                return
+            else:
+                await asyncio.sleep(600)
+                continue
 
-    except Exception as e:
-        print("CHRISTMAS EMBED ERROR:", e)
-        if attempt < 3:
-            print(f"PEXELS: retry za 10 minut (próba {attempt + 1})")
-            asyncio.create_task(retry_christmas_embed(ctx_or_channel, attempt + 1))
-        else:
-            error_embed = discord.Embed(
-                title="❌ Błąd Pexels",
-                description=f"Nie udało się wysłać obrazka po 3 próbach! Błąd: {e}",
-                color=0xE74C3C
-            )
-            await ctx_or_channel.send(embed=error_embed)
-        return
+        file = discord.File(fp=io.BytesIO(image_data), filename="swieta.jpg")
+        embed.set_image(url="attachment://swieta.jpg")
+        await channel.send(embed=embed, file=file)
+        return  # sukces, kończymy pętlę
 
-CHANNEL_ID = 1437924798645928106  # <-- wstaw swoje ID kanału
+# ---- Pętla świąteczna co 8 godzin ----
+CHANNEL_ID = 1437924798645928106  # <-- podaj ID swojego kanału
 
-# --- Loop świąteczny ---
 @tasks.loop(hours=8)
 async def christmas_loop():
     channel = bot.get_channel(CHANNEL_ID)
     if channel:
-        await send_christmas_embed(channel)  # ZMIANA: użycie nowej funkcji
+        await send_christmas_embed(channel)
     else:
-        print(f"Nie znalazłem kanału o ID {CHANNEL_ID}")
-            
+        print(f"Nie znaleziono kanału o ID {CHANNEL_ID}")
+
 @bot.event
 async def on_ready():
-    global session  # <-- dodaj to, żeby modyfikować globalną zmienną
-    print(f'Bot logged in as {bot.user}')
-    
-    if session is None:  # <-- dodaj to – tworzy sesję tylko raz, gdy potrzeba
+    global session
+    print(f'Bot uruchomiony jako {bot.user}')
+
+    if session is None or session.closed:
         session = aiohttp.ClientSession()
-    
+    # Uruchamiamy pętlę tylko raz (on_ready może być wywołane wiele razy przy re-connect)
     if not christmas_loop.is_running():
         christmas_loop.start()
-		
-# 🟢 AUTO-POWITANIE
+
 @bot.event
 async def on_member_join(member):
-    # znajdź kanał powitań po nazwie
+    # Wysyła powitanie na kanale o nazwie "powitania"
     channel = discord.utils.get(member.guild.text_channels, name="powitania")
     if channel:
         await channel.send(f"🎉 Witamy nowego członka: {member.mention}! Dajcie mu serduszko ❤️")
 
 @bot.event
 async def on_message(message):
-    # ignorujemy własne wiadomości
+    # Ignoruj własne wiadomości
     if message.author == bot.user:
         return
-    
-    # jeśli ktoś pisze PRIV do bota
+    # W odpowiedzi na DM do bota
     if isinstance(message.channel, discord.DMChannel):
-        await message.channel.send("Cześć! Ja reaguję tylko na komendy zaczynające się od `?`. Spróbuj np. `?ping`")
+        await message.channel.send(
+            "Cześć! Ja reaguję tylko na komendy zaczynające się od `?`. Spróbuj np. `?ping`"
+        )
         return
-    
-    # jeśli to normalna wiadomość na serwerze – sprawdzamy komendy
     await bot.process_commands(message)
 
-# -------- twoje komendy (przykład) --------
-# wklej tu dokładnie swoje funkcje warn, important, kick, mute, shield, ping
-# poniżej skrócona wersja — wklej pełne definicje jakie masz lokalnie
-
+# -------- Komendy moderacji i narzędzi --------
 @bot.command()
-async def warn(ctx, member: discord.Member, *, reason="Brak powodu"):
+async def warn(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
     if ctx.author.id not in MODERATORS:
-        await ctx.send("Nie masz uprawnień do tej komendy!")
+        await ctx.send(embed=discord.Embed(description="Nie masz uprawnień do tej komendy!", color=0xE74C3C))
         return
-    await ctx.send(f"{member.mention} otrzymał ostrzeżenie: {reason}")
+    await ctx.send(embed=discord.Embed(description=f"{member.mention} otrzymał ostrzeżenie: {reason}", color=0xE74C3C))
     try:
-        await member.send(f"Otrzymałeś ostrzeżenie na serwerze {ctx.guild.name}: {reason}")
-    except:
+        await member.send(f"Otrzymałeś ostrzeżenie na serwerze **{ctx.guild.name}**: {reason}")
+    except discord.Forbidden:
         await ctx.send("Nie mogę wysłać DM do tego użytkownika.")
 
-
 @bot.command()
-async def mute(ctx, member: discord.Member, *, reason="Brak powodu"):
+async def mute(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
     if ctx.author.id not in MODERATORS:
         await ctx.send("Nie masz uprawnień do tej komendy!")
         return
     muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
     if not muted_role:
-        await ctx.send("Rola 'Muted' nie istnieje.")
+        await ctx.send("Rola **Muted** nie istnieje.")
         return
     await member.add_roles(muted_role)
     await ctx.send(f"🔇 {member.name} został wyciszony. Powód: {reason}")
-	
-@bot.command()
-async def spamshield(ctx, member: discord.Member, times: int = 5):
-    """Spamuje DM o tarczy do wskazanego gracza (domyślnie 5 razy, max 10)."""
-    
-    # ograniczenie, żeby nie przesadzić
-    times = max(1, min(times, 10))  
-    
-    sent = 0
-    for i in range(times):
-        try:
-            await member.send("🛡️ Użyj tarczy! Wróg nadciąga!")
-            sent += 1
-        except:
-            await ctx.send(f"❌ Nie mogę wysłać wiadomości do {member.name}.")
-            return
-    
-    await ctx.send(f"✅ Wysłałem {sent} ostrzeżeń do {member.mention} na priv.")
 
 @bot.command()
 async def unmute(ctx, member: discord.Member):
@@ -378,96 +313,108 @@ async def unmute(ctx, member: discord.Member):
         return
     muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
     if not muted_role:
-        await ctx.send("Rola 'Muted' nie istnieje.")
+        await ctx.send("Rola **Muted** nie istnieje.")
         return
     try:
         await member.remove_roles(muted_role)
-        await ctx.send(f" {member.name} został odciszony.")
-    except:
+        await ctx.send(f"{member.name} został odciszony.")
+    except discord.HTTPException:
         await ctx.send("Nie mogę odciszyć tego użytkownika.")
 
-# ?kick - wyrzucenie (tylko moderatorzy)
 @bot.command()
-async def kick(ctx, member: discord.Member, *, reason="No reason provided"):
+async def kick(ctx, member: discord.Member, *, reason: str = "No reason provided"):
     if ctx.author.id not in MODERATORS:
         await ctx.send("Nie wolno używać tego polecenia!")
         return
     try:
         await member.kick(reason=reason)
         await ctx.send(f"{member.name} został wyrzucony. ({reason})")
-    except:
-        await ctx.send("Nie mogę wyrzucić tego użytkownika.")
-
-# --- Ważne wiadomości ---
-
+    except discord.Forbidden:
+        await ctx.send("Nie mam uprawnień, by wyrzucić tego użytkownika.")
+    except discord.HTTPException:
+        await ctx.send("Nie udało się wyrzucić tego użytkownika.")
 
 @bot.command()
-async def important(ctx, *, message):
-    if not ctx.message.mentions and not ctx.message.role_mentions and "@everyone" not in ctx.message.content:
-        await ctx.send("Musisz oznaczyć gracza, rolę lub @everyone.")
+async def spamshield(ctx, member: discord.Member, times: int = 5):
+    """Spamuje DM o tarczy do wskazanego gracza (domyślnie 5 razy, max 10)."""
+    times = max(1, min(times, 10))
+    sent = 0
+    for _ in range(times):
+        try:
+            await member.send("🛡️ Użyj tarczy! Wróg nadciąga!")
+            sent += 1
+        except discord.Forbidden:
+            await ctx.send(f"❌ Nie mogę wysłać wiadomości do {member.name}.")
+            return
+    await ctx.send(f"✅ Wysłałem {sent} ostrzeżeń do {member.mention} na priv.")
+
+@bot.command()
+async def important(ctx, *, message: str):
+    content = ctx.message.content
+    if not ctx.message.mentions and not ctx.message.role_mentions and "@everyone" not in content:
+        await ctx.send("Musisz oznaczyć gracza, rolę lub użyć @everyone.")
         return
 
+    notified = set()
 
-    notified = []
-
-
-    # oznaczeni użytkownicy
+    # Użytkownicy wymienieni bezpośrednio
     for member in ctx.message.mentions:
+        if member.id == bot.user.id:
+            continue
         try:
-            await member.send(f"🔔 Masz nową ważną wiadomość: {message}")
-            notified.append(member.name)
-        except:
+            await member.send(f"🔔 Ważna wiadomość od administracji serwera **{ctx.guild.name}**: {message}")
+            notified.add(member)
+        except discord.Forbidden:
             await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
 
-
-    # oznaczone role
+    # Użytkownicy z oznaczonych ról
     for role in ctx.message.role_mentions:
         for member in role.members:
+            if member.bot:
+                continue
             try:
-                await member.send(f"🔔 Masz nową ważną wiadomość dla roli {role.name}: {message}")
-                notified.append(member.name)
-            except:
+                await member.send(f"🔔 Ważna wiadomość dla roli **{role.name}**: {message}")
+                notified.add(member)
+            except discord.Forbidden:
                 await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
 
-
     # @everyone
-    if "@everyone" in ctx.message.content:
+    if "@everyone" in content:
         for member in ctx.guild.members:
             if member.bot:
                 continue
             try:
-                await member.send(f"🔔 Masz nową ważną wiadomość: {message}")
-                notified.append(member.name)
-            except:
-                pass  # wielu userów może mieć zablokowane DM
-
+                await member.send(f"🔔 Ważna wiadomość od administracji: {message}")
+                notified.add(member)
+            except discord.Forbidden:
+                continue
 
     if notified:
-        await ctx.send(f"Powiadomiłem {len(notified)} graczy jako ważne.")
+        await ctx.send(f"✅ Powiadomiłem {len(notified)} użytkowników jako **ważne**.")
 
-# ?shield - dostępne dla wszystkich
 @bot.command()
 async def shield(ctx, member: discord.Member):
+    """Informuje gracza o braku tarczy."""
     try:
-        await ctx.send(f"{member.mention} gracz został poinformowany o braku tarczy")
-        await member.send("Użyj tarczy! Wróg już nadciąga!")
-    except:
+        await ctx.send(f"{member.mention}, gracz został poinformowany o braku tarczy.")
+        await member.send("🛡️ Użyj tarczy! Wróg już nadciąga!")
+    except discord.Forbidden:
         await ctx.send("Nie mogę wysłać PW do tego użytkownika.")
 
 # --- Zabawa ---
-
-
 @bot.command()
 async def roll(ctx, sides: int = 100):
-    result = random.randint(1, sides)
-    await ctx.send(f"🎲 {ctx.author.name} rzucił kostką ({sides}) i wypadło **{result}**")
-
+    try:
+        result = random.randint(1, sides)
+        await ctx.send(f"🎲 {ctx.author.name} rzucił kostką (1–{sides}) i wypadło **{result}**")
+    except Exception as e:
+        print(f"[roll] {e}")
+        await ctx.send("Wystąpił błąd podczas rzutu kostką.")
 
 @bot.command()
 async def coinflip(ctx):
-    result = random.choice(["orzeł ", "reszka "])
+    result = random.choice(["orzeł", "reszka"])
     await ctx.send(f"{ctx.author.name} rzucił monetą: **{result}**")
-
 
 @bot.command(name="8ball")
 async def eight_ball(ctx, *, question: str):
@@ -487,26 +434,21 @@ async def eightballfun(ctx, *, question: str):
         "🙃 Czemu pytasz mnie, skoro masz Google?",
         "💔 Nie chcę łamać Ci serca, ale… nope.",
         "😏 Zastanów się jeszcze raz i udawaj, że nigdy nie pytałeś.",
-        "🤡 To najgłupsze pytanie jakie dziś usłyszałem.",
+        "🤡 To najgłupsze pytanie, jakie dziś usłyszałem.",
         "🔥 Jasne! A teraz wracaj do roboty.",
         "🌚 Powiedzmy, że odpowiedź brzmi: meh.",
         "🦄 42. Zawsze 42."
     ]
     await ctx.send(f"**{ctx.author.display_name} pyta:** {question}\n🎱 {random.choice(responses)}")
 
-
-# ✊✋✌️ RPS – Kamień papier nożyce
 @bot.command()
 async def rps(ctx, choice: str):
     choices = ["kamień", "papier", "nożyce"]
     bot_choice = random.choice(choices)
     choice = choice.lower()
-
     if choice not in choices:
         await ctx.send("Użyj: `?rps kamień`, `?rps papier` albo `?rps nożyce`.")
         return
-
-    # logika gry
     if choice == bot_choice:
         result = "Remis!"
     elif (choice == "kamień" and bot_choice == "nożyce") or \
@@ -515,147 +457,129 @@ async def rps(ctx, choice: str):
         result = "Wygrałeś! 🎉"
     else:
         result = "Przegrałeś! 😢"
-
     await ctx.send(f"Ty: **{choice}** | Bot: **{bot_choice}** → {result}")
 
 @bot.command()
 async def cat(ctx):
     url = "https://api.thecatapi.com/v1/images/search"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                image_url = data[0]["url"]  # bezpośredni link do jpg/png
-                embed = discord.Embed(title="🐱 Znalazłem jednego!", color=0xFF9900)
-                embed.set_image(url=image_url)
-                await ctx.send(embed=embed)
-            else:
-                await ctx.send("😿 Nie udało się znaleźć kota, spróbuj ponownie!")
-				
-# --- Pomoc i zasady ---
+    try:
+        async with aiohttp.ClientSession() as temp_session:
+            async with temp_session.get(url) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    image_url = data[0]["url"]
+                    embed = discord.Embed(title="🐱 Znalazłem jednego!", color=0xFF9900)
+                    embed.set_image(url=image_url)
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("😿 Nie udało się znaleźć kota, spróbuj ponownie później!")
+    except Exception as e:
+        print(f"[cat] {e}")
+        await ctx.send("😿 Wystąpił błąd podczas pobierania zdjęcia kota.")
 
+# --- Komendy pomocy i informacyjne ---
 @bot.command(name="print")
 async def echo(ctx, *, text: str):
-    # usuń wiadomość użytkownika (opcjonalnie)
     try:
         await ctx.message.delete()
-    except:
+    except discord.Forbidden:
         pass
     await ctx.send(text)
-	
-@bot.command()
-async def help(ctx):
-    help_text = """
-**Lista komend bota**
-
-
-Moderacja:
-- `?warn @user [powód]` – wysyła ostrzeżenie
-- `?mute @user [powód]` – wycisza użytkownika
-- `?unmute @user` – cofa wyciszenie
-- `?kick @user` – usuwa z serwera
-
- Informacyjne:
-- `?important @user [wiadomość]` – wysyła ważną wiadomość
-- `?rules` – pokazuje zasady serwera
-- `?shield @user` – informuje o braku tarczy
-- `?spamshield @user [ilość max 10]` – wysyła spam tarczy do użytkownika 
-- `?kontrlist` – wysyła listę konter 
-- `?print [wiadomość]` – wysyła wiadomość o podanej treści 
-
-Zabawa:
-- `?roll [sides]` – rzut kostką (domyślnie 1–100)
-- `?coinflip` – rzut monetą
-- `?8ball [pytanie]` – magiczna kula
-- `?8ballfun [pytanie]` – rozbudowana magiczna kula
-- `?cat` - wysyła losowego kotka
-- `?rps [wybór]` – gra w Kamień papier nożyce
-
- Narzędzia:
-- `?ping` – sprawdza czy bot działa
-"""
-    await ctx.send(help_text)
-
 
 @bot.command()
 async def rules(ctx):
     rules_text = """
 **Zasady serwera:**
 
-
-1️ Szanuj innych – zero obrażania i wyzwisk.  
-2️ Brak polityki i religii – to nie miejsce na takie dyskusje.  
-3️ Nie spamuj i nie flooduj wiadomości.  
-4️ Zakaz reklamowania innych serwerów/stron.  
-5️ Nie używaj cheatów ani exploitów w grach.  
-6️ Trzymaj się tematów kanałów.  
-7️ Słuchaj administracji i moderatorów.  
-8️ Zakaz udostępniania treści NSFW i nielegalnych.  
-9️ Używaj języka polskiego lub angielskiego (jeśli ustalono).  
-10 Pamiętaj – baw się dobrze i wspieraj klimat serwera!
+1️⃣ Szanuj innych – zero obrażania i wyzwisk.  
+2️⃣ Brak polityki i religii – nie miejsce na takie dyskusje.  
+3️⃣ Nie spamuj i nie flooduj wiadomości.  
+4️⃣ Zakaz reklamowania innych serwerów/stron.  
+5️⃣ Nie używaj cheatów ani exploitów w grach.  
+6️⃣ Trzymaj się tematów kanałów.  
+7️⃣ Słuchaj administracji i moderatorów.  
+8️⃣ Zakaz udostępniania treści NSFW i nielegalnych.  
+9️⃣ Używaj języka polskiego lub angielskiego (jeśli ustalono).  
+🔟 Pamiętaj – baw się dobrze i wspieraj klimat serwera!
 """
     await ctx.send(rules_text)
 
 @bot.command()
+async def help(ctx):
+    help_text = """
+**Lista komend bota**
+
+__Moderacja:__  
+• `?warn @user [powód]` – wysyła ostrzeżenie  
+• `?mute @user [powód]` – wycisza użytkownika  
+• `?unmute @user` – cofa wyciszenie  
+• `?kick @user [powód]` – usuwa z serwera  
+
+__Informacyjne:__  
+• `?important @user/rola [wiadomość]` – wysyła ważną wiadomość (DM)  
+• `?rules` – pokazuje zasady serwera  
+• `?shield @user` – informuje o braku tarczy (DM)  
+• `?spamshield @user [ilość, max 10]` – spam DM z tarczami  
+• `?kontrlist` – wysyła listę konter jako embed  
+• `?print [wiadomość]` – bot powtórzy wiadomość  
+
+__Zabawa:__  
+• `?roll [sides]` – rzut kostką (domyślnie 1–100)  
+• `?coinflip` – rzut monetą  
+• `?8ball [pytanie]` – magiczna kula (prosta)  
+• `?8ballfun [pytanie]` – rozbudowana magiczna kula  
+• `?cat` – losowy kotek (embed)  
+• `?rps [kamień/papier/nożyce]` – gra Kamień/Papier/Nożyce  
+
+__Narzędzia:__  
+• `?ping` – sprawdza czy bot działa  
+"""
+    await ctx.send(help_text)
+
+@bot.command()
 async def kontrlist(ctx):
     kontr = [
-    	"Kontry standardowe",
-	"przeciwko 884 użyj 848",
-        "przeciwko 488 użyj 884",
-        "przeciwko 569 użyj 848", 
-        "przeciwko 848 użyj 659",
-        "przeciwko 488 użyj 659",
-	"Kontry specjalne",
-        "przeciwko 488 użyj 13 5 2", 
-        "przeciwko 569 użyj 13 5 2",
-        "przeciwko 659 użyj 848",
-	"przeciwko 848 użyj 848",
-        "przeciwko 884 użyj 13 5 2",
-        "przeciwko 677 użyj 13 5 2", 
-        "przeciwko 767 użyj 13 5 2",
-        "przeciwko 776 użyj 11 7 2",
-	"przeciwko 13 5 2 użyj 13 5 2",
-        "przeciwko 5 11 4 użyj 11 7 2",
-        "przeciwko 11 7 2 użyj 13 5 2", 
+        "📜 **Kontry standardowe**:",
+        "• przeciwko 884 użyj 848",
+        "• przeciwko 488 użyj 884",
+        "• przeciwko 569 użyj 848", 
+        "• przeciwko 848 użyj 659",
+        "• przeciwko 488 użyj 659",
+        "📜 **Kontry specjalne**:",
+        "• przeciwko 488 użyj 13 5 2", 
+        "• przeciwko 569 użyj 13 5 2",
+        "• przeciwko 659 użyj 848",
+        "• przeciwko 848 użyj 848",
+        "• przeciwko 884 użyj 13 5 2",
+        "• przeciwko 677 użyj 13 5 2", 
+        "• przeciwko 767 użyj 13 5 2",
+        "• przeciwko 776 użyj 11 7 2",
+        "• przeciwko 13 5 2 użyj 13 5 2",
+        "• przeciwko 5 11 4 użyj 11 7 2",
+        "• przeciwko 11 7 2 użyj 13 5 2"
     ]
-
     embed = discord.Embed(
         title="📜 Lista konter",
         description="\n".join(kontr),
-        color=discord.Color.blue()  # możesz zmienić np. na .green(), .red()
+        color=discord.Color.blue()
     )
-
-
     await ctx.send(embed=embed)
-    
-# --- Ping ---
-
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send(" Pong! Bot działa.")
-	
+    try:
+        await ctx.send("Pong! Bot działa poprawnie.")
+    except Exception as e:
+        print(f"[ping] {e}")
+        await ctx.send("Wystąpił błąd podczas pingowania bota.")
+
 @bot.command()
 async def swieta(ctx):
-    await send_christmas_embed(ctx)  # ZMIANA: użycie nowej funkcji
-# start bota (discord.py run blokuje wątek główny — Flask już działa w osobnym wątku)
-@bot.event
-async def on_ready():
-    global session
-    print(f'Bot logged in as {bot.user}')
+    await send_christmas_embed(ctx)
 
-    # jeśli sesja nie istnieje lub została zamknięta — utwórz nową
-    if session is None or getattr(session, "closed", False):
-        session = aiohttp.ClientSession()
+# Uruchomienie bota
+bot.run(TOKEN)
 
-    if not christmas_loop.is_running():
-        christmas_loop.start()
-
-@bot.event
-async def on_close():
-    if session and not session.closed:
-        await session.close()
-# bot.run(TOKEN)
 
 
 
