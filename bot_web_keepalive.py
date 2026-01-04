@@ -33,7 +33,7 @@ original_send = commands.Context.send  # zachowujemy oryginalną funkcję
 
 
 async def new_send(ctx, *args, **kwargs):
-	    try:
+    try:
         return await original_send(ctx, *args, **kwargs)
     except discord.errors.HTTPException as e:
         if e.status == 429:
@@ -656,6 +656,7 @@ async def on_close():
     if session and not session.closed:
         await session.close()
 bot.run(TOKEN)
+
 
 
 
