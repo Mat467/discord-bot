@@ -253,21 +253,21 @@ async def send_christmas_embed(channel):
     if session is None or session.closed:
         session = aiohttp.ClientSession()
         
-key, category = random.choice(list(CHRISTMAS_THEMES.items()))
-item = random.choice(category["items"])
+    key, category = random.choice(list(CHRISTMAS_THEMES.items()))
+    item = random.choice(category["items"])
 
-text = item["text"]
-query = item["query"]
-color = item["color"]
+    text = item["text"]
+    query = item["query"]
+    color = item["color"]
 
-url = f"https://api.pexels.com/v1/search?query={query}&per_page=15&page={random.randint(1,10)}"
-headers = {"Authorization": PEXELS_API_KEY}
+    url = f"https://api.pexels.com/v1/search?query={query}&per_page=15&page={random.randint(1,10)}"
+    headers = {"Authorization": PEXELS_API_KEY}
 
-embed = discord.Embed(
+    embed = discord.Embed(
     title=category["name"],
     description=text,
     color=color
-)
+    )
 
     for attempt in range(1, 4):
         try:
@@ -696,6 +696,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
