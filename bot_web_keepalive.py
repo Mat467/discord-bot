@@ -35,117 +35,215 @@ def run_flask():
 
 Thread(target=run_flask, daemon=True).start()
 
-# ---- Tematy świąteczne ----
-CHRISTMAS_THEMES = {
-    "🎄 Choinka": {
-        "query": "christmas+tree+ornaments+lights",
-        "color": 0x2ECC71,
-        "texts": [
-            "🎄 Świąteczna propaganda obowiązkowa",
-            "🎄 Choinka stoi. Regulamin też.",
-            "🎄 Ten moment, gdy drzewko ma więcej ozdób niż rola",
-            "🎄 Administracja potwierdza: to jest choinka",
-            "🎄 Lampki zapalone = tryb chill on",
-            "🎄 Gałązka sztuki, odgłos lampek i dramaty w tle"
-        ]
+ CHRISTMAS_THEMES = {
+    "winter_traditions": {
+        "name": "Święta / zimowe tradycje",
+        "items": [
+            {"text": "🎄 Choinka włączona, powiadomienia wyciszone", "query": "christmas+tree+lights+cozy", "color": 0x2ECC71},
+            {"text": "🎅 Mikołaj się zgubił, ale pingi nadal docierają", "query": "santa+claus+lost+winter", "color": 0xE74C3C},
+            {"text": "❄️ Śnieg pada, serwer działa… jakoś", "query": "winter+snow+server+night", "color": 0x5DADE2},
+            {"text": "🕯️ Świeczki zapalone, chaos kontrolowany", "query": "candle+light+cozy+dark", "color": 0xF5B041},
+            {"text": "🍪 Pierniki są, produktywność nie", "query": "gingerbread+cookies+christmas", "color": 0xD35400},
+            {"text": "🧦 Skarpety na nogach, memy w rękach", "query": "christmas+socks+cozy", "color": 0xAF7AC5},
+            {"text": "🎁 Prezenty zapakowane, odpowiedzi brak", "query": "christmas+gifts+wrapped+boxes", "color": 0xF4D03F},
+            {"text": "🦌 Renifery w trybie patrolu, użytkownicy w trybie snu", "query": "reindeer+winter+night", "color": 0xA04000},
+            {"text": "⛄ Bałwan stoi, a ja czekam na reakcje", "query": "snowman+winter+snow", "color": 0xAED6F1},
+            {"text": "🧣 Szalik na szyi, serwer w trybie chill", "query": "scarf+winter+cozy", "color": 0x1ABC9C},
+        ],
     },
-    "🎅 Mikołaj": {
-        "query": "santa+claus+red+suit+beard+presents+workshop+helper",
-        "color": 0xE74C3C,
-        "texts": [
-            "🎅 Ho ho ho. Logi były sprawdzane.",
-            "🎅 Mikołaj widzi więcej niż moderator",
-            "🎅 Prezentów brak, ale klimat jest",
-            "🎅 Regulamin grzecznych obowiązuje cały rok",
-            "🎅 Pamiętaj: lista grzecznych jest dłuższa niż myślisz",
-            "🎅 Jeśli zostawiłeś ciasteczka, masz przewagę"
-        ]
+
+    "winter_weather": {
+        "name": "Mróz i zimowa aura",
+        "items": [
+            {"text": "❄️ Mróz na zewnątrz, Discord w środku działa", "query": "winter+frost+window", "color": 0x85C1E9},
+            {"text": "🌨️ Śnieżyca = idealna wymówka do braku aktywności", "query": "snowstorm+winter", "color": 0x5DADE2},
+            {"text": "🧊 Lodowata cisza w kanałach", "query": "ice+cold+winter+silence", "color": 0xAAB7B8},
+            {"text": "🌬️ Wiatr hula, ja siedzę pod kocem", "query": "winter+wind+cozy+blanket", "color": 0x7FB3D5},
+            {"text": "☃️ Bałwan patrzy, jak nikt nie odpowiada", "query": "snowman+lonely+winter", "color": 0xD6EAF8},
+            {"text": "🥶 Dłonie zamarznięte, ping nie dotarł", "query": "cold+hands+winter", "color": 0x5D6D7E},
+            {"text": "❄️ Śnieg = naturalny filtr powiadomień", "query": "falling+snow+winter", "color": 0xEBF5FB},
+            {"text": "🌫️ Mgła na zewnątrz, chaos w czacie minimalny", "query": "winter+fog+street", "color": 0x99A3A4},
+            {"text": "🧤 Rękawice na dłoniach, CTRL+C na aktywności", "query": "winter+gloves+cold", "color": 0x566573},
+            {"text": "🌁 Widoczność spada, tak samo jak moja motywacja", "query": "foggy+winter+city", "color": 0x616A6B},
+        ],
     },
-    "🦌 Renifery": {
-        "query": "reindeer+rudolph+sleigh+antlers+winter-animals",
-        "color": 0xA04000,
-        "texts": [
-            "🦌 Renifer na służbie. Zaprzęg w gotowości.",
-            "🦌 Rudolf twierdzi, że to nie jego wina",
-            "🦌 Bez reniferów nie ma logistyki świąt",
-            "🦌 Ten gość ciągnie cały projekt",
-            "🦌 Szczęśliwy renifer = termin dostarczony na czas",
-            "🦌 Zaprzęg gotowy, kawa w kubku, jedziemy"
-        ]
+
+    "cozy_chill": {
+        "name": "Herbata, koc i chill",
+        "items": [
+            {"text": "☕ Herbata w kubku, nic nie muszę", "query": "tea+cup+cozy", "color": 0xA569BD},
+            {"text": "🛋️ Kanapa w trybie królewskim, serwer w trybie obserwacji", "query": "sofa+cozy+living+room", "color": 0x7DCEA0},
+            {"text": "🕯️ Światło świec = jedyna energia dnia", "query": "candlelight+dark+cozy", "color": 0xF5CBA7},
+            {"text": "🧣 Koc + szalik = tryb maksymalnego komfortu", "query": "blanket+scarf+cozy", "color": 0x48C9B0},
+            {"text": "🍫 Gorąca czekolada rekomendowana przy pingach", "query": "hot+chocolate+cozy", "color": 0x935116},
+            {"text": "📖 Książka w ręku, czat w spokoju", "query": "reading+book+cozy", "color": 0x5B2C6F},
+            {"text": "🎶 Świąteczne melodie w tle, odpowiedzi rzadko", "query": "christmas+music+cozy", "color": 0x1F618D},
+            {"text": "🐾 Zwierzak obok, serwer nadal żyje", "query": "pet+cat+dog+cozy", "color": 0x52BE80},
+            {"text": "🌙 Noc = czas kreatywnego ignorowania", "query": "night+moon+quiet", "color": 0x2C3E50},
+            {"text": "🔥 Kominek działa, motywacja offline", "query": "fireplace+cozy+night", "color": 0xCB4335},
+        ],
     },
-    "❄️ Zima": {
-        "query": "winter+snow+snowy+ice+frost",
-        "color": 0x5DADE2,
-        "texts": [
-            "❄️ Zima przyszła. Produktywność wyszła.",
-            "❄️ Śnieg pada, serwer nadal żyje",
-            "❄️ Idealna pogoda na nieodpisywanie",
-            "❄️ Mróz na zewnątrz, ciepło na czacie",
-            "❄️ Mróz + herbata = plan działania: zero",
-            "❄️ Śnieżne widowisko, minimalne zaangażowanie"
-        ]
+
+    "winter_memes": {
+        "name": "Humor i memy zimowe",
+        "items": [
+            {"text": "🦌 Rudolf nadal nie odpowiada", "query": "reindeer+winter+funny", "color": 0x873600},
+            {"text": "🎄 Choinka mówi: „Nie dzwońcie, odpoczywam”", "query": "christmas+tree+funny", "color": 0x27AE60},
+            {"text": "⛄ Bałwan patrzy dziwnie, jak pingi spadają", "query": "snowman+funny+winter", "color": 0xAED6F1},
+            {"text": "❄️ Mróz = darmowy filtr spamu", "query": "cold+winter+humor", "color": 0x85C1E9},
+            {"text": "🧦 Skarpety w roli moderatora", "query": "funny+socks+winter", "color": 0xAF7AC5},
+            {"text": "🎅 Święty Mikołaj ignoruje tagi", "query": "santa+claus+funny", "color": 0xC0392B},
+            {"text": "☕ Kawa nie rozwiąże wszystkiego, ale pomaga", "query": "coffee+cup+funny", "color": 0x6E2C00},
+            {"text": "🧣 Szalik zakrywa oczy przed dramatem", "query": "scarf+winter+funny", "color": 0x16A085},
+            {"text": "🐧 Ping nie dotarł? Ping z pingwinem!", "query": "penguin+winter+funny", "color": 0x2980B9},
+            {"text": "🛷 Sanie wjechały, chaos też", "query": "sled+winter+chaos", "color": 0xD68910},
+        ],
     },
-    "🎁 Prezenty": {
-        "query": "christmas+gifts+presents+wrapping+boxes",
-        "color": 0xF4D03F,
-        "texts": [
-            "🎁 Najlepszy prezent to brak pingów",
-            "🎁 Administracja nic nie obiecuje",
-            "🎁 Opakowanie ładniejsze niż zawartość",
-            "🎁 Tak, to też się liczy",
-            "🎁 Prezenty pakowane specjalnie: poziom chaosu",
-            "🎁 Jeśli dostałeś skarpetki — interpretuj to jako inwestycję"
-        ]
+
+    "home_vibes": {
+        "name": "Domowy klimat",
+        "items": [
+            {"text": "🏠 Kanapa, koc, serwer w tle", "query": "home+cozy+sofa", "color": 0x935116},
+            {"text": "🕯️ Świeczki i spokój", "query": "candles+calm+cozy", "color": 0xF8C471},
+            {"text": "🧸 Pluszak jako moderator dnia", "query": "teddy+bear+cozy", "color": 0xAF601A},
+            {"text": "📺 Telewizor włączony, odpowiedzi minimalne", "query": "tv+living+room+cozy", "color": 0x566573},
+            {"text": "🛋️ Fotel wygodniejszy niż każda komenda", "query": "armchair+cozy+home", "color": 0x7DCEA0},
+            {"text": "🍪 Przerwa na ciasteczko = wymówka", "query": "cookies+home+cozy", "color": 0xD35400},
+            {"text": "🐶 Pies blokuje kanał, ja pod kocem", "query": "dog+blanket+cozy", "color": 0x52BE80},
+            {"text": "🏡 Widok z okna = śnieg i cisza", "query": "winter+window+snow", "color": 0x85C1E9},
+            {"text": "🎶 Muzyka nastrojowa = serwer chill", "query": "music+cozy+home", "color": 0x76448A},
+            {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home", "color": 0xA93226},
+        ],
     },
-    "☕ Klimat": {
-        "query": "christmas+cozy+hot-chocolate+blanket+fireplace",
-        "color": 0xAF7AC5,
-        "texts": [
-            "☕ Tryb koc + herbata aktywny",
-            "☕ Oficjalnie: nic nie musisz",
-            "☕ To nie lenistwo, to święta",
-            "☕ Discord, cisza i zero planów",
-            "☕ Kocyk ⊕ herbata = 100% efektywności relaksu",
-            "☕ Kiedy świat płonie, parzę herbatę"
-        ]
+
+    "winter_survival": {
+        "name": "Planowanie i przetrwanie zimy",
+        "items": [
+            {"text": "📝 Listy rzeczy do zrobienia ignorowane", "query": "to+do+list+desk", "color": 0x5D6D7E},
+            {"text": "📅 Kalendarz mówi „odpocznij”", "query": "calendar+relax", "color": 0x1F618D},
+            {"text": "🕰️ Czas leci, a ja nadal pod kocem", "query": "clock+time+waiting", "color": 0x7B7D7D},
+            {"text": "🔥 Ogień w kominku = plan na dzisiaj: nic", "query": "fireplace+relax", "color": 0xCB4335},
+            {"text": "🎯 Cel dnia: nie zamarznąć", "query": "winter+goal+survival", "color": 0x2874A6},
+            {"text": "🧭 Kompas pokazuje kierunek do herbaty", "query": "compass+direction", "color": 0x1ABC9C},
+            {"text": "🏔️ Zimowa wyprawa: do kuchni po czekoladę", "query": "winter+mountains+funny", "color": 0x5DADE2},
+            {"text": "⏳ Odpowiedzi przyjdą… może", "query": "hourglass+time+waiting", "color": 0x95A5A6},
+            {"text": "🥶 Przetrwać mróz = sztuka dnia", "query": "cold+winter+survival", "color": 0x5499C7},
+            {"text": "💡 Pomysł: minimalne działania, maksymalny chill", "query": "minimalism+relax+cozy", "color": 0xF7DC6F},
+        ],
     },
-    "🏠 Dom": {
-        "query": "christmas+home+cozy-home+family+decor",
-        "color": 0xDC7633,
-        "texts": [
-            "🏠 Domowy tryb serwera",
-            "🏠 Bez pośpiechu, bez dram",
-            "🏠 Nawet bot zwalnia tempo",
-            "🏠 Tu się odpoczywa",
-            "🏠 Kanapa królem, pilot władcą świata",
-            "🏠 Zapach piernika rekomendowany"
-        ]
-    },
-    "🔥 Ogień": {
-        "query": "fireplace+winter+cozy-fire+embers+hearth",
-        "color": 0xCB4335,
-        "texts": [
-            "🔥 Idealne tło do ignorowania obowiązków",
-            "🔥 Ogień trzaska, czat żyje",
-            "🔥 Legalne źródło ciepła",
-            "🔥 Klimat zatwierdzony",
-            "🔥 Siedzimy przy ogniu, planów brak",
-            "🔥 Ogień = dobry pretekst do dramy (ale miłej)"
-        ]
-    },
-    "🌌 Noc": {
-        "query": "christmas+night+stars+night-sky+twilight",
-        "color": 0x1F618D,
-        "texts": [
-            "🌌 Nocna wersja świąt",
-            "🌌 Cisza, spokój, Discord",
-            "🌌 Idealna pora na memy",
-            "🌌 Bot nadal czuwa. Niestety.",
-            "🌌 Nocą wszystko wygląda lepiej z lampkami",
-            "🌌 Gwiazdy, cisza i podejrzane myśli o prezentach"
-        ]
-    }
 }
+
+# ---- Tematy świąteczne ----
+# CHRISTMAS_THEMES = {
+   # "🎄 Choinka": {
+      #  "query": "christmas+tree+ornaments+lights",
+      #  "color": 0x2ECC71,
+ #       "texts": [
+#            "🎄 Świąteczna propaganda obowiązkowa",
+  #          "🎄 Choinka stoi. Regulamin też.",
+   #         "🎄 Ten moment, gdy drzewko ma więcej ozdób niż rola",
+    #        "🎄 Administracja potwierdza: to jest choinka",
+     #       "🎄 Lampki zapalone = tryb chill on",
+      #      "🎄 Gałązka sztuki, odgłos lampek i dramaty w tle"
+       # ]
+  #  },
+   # "🎅 Mikołaj": {
+    #    "query": "santa+claus+red+suit+beard+presents+workshop+helper",
+     #   "color": 0xE74C3C,
+      #  "texts": [
+       #     "🎅 Ho ho ho. Logi były sprawdzane.",
+        #    "🎅 Mikołaj widzi więcej niż moderator",
+         #   "🎅 Prezentów brak, ale klimat jest",
+          #  "🎅 Regulamin grzecznych obowiązuje cały rok",
+           # "🎅 Pamiętaj: lista grzecznych jest dłuższa niż myślisz",
+            #"🎅 Jeśli zostawiłeś ciasteczka, masz przewagę"
+     #   ]
+    #},
+   # "🦌 Renifery": {
+  #      "query": "reindeer+rudolph+sleigh+antlers+winter-animals",
+ #       "color": 0xA04000,
+#        "texts": [
+          #  "🦌 Renifer na służbie. Zaprzęg w gotowości.",
+         #   "🦌 Rudolf twierdzi, że to nie jego wina",
+        #    "🦌 Bez reniferów nie ma logistyki świąt",
+       #     "🦌 Ten gość ciągnie cały projekt",
+      #      "🦌 Szczęśliwy renifer = termin dostarczony na czas",
+     #       "🦌 Zaprzęg gotowy, kawa w kubku, jedziemy"
+    #    ]
+   # },
+  #  "❄️ Zima": {
+     #   "query": "winter+snow+snowy+ice+frost",
+    #    "color": 0x5DADE2,
+   #     "texts": [
+          #  "❄️ Zima przyszła. Produktywność wyszła.",
+         #   "❄️ Śnieg pada, serwer nadal żyje",
+        #    "❄️ Idealna pogoda na nieodpisywanie",
+       #     "❄️ Mróz na zewnątrz, ciepło na czacie",
+      #      "❄️ Mróz + herbata = plan działania: zero",
+     #       "❄️ Śnieżne widowisko, minimalne zaangażowanie"
+    #    ]
+   # },
+    #"🎁 Prezenty": {
+   #     "query": "christmas+gifts+presents+wrapping+boxes",
+  #      "color": 0xF4D03F,
+ #       "texts": [
+       #     "🎁 Najlepszy prezent to brak pingów",
+      #      "🎁 Administracja nic nie obiecuje",
+     #       "🎁 Opakowanie ładniejsze niż zawartość",
+    #        "🎁 Tak, to też się liczy",
+   #         "🎁 Prezenty pakowane specjalnie: poziom chaosu",
+  #          "🎁 Jeśli dostałeś skarpetki — interpretuj to jako inwestycję"
+ #       ]
+#    },
+  #  "☕ Klimat": {
+ #       "query": "christmas+cozy+hot-chocolate+blanket+fireplace",
+#        "color": 0xAF7AC5,
+        #"texts": [
+       #     "☕ Tryb koc + herbata aktywny",
+      #      "☕ Oficjalnie: nic nie musisz",
+     #       "☕ To nie lenistwo, to święta",
+    #        "☕ Discord, cisza i zero planów",
+   #         "☕ Kocyk ⊕ herbata = 100% efektywności relaksu",
+  #          "☕ Kiedy świat płonie, parzę herbatę"
+    #    ]
+   # },
+  #  "🏠 Dom": {
+  #      "query": "christmas+home+cozy-home+family+decor",
+ #      "color": 0xDC7633,
+#        "texts": [
+          #  "🏠 Domowy tryb serwera",
+         #   "🏠 Bez pośpiechu, bez dram",
+        #    "🏠 Nawet bot zwalnia tempo",
+       #     "🏠 Tu się odpoczywa",
+      #      "🏠 Kanapa królem, pilot władcą świata",
+     #       "🏠 Zapach piernika rekomendowany"
+    #    ]
+   # },
+  #  "🔥 Ogień": {
+ #       "query": "fireplace+winter+cozy-fire+embers+hearth",
+#        "color": 0xCB4335,
+       # "texts": [
+         #   "🔥 Idealne tło do ignorowania obowiązków",
+       #     "🔥 Ogień trzaska, czat żyje",
+      #      "🔥 Legalne źródło ciepła",
+     #       "🔥 Klimat zatwierdzony",
+    #        "🔥 Siedzimy przy ogniu, planów brak",
+    #        "🔥 Ogień = dobry pretekst do dramy (ale miłej)"
+   #     ]
+   # },
+    #"🌌 Noc": {
+        #"query": "christmas+night+stars+night-sky+twilight",
+        #"color": 0x1F618D,
+        #"texts": [
+        #    "🌌 Nocna wersja świąt",
+       #     "🌌 Cisza, spokój, Discord",
+      #      "🌌 Idealna pora na memy",
+     #       "🌌 Bot nadal czuwa. Niestety.",
+    #        "🌌 Nocą wszystko wygląda lepiej z lampkami",
+   #         "🌌 Gwiazdy, cisza i podejrzane myśli o prezentach"
+  #      ]
+ #   }
+#}
 
 session: aiohttp.ClientSession = None  # globalna sesja HTTP
 
@@ -538,7 +636,7 @@ __Zabawa:__
 • `?8ballfun [pytanie]` – rozbudowana magiczna kula  
 • `?cat` – losowy kotek (embed)  
 • `?rps [kamień/papier/nożyce]` – gra Kamień/Papier/Nożyce  
-
+• `?specjal` – wysyła obrazek tematyczny
 __Narzędzia:__  
 • `?ping` – sprawdza czy bot działa  
 """
@@ -582,11 +680,12 @@ async def ping(ctx):
         await ctx.send("Wystąpił błąd podczas pingowania bota.")
 
 @bot.command()
-async def swieta(ctx):
+async def specjal(ctx):
     await send_christmas_embed(ctx)
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
