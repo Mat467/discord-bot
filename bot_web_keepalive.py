@@ -35,7 +35,7 @@ def run_flask():
 
 Thread(target=run_flask, daemon=True).start()
 
- CHRISTMAS_THEMES = {
+CHRISTMAS_THEMES = {
     "winter_traditions": {
         "name": "Święta / zimowe tradycje",
         "items": [
@@ -681,10 +681,13 @@ async def ping(ctx):
 
 @bot.command()
 async def specjal(ctx):
-    await send_christmas_embed(ctx)
+    await send_christmas_embed(ctx.channel)
+    
+ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
