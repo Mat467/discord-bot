@@ -543,18 +543,6 @@ async def coinflip(ctx):
     result = random.choice(["orzeł", "reszka"])
     await ctx.send(f"{ctx.author.name} rzucił monetą: **{result}**")
 
-@bot.command(name="8ball")
-async def eight_ball(ctx, *, question: str):
-    responses = [
-        "Tak!", "Nie.", "Może...", "Raczej tak.", "Raczej nie.",
-        "Zdecydowanie!", "Lepiej nie pytaj.", "Ciężko powiedzieć."
-    ]
-    answer = random.choice(responses)
-    await ctx.send(f"Pytanie: {question}\nOdpowiedź: **{answer}**")
-
-import random
-from discord.ext import commands
-
 SARCASM_RESPONSES = [
     "✅ Tak — ale nie licz na to bez cudu.",
     "❌ Nie — chyba że znajdziesz jednorożca.",
@@ -595,31 +583,23 @@ SARCASM_RESPONSES = [
     "🌜Księżyc milczy — więc odpowiedź niepewna.",
     "📦 Odesłane bez śladu — brak sukcesu.",
     "📣 Tak — ale nikt tego nie usłyszy.",
-    "🪞Spójrz w lustro: tam jest odpowiedź.",
+    "🪞 Spójrz w lustro: tam jest odpowiedź.",
     "🎚️ Ustawienie domyślne: 'nie'.",
-    "🔭 Widok mglisty — powtórz pytanie później.",
+    "🔭 Widok jest mglisty — powtórz pytanie później.",
     "🎨 Tak, jeśli pomalujesz marzenia na zielono.",
     "🧙‍♂️ Czarnoksiężnik mówi: spróbuj jeszcze raz.",
     "🪄 Magia dziś na przerwie — raczej nie.",
     "🎯 Szansa jest, ale nie licz na celność.",
     "🤔 Może. A może nie. Życie.",
-    "🌓 Zależy od fazy księżyca i Twoich decyzji życiowych.",
+    "🌓 To zależy od fazy księżyca i Twoich decyzji życiowych.",
     "🥶 Zapytaj lodówkę. Ona wie więcej.",
     "🐱 Zapytałem i kot odpowiedział, że tak. Nie pytaj gdzie znalazłem kota.",
     "🕹️ Gra mówi nie: resetuj i spróbuj ponownie."
-    "✅ Tak. I nawet nie udawaj, że jesteś zaskoczony.",
-    "🌟 Oczywiście. Wszechświat się dziś postarał.",
-    "👍 Tak, ale tylko dlatego, że pytanie było banalne.",
-    "✨ Zgadza się. Następne pytanie.",
-    "❌ Nie. I nie próbuj negocjować.",
-    "🙅‍♂️ Absolutnie nie.",
-    "🚫 Nie, nawet w alternatywnej rzeczywistości.",
-    "⛔ Zapomnij.",
 ]
 
 @bot.command(
     name="8ballfun",
-    aliases=["8ball", "eightball", "ball", "🎱"]
+    aliases=["ballfun", "🎱fun"]
 )
 async def eightballfun(ctx, *, question: str):
     """Sarkastyczny 8ball — odpowiedzi pasujące do pytań tak/nie."""
@@ -766,6 +746,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
