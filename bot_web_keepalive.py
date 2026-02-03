@@ -12,7 +12,7 @@ DEFAULT_EMBED_COLOUR = 0x2ECC71
 ORIGINAL_CTX_SEND = commands.Context.send
 
 Async def ctx_send_override(self, content=None, **kwargs):
-    If content is not None and isinstance(content, str) and ‘embed’ not in kwargs:
+    If content is not None and isinstance(content, str) and 'embed' not in kwargs:
         Embed = discord.Embed(description=content, colour=DEFAULT_EMBED_COLOUR)
         Return await ORIGINAL_CTX_SEND(self, embed=embed, **kwargs)
     Return await ORIGINAL_CTX_SEND(self, content=content, **kwargs)
@@ -752,6 +752,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
