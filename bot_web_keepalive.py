@@ -8,16 +8,16 @@ from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
 
-DEFAULT_EMBED_COLOR = 0x2ECC71
-ORIGINAL_EMBED_INIT = discord.Embed.__init__
+DEFAULT_EMBED_COLOUR = 0x2ECC71
+ORIGINAL_CTX_SEND = commands.Context.send
 
-def embed_init_override(self, *args, **kwargs):
-    # Jeśli nie podano koloru i to nie jest Christmas, ustaw domyślny
-    if "color" not in kwargs:
-        kwargs["color"] = DEFAULT_EMBED_COLOR
-    ORIGINAL_EMBED_INIT(self, *args, **kwargs)
+Async def ctx_send_override(self, content=None, **kwargs):
+    If content is not None and isinstance(content, str) and ‘embed’ not in kwargs:
+        Embed = discord.Embed(description=content, colour=DEFAULT_EMBED_COLOUR)
+        Return await ORIGINAL_CTX_SEND(self, embed=embed, **kwargs)
+    Return await ORIGINAL_CTX_SEND(self, content=content, **kwargs)
 
-discord.Embed.__init__ = embed_init_override
+Commands.Context.send = ctx_send_override
 
 HTTP_TIMEOUT = aiohttp.ClientTimeout(total=15)
 
@@ -752,6 +752,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
