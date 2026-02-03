@@ -574,7 +574,7 @@ SARCASM_RESPONSES = [
     "📉 Statystyki krzyczą: nie.",
     "📈 Tak — jak tylko nauczysz się oszukiwać los.",
     "🔋 Brakuje energii wszechświata na to, więc nie teraz.",
-    "🧭 Kierunek: zdecydowanie w stronę 'nie'.",,
+    "🧭 Kierunek: zdecydowanie w stronę 'nie'.",
     "🕰️ Może kiedyś. Tylko nie dziś i nie jutro.",
     "🪤 Nie daj się złapać na obietnice.",
     "🎭 Tak, ale to będzie spektakl żałosny.",,
@@ -767,6 +767,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
