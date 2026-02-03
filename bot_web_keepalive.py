@@ -7,11 +7,17 @@ import aiohttp
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
-from functools import partial
 
 DEFAULT_EMBED_COLOR = 0x2ECC71
+ORIGINAL_EMBED_INIT = discord.Embed.__init__
 
-Embed = partial(discord.Embed, color=DEFAULT_EMBED_COLOR)
+def embed_init_override(self, *args, **kwargs):
+    # Jeśli nie podano koloru i to nie jest Christmas, ustaw domyślny
+    if "color" not in kwargs:
+        kwargs["color"] = DEFAULT_EMBED_COLOR
+    ORIGINAL_EMBED_INIT(self, *args, **kwargs)
+
+discord.Embed.__init__ = embed_init_override
 
 HTTP_TIMEOUT = aiohttp.ClientTimeout(total=15)
 
@@ -746,6 +752,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
