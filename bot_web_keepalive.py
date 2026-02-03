@@ -7,6 +7,13 @@ import aiohttp
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
+from functools import partial
+
+DEFAULT_EMBED_COLOR = 0x2ECC71
+
+Embed = partial(discord.Embed, color=DEFAULT_EMBED_COLOR)
+
+HTTP_TIMEOUT = aiohttp.ClientTimeout(total=15)
 
 # --- konfiguracja z ENV ---
 PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")
@@ -251,7 +258,7 @@ async def send_christmas_embed(channel):
     """Wysyła losowy embed świąteczny do danego kanału z Pexels."""
     global session
     if session is None or session.closed:
-        session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
         
     key, category = random.choice(list(CHRISTMAS_THEMES.items()))
     item = random.choice(category["items"])
@@ -271,7 +278,7 @@ async def send_christmas_embed(channel):
 
     for attempt in range(1, 4):
         try:
-            async with session.get(url, headers=headers) as resp:
+            async with session.get(url, headers=headers, timeout=15) as resp:
                 status = resp.status
                 if status != 200:
                     print(f"PEXELS: HTTP {status}. Próba {attempt}/3.")
@@ -317,7 +324,7 @@ async def send_christmas_embed(channel):
         photo = random.choice(photos)
         image_url = photo["src"]["large2x"]
         try:
-            async with session.get(image_url) as img_resp:
+            async with session.get(image_url, timeout=15) as img_resp:
                 if img_resp.status != 200:
                     print(f"IMAGE: HTTP {img_resp.status}.")
                     if attempt == 3:
@@ -345,6 +352,8 @@ async def send_christmas_embed(channel):
         file = discord.File(fp=io.BytesIO(image_data), filename="swieta.jpg")
         embed.set_image(url="attachment://swieta.jpg")
         await channel.send(embed=embed, file=file)
+        await session.close()
+        session = None
         return  # sukces, kończymy pętlę
 
 # ---- Pętla świąteczna co 8 godzin ----
@@ -352,11 +361,14 @@ CHANNEL_ID = 1437924798645928106  # <-- podaj ID swojego kanału
 
 @tasks.loop(hours=8)
 async def christmas_loop():
-    channel = bot.get_channel(CHANNEL_ID)
-    if channel:
-        await send_christmas_embed(channel)
-    else:
-        print(f"Nie znaleziono kanału o ID {CHANNEL_ID}")
+    try:
+        channel = bot.get_channel(CHANNEL_ID)
+        if channel:
+            await send_christmas_embed(channel)
+        else:
+            print(f"Nie znaleziono kanału o ID {CHANNEL_ID}")
+    except Exception as e:
+        print("❌ BŁĄD W christmas_loop:", repr(e))
 
 @bot.event
 async def on_ready():
@@ -364,7 +376,7 @@ async def on_ready():
     print(f'Bot uruchomiony jako {bot.user}')
 
     if session is None or session.closed:
-        session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
     # Uruchamiamy pętlę tylko raz (on_ready może być wywołane wiele razy przy re-connect)
     if not christmas_loop.is_running():
         christmas_loop.start()
@@ -384,7 +396,7 @@ async def on_message(message):
     # W odpowiedzi na DM do bota
     if isinstance(message.channel, discord.DMChannel):
         await message.channel.send(
-            "Cześć! Ja reaguję tylko na komendy zaczynające się od `?`. Spróbuj np. `?ping`"
+            "Cześć! Ja reaguję tylko na komendy zaczynające się od `?` wysłane na serwerze. Priv nie obsługuję. Spróbuj np. `?ping`"
         )
         return
     await bot.process_commands(message)
@@ -477,7 +489,7 @@ async def important(ctx, *, message: str):
         if member.id == bot.user.id:
             continue
         try:
-            await member.send(f"🔔 Ważna wiadomość od administracji serwera **{ctx.guild.name}**: {message}")
+            await member.send(f"🔔 Masz nową ważną wiadomość! Przeczytaj ją teraz! **{ctx.guild.name}**: {message}")
             notified.add(member)
         except discord.Forbidden:
             await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
@@ -499,13 +511,13 @@ async def important(ctx, *, message: str):
             if member.bot:
                 continue
             try:
-                await member.send(f"🔔 Ważna wiadomość od administracji: {message}")
+                await member.send(f"🔔 Masz nową ważną wiadomość! Przeczytaj ją teraz!: {message}")
                 notified.add(member)
             except discord.Forbidden:
                 continue
 
     if notified:
-        await ctx.send(f"✅ Powiadomiłem {len(notified)} użytkowników jako **ważne**.")
+        await ctx.send(f"✅ Wysłałem {len(notified)} do użytkowników wiadomości oznaczone jako **ważne**.")
 
 @bot.command()
 async def shield(ctx, member: discord.Member):
@@ -540,21 +552,80 @@ async def eight_ball(ctx, *, question: str):
     answer = random.choice(responses)
     await ctx.send(f"Pytanie: {question}\nOdpowiedź: **{answer}**")
 
-@bot.command()
+import random
+from discord.ext import commands
+
+SARCASM_RESPONSES = [
+    "✅ Tak — ale nie licz na to bez cudu.",
+    "❌ Nie — chyba że znajdziesz jednorożca.",
+    "🤷 Może. Albo nie. Zależy od twojej kolejki życzeń.",
+    "🔁 Spróbuj jeszcze raz. I przestań wierzyć w bajki.",
+    "🎲 Szanse: mniejsze niż półfinał w totka.",
+    "🔥 Tak — kiedy świat się najpierw spali.",
+    "💤 Nie teraz. Spróbuj za sto lat.",
+    "🧊 Raczej nie, ale ładnie zabrzmiało to pytanie.",
+    "🌪️ Tak — jeśli najpierw spadną gwiazdy z nieba.",
+    "🪄 Pewnie, w jakiejś alternatywnej rzeczywistości.",
+    "🏆 Tak — jeśli opanujesz teleportację najpierw.",
+    "🧯 Nie; lepiej kup sobie gaśnicę nadziei.",
+    "⚖️ 50/50 — rzuć monetą i przestań pytać bota.",
+    "💩 Nie. I tak to pachnie porażką.",
+    "🦄 Może — po oswojeniu jednorożca.",
+    "📉 Statystyki krzyczą: nie.",
+    "📈 Tak — jak tylko nauczysz się oszukiwać los.",
+    "🔋 Brakuje energii wszechświata na to, więc nie teraz.",
+    "🧭 Kierunek: zdecydowanie w stronę 'nie'.",,
+    "🕰️ Może kiedyś. Tylko nie dziś i nie jutro.",
+    "🪤 Nie daj się złapać na obietnice.",
+    "🎭 Tak, ale to będzie spektakl żałosny.",,
+    "📞 Odbiornik nie odpowiada. Spróbuj później.",
+    "🎁 Może, ale najpierw rozpakuj rzeczy.",
+    "🧨 Nie — mamy na to dowód i raport.",
+    "🧪 Wyniki eksperymentu: brak potwierdzenia.",
+    "🧿 Los patrzy w bok — więc... raczej nie.",
+    "🌧️ Deszcz szans na to: sporadyczny.",
+    "🌈 Tak — po przejściu po tęczy.",
+    "🚪 Drzwi do odpowiedzi są zamknięte. Klucz zgubiono.",
+    "🪦 Nie. Spuść zasłonę nad tym marzeniem.",
+    "🪙 Rzuć monetą — odpowiedź już padła.",
+    "🦶 Twoje kroki prowadzą ku 'nie'.",
+    "🍀 Niestety szczęście dziś na urlopie.",
+    "🧵 Nitka losu jest przerwana więc brak odpowiedzi — sorry.",
+    "🪵 Pal licho — czyli nie.",
+    "🔧 Możliwe, jeśli potrafisz składać cuda.",
+    "🌜Księżyc milczy — więc odpowiedź niepewna.",
+    "📦 Odesłane bez śladu — brak sukcesu.",
+    "📣 Tak — ale nikt tego nie usłyszy.",
+    "🪞Spójrz w lustro: tam jest odpowiedź.",
+    "🎚️ Ustawienie domyślne: 'nie'.",
+    "🔭 Widok mglisty — powtórz pytanie później.",
+    "🎨 Tak, jeśli pomalujesz marzenia na zielono.",
+    "🧙‍♂️ Czarnoksiężnik mówi: spróbuj jeszcze raz.",
+    "🪄 Magia dziś na przerwie — raczej nie.",
+    "🎯 Szansa jest, ale nie licz na celność.",
+    "🤔 Może. A może nie. Życie.",
+    "🌓 Zależy od fazy księżyca i Twoich decyzji życiowych.",
+    "🥶 Zapytaj lodówkę. Ona wie więcej.",
+    "🐱 Zapytałem i kot odpowiedział, że tak. Nie pytaj gdzie znalazłem kota.",
+    "🕹️ Gra mówi nie: resetuj i spróbuj ponownie."
+    "✅ Tak. I nawet nie udawaj, że jesteś zaskoczony.",
+    "🌟 Oczywiście. Wszechświat się dziś postarał.",
+    "👍 Tak, ale tylko dlatego, że pytanie było banalne.",
+    "✨ Zgadza się. Następne pytanie.",
+    "❌ Nie. I nie próbuj negocjować.",
+    "🙅‍♂️ Absolutnie nie.",
+    "🚫 Nie, nawet w alternatywnej rzeczywistości.",
+    "⛔ Zapomnij.",
+]
+
+@bot.command(
+    name="8ballfun",
+    aliases=["8ball", "eightball", "ball", "🎱"]
+)
 async def eightballfun(ctx, *, question: str):
-    responses = [
-        "😂 Hahaha, dobre pytanie!",
-        "🔮 Zapytaj jutro, dziś nie wróżę.",
-        "🍕 Może tak, może nie. A może pizza?",
-        "🙃 Czemu pytasz mnie, skoro masz Google?",
-        "💔 Nie chcę łamać Ci serca, ale… nope.",
-        "😏 Zastanów się jeszcze raz i udawaj, że nigdy nie pytałeś.",
-        "🤡 To najgłupsze pytanie, jakie dziś usłyszałem.",
-        "🔥 Jasne! A teraz wracaj do roboty.",
-        "🌚 Powiedzmy, że odpowiedź brzmi: meh.",
-        "🦄 42. Zawsze 42."
-    ]
-    await ctx.send(f"**{ctx.author.display_name} pyta:** {question}\n🎱 {random.choice(responses)}")
+    """Sarkastyczny 8ball — odpowiedzi pasujące do pytań tak/nie."""
+    answer = random.choice(SARCASM_RESPONSES)
+    await ctx.send(f"**{ctx.author.display_name} pyta:** {question}\n{answer}")
 
 @bot.command()
 async def rps(ctx, choice: str):
@@ -696,6 +767,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
