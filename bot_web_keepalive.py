@@ -418,14 +418,22 @@ async def on_disconnect():
 # -------- Komendy moderacji i narzędzi --------
 @bot.command()
 async def warn(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
-    if ctx.author.id not in MODERATORS:
-        await ctx.send(embed=discord.Embed(description="Nie masz uprawnień do tej komendy!", color=0xE74C3C))
-        return
-    await ctx.send(embed=discord.Embed(description=f"{member.mention} otrzymał ostrzeżenie: {reason}", color=0xE74C3C))
-    try:
-        await member.send(f"Otrzymałeś ostrzeżenie na serwerze **{ctx.guild.name}**: {reason}")
-    except discord.Forbidden:
-        await ctx.send("Nie mogę wysłać DM do tego użytkownika.")
+
+    message_text = f"Gracz {member.mention} został ostrzeżony.\n{reason}"
+
+    embed = discord.Embed(
+        description=message_text,
+        color=0xE74C3C
+    )
+
+    await ctx.send(embed=embed)
+
+    # DM tylko dla ludzi
+    if not member.bot:
+        try:
+            await member.send(message_text)
+        except discord.Forbidden:
+            await ctx.send("Nie mogę wysłać DM do tego użytkownika.")
 
 @bot.command()
 async def mute(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
@@ -752,6 +760,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
