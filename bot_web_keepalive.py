@@ -7,6 +7,7 @@ import aiohttp
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
+from collections import Counter
 
 DEFAULT_EMBED_COLOUR = 0x2ECC71
 ORIGINAL_CTX_SEND = commands.Context.send
@@ -514,6 +515,10 @@ async def on_disconnect():
         print("🌐 Globalna sesja aiohttp została zamknięta.")
 
 
+
+EMOJI_POOL = ["🍒", "🍋", "🔔", "💎", "🍀", "🍇"]
+
+
 DEAF_PROPHECIES = [
     "Przeznaczenie spojrzało… i przewróciło oczami.",
     "Los uznał, że to nie ta linia czasowa.",
@@ -521,89 +526,100 @@ DEAF_PROPHECIES = [
     "Gwiazdy się ustawiły… przeciwko tobie.",
     "Dziś nie wygrywasz. Nawet w Monopoly.",
     "Masz szczęście. Tylko nie dziś.",
-    "Wszechświat nacisnął „pomiń”, więc zagraj jeszcze raz..",
+    "Wszechświat nacisnął „pomiń”, więc zagraj jeszcze raz.",
     "System wykrył brak aury zwycięzcy.",
     "Automat stwierdził: próbuj później."
 ]
 
+
 MINI_PROPHECIES = [
-    "Ktoś dziś zapyta o coś oczywistego.",
-    "Twój czajnik będzie działał z determinacją.",
-    "Za godzinę przypomnisz sobie coś żenującego.",
-    "Jutro też będzie jutro.",
-    "Twoja lodówka otworzy się przynajmniej raz.",
-    "O 3:17 przypomnisz sobie coś żenującego z 2014.",
-    "Ktoś dziś zapyta „co robicie”.",
-    "Twoje WiFi przetrwa kolejny dzień.",
-    "Herbata wystygnie szybciej niż planowałeś.",
-    "Zobaczysz powiadomienie, które nie jest do ciebie.",
-    "Twój telefon będzie w twojej kieszeni. Prawdopodobnie.",
-    "Ktoś powie „to tylko 5 minut” i nie będzie to 5 minut.",
-    "Dziś zjesz coś. To będzie jedzenie."
+    "Przepowiadam Ci, że... Ktoś dziś zapyta o coś oczywistego.",
+    "Przepowiadam Ci, że... Za godzinę przypomnisz sobie coś żenującego.",
+    "Przepowiadam Ci, że... Twoja lodówka otworzy się przynajmniej raz.",
+    "Przepowiadam Ci, że... Jutro też będzie jutro.",
+    "Przepowiadam Ci, że... Herbata wystygnie szybciej niż planowałeś.",
+    "Przepowiadam Ci, że... Ktoś powie „to tylko 5 minut” i nie będzie to 5 minut.",
+    "Przepowiadam Ci, że... Dziś zjesz coś. To będzie jedzenie."
 ]
+
 
 JACKPOT_PROPHECIES = [
-    "Dziś w nocy będzie ciemno.",
-    "Twoje skarpetki nie będą parą. I nigdy nie były.",
-    "Klikniesz coś, czego nie trzeba było klikać.",
-    "Wiosna przyniesie… więcej wiosny.",
-    "Za 6 godzin powiesz „nie no, serio?”.",
-    "Jesteś główną postacią… w czyjejś historii pobocznej.",
-    "Przyszłość przewiduje… więcej przyszłości.",
-    "Jutro wstaniesz. To nie groźba.",
-    "Twoje przeznaczenie ma opóźnienie.",
-    "W tym tygodniu powiesz „dobra, od jutra”.",
-    "Wszechświat mrugnął. Nikt nie wie czemu.",
-    "Dziś unikniesz jednej drobnej katastrofy. Nie dowiesz się której.",
-    "Masz w sobie potencjał. Leży gdzieś pod kanapą.",
-    "Twoja legenda zacznie się… kiedyś.",
-    "Serwer będzie dziś działał. Szokujące.",
-    "Twój przyszły „ja” mówi: ogarnij się.",
-    "Wszechświat wyśle Ci tajemniczy znak."
+    "Przepowiadam Ci, że... Twoje przeznaczenie ma opóźnienie, ale dziś nadrobi.",
+    "Przepowiadam Ci, że... Jesteś główną postacią… przynajmniej przez chwilę.",
+    "Przepowiadam Ci, że... Wszechświat mrugnął. To był znak.",
+    "Przepowiadam Ci, że... Twoja legenda zacznie się dziś. Może.",
+    "Przepowiadam Ci, że... Masz w sobie potencjał. Tym razem znaleziony.",
+    "Przepowiadam Ci, że... Przyszły ty mówi: no, w końcu."
 ]
 
 
-class CasinoView(discord.ui.View):
-    def __init__(self, author):
-        super().__init__(timeout=60)
-        self.author = author
 
-    @discord.ui.button(label="🎰 ZAKRĘĆ", style=discord.ButtonStyle.primary)
-    async def spin(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != self.author:
-            await interaction.response.send_message(
-                "To nie twoje kasyno. Nie dotykaj cudzej ruletki.",
-                ephemeral=True
-            )
-            return
 
-        roll = random.randint(1, 100)
+def result_type(emojis):
+    counts = Counter(emojis).values()
+    if 3 in counts:
+        return "jackpot"
+    if 2 in counts:
+        return "win"
+    return "lose"
 
-        if roll <= 50:  # 50% porażka
-            prophecy = random.choice(DEAF_PROPHECIES)
-            result_text = f"💀 **{interaction.user.mention}, tym razem porażka!**\n: {prophecy} ❌"
-        elif roll <= 80:  # 30% mini
-            prophecy = random.choice(MINI_PROPHECIES)
-            result_text = f"✨ **{interaction.user.mention} wygrał!**\nOto twoja przepowiednia! Przepowiadam, że:\n🔮 {prophecy} 🌟"
-        else:  # 20% jackpot
-            prophecy = random.choice(JACKPOT_PROPHECIES)
-            result_text = f"💥 **JACKPOT!!! {interaction.user.mention}** 💥\nGratulacje! Oto twoja przepowiednia premium! Przepowiadam, że: \n🎇🔮 {prophecy} 🎇"
 
-        button.disabled = True
-        await interaction.response.edit_message(content=result_text, view=self)
-        self.stop()
 
 
 @bot.command(name="kasyno")
 async def kasyno(ctx):
-    view = CasinoView(ctx.author)
-    embed = discord.Embed(
-        title="🎰 Wiosenne Kasyno Chaosu",
-        description=f"@{ctx.author.display_name} – kliknij przycisk i sprawdź, czy los ma dziś dobry humor.",
-        color=0xF1C40F
+    await ctx.send(
+        "🎰 **Kasyno zostało aktywowane!**\n\n"
+        "Zagraj o tajemniczą przepowiednię przyszłości!.\n\n"
+        f"Wybierz **3 emotki** z tej puli:\n{' '.join(EMOJI_POOL)}\n\n"
+        "Jeśli **min. 2 będą takie same** – wygrywasz.\n"
+        "Jeśli **3 takie same** – JACKPOT.\n"
+        "Wszystkie różne – kasyno nawet nie udaje współczucia.\n\n"
+        "⏳ Masz **1 minutę **. Wyślij emotki w **jednej wiadomości**."
     )
-    await ctx.send(embed=embed, view=view)
 
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel
+
+
+    try:
+        msg = await bot.wait_for("message", check=check, timeout=60)
+    except asyncio.TimeoutError:
+        await ctx.send("⏳ Kasyno się zamknęło. Los nie lubi niezdecydowanych.")
+        return
+
+
+    user_emojis = [c for c in msg.content if c in EMOJI_POOL]
+
+
+    if len(user_emojis) != 3:
+        await ctx.send("❌ Miały być **dokładnie 3 emotki**. Automat nie interpretuje chaosu.")
+        return
+
+
+    bot_emojis = random.sample(EMOJI_POOL, 3)
+    outcome = result_type(user_emojis)
+
+
+    if outcome == "jackpot":
+        prophecy = random.choice(JACKPOT_PROPHECIES)
+        verdict = "💥 **JACKPOT!!!** 💥"
+    elif outcome == "win":
+        prophecy = random.choice(MINI_PROPHECIES)
+        verdict = "✨ **WYGRANA!**"
+    else:
+        prophecy = random.choice(DEAF_PROPHECIES)
+        verdict = "💀 **PRZEGRANA.**"
+
+
+    await ctx.send(
+        f"🎲 **Twoje emotki:** {' '.join(user_emojis)}\n"
+        f"🎰 **Kasyno wylosowało:** {' '.join(bot_emojis)}\n\n"
+        f"{verdict}\n"
+        f"🔮 {prophecy}"
+    )
+    
 PING_REPLIES = [
     "Pong! Ale czy naprawdę tego chciałeś?",
     "Twój ping został odnotowany przez Wszechświat. On też się zdziwił.",
@@ -964,6 +980,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
