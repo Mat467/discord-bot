@@ -49,102 +49,200 @@ def run_flask():
 Thread(target=run_flask, daemon=True).start()
 
 CHRISTMAS_THEMES = {
-    "winter_traditions": {
-        "name": "Święta / zimowe tradycje",
+    "spring_awakening": {
+        "name": "Wiosenne przebudzenie / natura",
         "items": [
-            {"text": "🎄 Choinka włączona, powiadomienia wyciszone", "query": "christmas+tree+lights+cozy", "color": 0x2ECC71},
-            {"text": "🎅 Mikołaj się zgubił, ale pingi nadal docierają", "query": "santa+claus+lost+winter", "color": 0xE74C3C},
-            {"text": "❄️ Śnieg pada, serwer działa… jakoś", "query": "winter+snow+server+night", "color": 0x5DADE2},
-            {"text": "🕯️ Świeczki zapalone, chaos kontrolowany", "query": "candle+light+cozy+dark", "color": 0xF5B041},
-            {"text": "🍪 Pierniki są, produktywność nie", "query": "gingerbread+cookies+christmas", "color": 0xD35400},
-            {"text": "🧦 Skarpety na nogach, memy w rękach", "query": "christmas+socks+cozy", "color": 0xAF7AC5},
-            {"text": "🎁 Prezenty zapakowane, odpowiedzi brak", "query": "christmas+gifts+wrapped+boxes", "color": 0xF4D03F},
-            {"text": "🦌 Renifery w trybie patrolu, użytkownicy w trybie snu", "query": "reindeer+winter+night", "color": 0xA04000},
-            {"text": "⛄ Bałwan stoi, a ja czekam na reakcje", "query": "snowman+winter+snow", "color": 0xAED6F1},
-            {"text": "🧣 Szalik na szyi, serwer w trybie chill", "query": "scarf+winter+cozy", "color": 0x1ABC9C},
+            {"text": "🌱 Pierwsze liście wyłażą, serwer też powoli budzi się do życia", "query": "spring+leaves+sunlight+morning", "color": 0x58D68D},
+            {"text": "🌸 Kwiaty w tle, memy w rękach", "query": "spring+flowers+bloom", "color": 0xEBDEF0},
+            {"text": "☀️ Słońce świeci, a ja dalej pod kocem", "query": "spring+sun+cozy+window", "color": 0xF4D03F},
+            {"text": "🐦 Ptaki ćwierkają, a odpowiedzi wciąż rzadkie", "query": "birds+spring+morning", "color": 0x5DADE2},
+            {"text": "🌿 Wiosenny wiatr = naturalny filtr spamu", "query": "spring+wind+trees", "color": 0x48C9B0},
+            {"text": "🌼 Pąki rosną, chaos w czacie też", "query": "flower+buds+spring", "color": 0xF7DC6F},
+            {"text": "🏡 Widok z okna: zielono, a produktywność wciąż zimowa", "query": "green+landscape+spring+window", "color": 0x52BE80},
+            {"text": "🦋 Motyl przelatuje, użytkownicy też czasem", "query": "butterfly+spring+garden", "color": 0xD7BDE2},
+            {"text": "🌳 Drzewo stoi, ja patrzę na powiadomienia", "query": "tree+spring+sunlight", "color": 0x239B56},
+            {"text": "🌞 Słońce i lekki chill – obowiązkowo", "query": "spring+sun+relax", "color": 0xF5CBA7},
         ],
     },
 
-    "winter_weather": {
-        "name": "Mróz i zimowa aura",
+    "spring_cleaning": {
+        "name": "Porządki / organizacja",
         "items": [
-            {"text": "❄️ Mróz na zewnątrz, Discord w środku działa", "query": "winter+frost+window", "color": 0x85C1E9},
-            {"text": "🌨️ Śnieżyca = idealna wymówka do braku aktywności", "query": "snowstorm+winter", "color": 0x5DADE2},
-            {"text": "🧊 Lodowata cisza w kanałach", "query": "ice+cold+winter+silence", "color": 0xAAB7B8},
-            {"text": "🌬️ Wiatr hula, ja siedzę pod kocem", "query": "winter+wind+cozy+blanket", "color": 0x7FB3D5},
-            {"text": "☃️ Bałwan patrzy, jak nikt nie odpowiada", "query": "snowman+lonely+winter", "color": 0xD6EAF8},
-            {"text": "🥶 Dłonie zamarznięte, ping nie dotarł", "query": "cold+hands+winter", "color": 0x5D6D7E},
-            {"text": "❄️ Śnieg = naturalny filtr powiadomień", "query": "falling+snow+winter", "color": 0xEBF5FB},
-            {"text": "🌫️ Mgła na zewnątrz, chaos w czacie minimalny", "query": "winter+fog+street", "color": 0x99A3A4},
-            {"text": "🧤 Rękawice na dłoniach, CTRL+C na aktywności", "query": "winter+gloves+cold", "color": 0x566573},
-            {"text": "🌁 Widoczność spada, tak samo jak moja motywacja", "query": "foggy+winter+city", "color": 0x616A6B},
+            {"text": "🧹 Wiosenne sprzątanie: serwer nie umyje się sam", "query": "spring+cleaning+home", "color": 0xAAB7B8},
+            {"text": "🗂️ Foldery w porządku, a pingów nadal brak", "query": "organized+folders+desk", "color": 0x5D6D7E},
+            {"text": "📦 Porządek w chaosie = codzienna sztuka", "query": "minimalist+workspace+clean", "color": 0x85929E},
+            {"text": "🧴 Dezynfekcja kanałów w toku", "query": "cleaning+supplies+spring", "color": 0xAED6F1},
+            {"text": "📝 Plan dnia: posprzątać i zapomnieć o odpowiedziach", "query": "to+do+list+spring", "color": 0x7FB3D5},
+            {"text": "📅 Kalendarz mówi: „nie śpiesz się”", "query": "calendar+spring+planning", "color": 0x5499C7},
+            {"text": "🪴 Doniczki poukładane, memy też", "query": "potted+plants+home", "color": 0x27AE60},
+            {"text": "🔄 Rotacja dopisków w trybie czystości", "query": "refresh+cycle+clean", "color": 0x48C9B0},
+            {"text": "🛋️ Kanapa wciąż królem porządku", "query": "clean+living+room+spring", "color": 0x82E0AA},
+            {"text": "🗃️ Sortowanie pingów = minimalna motywacja", "query": "organizing+desk+workspace", "color": 0x566573},
         ],
     },
 
-    "cozy_chill": {
-        "name": "Herbata, koc i chill",
+    "spring_weather": {
+        "name": "Pogoda / słońce",
         "items": [
-            {"text": "☕ Herbata w kubku, nic nie muszę", "query": "tea+cup+cozy", "color": 0xA569BD},
-            {"text": "🛋️ Kanapa w trybie królewskim, serwer w trybie obserwacji", "query": "sofa+cozy+living+room", "color": 0x7DCEA0},
-            {"text": "🕯️ Światło świec = jedyna energia dnia", "query": "candlelight+dark+cozy", "color": 0xF5CBA7},
-            {"text": "🧣 Koc + szalik = tryb maksymalnego komfortu", "query": "blanket+scarf+cozy", "color": 0x48C9B0},
-            {"text": "🍫 Gorąca czekolada rekomendowana przy pingach", "query": "hot+chocolate+cozy", "color": 0x935116},
-            {"text": "📖 Książka w ręku, czat w spokoju", "query": "reading+book+cozy", "color": 0x5B2C6F},
-            {"text": "🎶 Świąteczne melodie w tle, odpowiedzi rzadko", "query": "christmas+music+cozy", "color": 0x1F618D},
-            {"text": "🐾 Zwierzak obok, serwer nadal żyje", "query": "pet+cat+dog+cozy", "color": 0x52BE80},
-            {"text": "🌙 Noc = czas kreatywnego ignorowania", "query": "night+moon+quiet", "color": 0x2C3E50},
-            {"text": "🔥 Kominek działa, motywacja offline", "query": "fireplace+cozy+night", "color": 0xCB4335},
+            {"text": "☀️ Słońce świeci, a ja wciąż ignoruję powiadomienia", "query": "bright+sunny+spring+day", "color": 0xF4D03F},
+            {"text": "🌤️ Chmury przesłaniają obowiązki", "query": "spring+clouds+sky", "color": 0xD6EAF8},
+            {"text": "🌦️ Deszcz? Idealny do pozostania na kanapie", "query": "spring+rain+window", "color": 0x5DADE2},
+            {"text": "🌈 Po deszczu memy wychodzą pięknie", "query": "rainbow+after+rain+spring", "color": 0xBB8FCE},
+            {"text": "🌬️ Wiatr wieje, a serwer stoi", "query": "windy+spring+trees", "color": 0x7FB3D5},
+            {"text": "🌞 Lekkie ocieplenie = powód do herbaty w ogrodzie", "query": "spring+garden+tea", "color": 0xF8C471},
+            {"text": "⛅ Chmurka = wymówka do minimalnej aktywności", "query": "partly+cloudy+spring", "color": 0xAED6F1},
+            {"text": "🌄 Poranny widok = więcej motywacji, mniej odpowiedzi", "query": "spring+sunrise+landscape", "color": 0xF5B041},
+            {"text": "🌱 Świeża zieleń = darmowa dekoracja czatu", "query": "fresh+green+spring+nature", "color": 0x58D68D},
+            {"text": "🌸 Kwiaty rosną, a ja czekam na reakcje", "query": "blooming+flowers+spring", "color": 0xF1948A},
         ],
     },
 
-    "winter_memes": {
-        "name": "Humor i memy zimowe",
+    "spring_memes": {
+        "name": "Humor i memy wiosenne",
         "items": [
-            {"text": "🦌 Rudolf nadal nie odpowiada", "query": "reindeer+winter+funny", "color": 0x873600},
-            {"text": "🎄 Choinka mówi: „Nie dzwońcie, odpoczywam”", "query": "christmas+tree+funny", "color": 0x27AE60},
-            {"text": "⛄ Bałwan patrzy dziwnie, jak pingi spadają", "query": "snowman+funny+winter", "color": 0xAED6F1},
-            {"text": "❄️ Mróz = darmowy filtr spamu", "query": "cold+winter+humor", "color": 0x85C1E9},
-            {"text": "🧦 Skarpety w roli moderatora", "query": "funny+socks+winter", "color": 0xAF7AC5},
-            {"text": "🎅 Święty Mikołaj ignoruje tagi", "query": "santa+claus+funny", "color": 0xC0392B},
-            {"text": "☕ Kawa nie rozwiąże wszystkiego, ale pomaga", "query": "coffee+cup+funny", "color": 0x6E2C00},
-            {"text": "🧣 Szalik zakrywa oczy przed dramatem", "query": "scarf+winter+funny", "color": 0x16A085},
-            {"text": "🐧 Ping nie dotarł? Ping z pingwinem!", "query": "penguin+winter+funny", "color": 0x2980B9},
-            {"text": "🛷 Sanie wjechały, chaos też", "query": "sled+winter+chaos", "color": 0xD68910},
+            {"text": "🐦 Ping jak ptak – czasem przylatuje", "query": "bird+spring+funny", "color": 0x5DADE2},
+            {"text": "🌼 Kwiat w roli moderatora dnia", "query": "flower+funny+spring", "color": 0xF7DC6F},
+            {"text": "🌞 Słońce świeci, a chaos żyje", "query": "sunny+spring+chaos", "color": 0xF4D03F},
+            {"text": "🦋 Motyl taguje przypadkowych użytkowników", "query": "butterfly+funny+spring", "color": 0xD7BDE2},
+            {"text": "🐝 Bzyczenie = naturalny alert", "query": "bee+spring+macro", "color": 0xF1C40F},
+            {"text": "🌿 Liście spadają? Nie, memy wciąż na miejscu", "query": "spring+leaves+funny", "color": 0x52BE80},
+            {"text": "🐞 Biedronka przynosi dobre vibes", "query": "ladybug+spring+macro", "color": 0xE74C3C},
+            {"text": "☁️ Chmura przysłania powiadomienia", "query": "cloudy+spring+sky", "color": 0xD6EAF8},
+            {"text": "🌳 Drzewo patrzy na kanały, ja na kawę", "query": "tree+spring+coffee", "color": 0x239B56},
+            {"text": "🌸 Pąk kwiatowy = codzienny dopisek", "query": "flower+bud+spring+macro", "color": 0xF1948A},
         ],
     },
 
-    "home_vibes": {
-        "name": "Domowy klimat",
+    "spring_chill": {
+        "name": "Chill / odpoczynek",
         "items": [
-            {"text": "🏠 Kanapa, koc, serwer w tle", "query": "home+cozy+sofa", "color": 0x935116},
-            {"text": "🕯️ Świeczki i spokój", "query": "candles+calm+cozy", "color": 0xF8C471},
-            {"text": "🧸 Pluszak jako moderator dnia", "query": "teddy+bear+cozy", "color": 0xAF601A},
-            {"text": "📺 Telewizor włączony, odpowiedzi minimalne", "query": "tv+living+room+cozy", "color": 0x566573},
-            {"text": "🛋️ Fotel wygodniejszy niż każda komenda", "query": "armchair+cozy+home", "color": 0x7DCEA0},
-            {"text": "🍪 Przerwa na ciasteczko = wymówka", "query": "cookies+home+cozy", "color": 0xD35400},
-            {"text": "🐶 Pies blokuje kanał, ja pod kocem", "query": "dog+blanket+cozy", "color": 0x52BE80},
-            {"text": "🏡 Widok z okna = śnieg i cisza", "query": "winter+window+snow", "color": 0x85C1E9},
-            {"text": "🎶 Muzyka nastrojowa = serwer chill", "query": "music+cozy+home", "color": 0x76448A},
-            {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home", "color": 0xA93226},
+            {"text": "🛋️ Kanapa w trybie „wiosenny relaks”", "query": "cozy+sofa+spring", "color": 0x82E0AA},
+            {"text": "☕ Herbata na świeżym powietrzu", "query": "tea+garden+spring", "color": 0xA569BD},
+            {"text": "🎶 Śpiew ptaków zamiast powiadomień", "query": "birds+singing+spring", "color": 0x48C9B0},
+            {"text": "🧸 Pluszak nadzoruje spokój czatu", "query": "teddy+bear+spring", "color": 0xAF7AC5},
+            {"text": "📖 Książka i chill = wiosenny zestaw dnia", "query": "reading+book+garden", "color": 0x5B2C6F},
+            {"text": "🌅 Zachód słońca = minimalne aktywności", "query": "spring+sunset+landscape", "color": 0xF5B041},
+            {"text": "🌞 Poranna kawa + serwer w tle", "query": "coffee+morning+spring", "color": 0xDC7633},
+            {"text": "🐾 Zwierzak obok, powiadomienia ignorowane", "query": "pet+spring+relax", "color": 0x52BE80},
+            {"text": "🪑 Fotel wygodniejszy niż każda komenda", "query": "armchair+spring+cozy", "color": 0x7DCEA0},
+            {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home+spring", "color": 0xA93226},
         ],
     },
 
-    "winter_survival": {
-        "name": "Planowanie i przetrwanie zimy",
+    "spring_productivity": {
+        "name": "Planowanie i produktywność",
         "items": [
-            {"text": "📝 Listy rzeczy do zrobienia ignorowane", "query": "to+do+list+desk", "color": 0x5D6D7E},
-            {"text": "📅 Kalendarz mówi „odpocznij”", "query": "calendar+relax", "color": 0x1F618D},
-            {"text": "🕰️ Czas leci, a ja nadal pod kocem", "query": "clock+time+waiting", "color": 0x7B7D7D},
-            {"text": "🔥 Ogień w kominku = plan na dzisiaj: nic", "query": "fireplace+relax", "color": 0xCB4335},
-            {"text": "🎯 Cel dnia: nie zamarznąć", "query": "winter+goal+survival", "color": 0x2874A6},
-            {"text": "🧭 Kompas pokazuje kierunek do herbaty", "query": "compass+direction", "color": 0x1ABC9C},
-            {"text": "🏔️ Zimowa wyprawa: do kuchni po czekoladę", "query": "winter+mountains+funny", "color": 0x5DADE2},
-            {"text": "⏳ Odpowiedzi przyjdą… może", "query": "hourglass+time+waiting", "color": 0x95A5A6},
-            {"text": "🥶 Przetrwać mróz = sztuka dnia", "query": "cold+winter+survival", "color": 0x5499C7},
-            {"text": "💡 Pomysł: minimalne działania, maksymalny chill", "query": "minimalism+relax+cozy", "color": 0xF7DC6F},
+            {"text": "📝 Lista rzeczy do zrobienia: 10% wykonane, 90% ignorowane", "query": "to+do+list+desk+spring", "color": 0x5D6D7E},
+            {"text": "📅 Kalendarz mówi: „wiosna = powolne tempo”", "query": "calendar+spring+planning", "color": 0x5499C7},
+            {"text": "🔄 Rotacja dopisków w trybie produktywności", "query": "refresh+cycle+workspace", "color": 0x48C9B0},
+            {"text": "🏞️ Spacer = powód do przerwy", "query": "spring+walk+park", "color": 0x58D68D},
+            {"text": "💡 Pomysł dnia: minimalne działania, maksymalny chill", "query": "minimalism+spring+idea", "color": 0xF7DC6F},
+            {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "spring+window+view", "color": 0x52BE80},
+            {"text": "🌱 Zasadziłem wirtualny kwiat = progres!", "query": "planting+flower+spring", "color": 0x27AE60},
+            {"text": "⏳ Czas leci, a ja wciąż na kanapie", "query": "clock+time+relax", "color": 0x95A5A6},
+            {"text": "🧭 Kompas pokazuje kierunek do kawy", "query": "compass+direction+coffee", "color": 0x1ABC9C},
+            {"text": "🎯 Cel dnia: przeżyć wiosnę bez dram", "query": "spring+goal+focus", "color": 0x2874A6},
         ],
     },
 }
+
+# CHRISTMAS_THEMES = {
+ #   "winter_traditions": {
+  #      "name": "Święta / zimowe tradycje",
+   #     "items": [
+    #        {"text": "🎄 Choinka włączona, powiadomienia wyciszone", "query": "christmas+tree+lights+cozy", "color": 0x2ECC71},
+            #{"text": "🎅 Mikołaj się zgubił, ale pingi nadal docierają", "query": "santa+claus+lost+winter", "color": 0xE74C3C},
+           # {"text": "❄️ Śnieg pada, serwer działa… jakoś", "query": "winter+snow+server+night", "color": 0x5DADE2},
+          #  {"text": "🕯️ Świeczki zapalone, chaos kontrolowany", "query": "candle+light+cozy+dark", "color": 0xF5B041},
+         #   {"text": "🍪 Pierniki są, produktywność nie", "query": "gingerbread+cookies+christmas", "color": 0xD35400},
+        #    {"text": "🧦 Skarpety na nogach, memy w rękach", "query": "christmas+socks+cozy", "color": 0xAF7AC5},
+       #     {"text": "🎁 Prezenty zapakowane, odpowiedzi brak", "query": "christmas+gifts+wrapped+boxes", "color": 0xF4D03F},
+      #      {"text": "🦌 Renifery w trybie patrolu, użytkownicy w trybie snu", "query": "reindeer+winter+night", "color": 0xA04000},
+     #       {"text": "⛄ Bałwan stoi, a ja czekam na reakcje", "query": "snowman+winter+snow", "color": 0xAED6F1},
+    #        {"text": "🧣 Szalik na szyi, serwer w trybie chill", "query": "scarf+winter+cozy", "color": 0x1ABC9C},
+   #     ],
+  #  },
+
+ #   "winter_weather": {
+   #     "name": "Mróz i zimowa aura",
+   #     "items": [
+            #{"text": "❄️ Mróz na zewnątrz, Discord w środku działa", "query": "winter+frost+window", "color": 0x85C1E9},
+           # {"text": "🌨️ Śnieżyca = idealna wymówka do braku aktywności", "query": "snowstorm+winter", "color": 0x5DADE2},
+          #  {"text": "🧊 Lodowata cisza w kanałach", "query": "ice+cold+winter+silence", "color": 0xAAB7B8},
+         #   {"text": "🌬️ Wiatr hula, ja siedzę pod kocem", "query": "winter+wind+cozy+blanket", "color": 0x7FB3D5},
+        #    {"text": "☃️ Bałwan patrzy, jak nikt nie odpowiada", "query": "snowman+lonely+winter", "color": 0xD6EAF8},
+       #     {"text": "🥶 Dłonie zamarznięte, ping nie dotarł", "query": "cold+hands+winter", "color": 0x5D6D7E},
+      #      {"text": "❄️ Śnieg = naturalny filtr powiadomień", "query": "falling+snow+winter", "color": 0xEBF5FB},
+     #       {"text": "🌫️ Mgła na zewnątrz, chaos w czacie minimalny", "query": "winter+fog+street", "color": 0x99A3A4},
+    #        {"text": "🧤 Rękawice na dłoniach, CTRL+C na aktywności", "query": "winter+gloves+cold", "color": 0x566573},
+   #         {"text": "🌁 Widoczność spada, tak samo jak moja motywacja", "query": "foggy+winter+city", "color": 0x616A6B},
+  #      ],
+ #   },
+#
+  #  "cozy_chill": {
+    #    "name": "Herbata, koc i chill",
+   #     "items": [
+  #          {"text": "☕ Herbata w kubku, nic nie muszę", "query": "tea+cup+cozy", "color": 0xA569BD},
+           # {"text": "🛋️ Kanapa w trybie królewskim, serwer w trybie obserwacji", "query": "sofa+cozy+living+room", "color": 0x7DCEA0},
+          #  {"text": "🕯️ Światło świec = jedyna energia dnia", "query": "candlelight+dark+cozy", "color": 0xF5CBA7},
+         #   {"text": "🧣 Koc + szalik = tryb maksymalnego komfortu", "query": "blanket+scarf+cozy", "color": 0x48C9B0},
+        #    {"text": "🍫 Gorąca czekolada rekomendowana przy pingach", "query": "hot+chocolate+cozy", "color": 0x935116},
+       #     {"text": "📖 Książka w ręku, czat w spokoju", "query": "reading+book+cozy", "color": 0x5B2C6F},
+      #      {"text": "🎶 Świąteczne melodie w tle, odpowiedzi rzadko", "query": "christmas+music+cozy", "color": 0x1F618D},
+     #       {"text": "🐾 Zwierzak obok, serwer nadal żyje", "query": "pet+cat+dog+cozy", "color": 0x52BE80},
+    #        {"text": "🌙 Noc = czas kreatywnego ignorowania", "query": "night+moon+quiet", "color": 0x2C3E50},
+   #         {"text": "🔥 Kominek działa, motywacja offline", "query": "fireplace+cozy+night", "color": 0xCB4335},
+  #      ],
+ #   },
+#
+   # "winter_memes": {
+  #      "name": "Humor i memy zimowe",
+ #       "items": [
+#            {"text": "🦌 Rudolf nadal nie odpowiada", "query": "reindeer+winter+funny", "color": 0x873600},
+           # {"text": "🎄 Choinka mówi: „Nie dzwońcie, odpoczywam”", "query": "christmas+tree+funny", "color": 0x27AE60},
+          #  {"text": "⛄ Bałwan patrzy dziwnie, jak pingi spadają", "query": "snowman+funny+winter", "color": 0xAED6F1},
+         #   {"text": "❄️ Mróz = darmowy filtr spamu", "query": "cold+winter+humor", "color": 0x85C1E9},
+        #    {"text": "🧦 Skarpety w roli moderatora", "query": "funny+socks+winter", "color": 0xAF7AC5},
+       #     {"text": "🎅 Święty Mikołaj ignoruje tagi", "query": "santa+claus+funny", "color": 0xC0392B},
+      #      {"text": "☕ Kawa nie rozwiąże wszystkiego, ale pomaga", "query": "coffee+cup+funny", "color": 0x6E2C00},
+     #       {"text": "🧣 Szalik zakrywa oczy przed dramatem", "query": "scarf+winter+funny", "color": 0x16A085},
+    #        {"text": "🐧 Ping nie dotarł? Ping z pingwinem!", "query": "penguin+winter+funny", "color": 0x2980B9},
+   #         {"text": "🛷 Sanie wjechały, chaos też", "query": "sled+winter+chaos", "color": 0xD68910},
+  #      ],
+ #   },
+#
+   # "home_vibes": {
+  #      "name": "Domowy klimat",
+ #       "items": [
+#            {"text": "🏠 Kanapa, koc, serwer w tle", "query": "home+cozy+sofa", "color": 0x935116},
+           # {"text": "🕯️ Świeczki i spokój", "query": "candles+calm+cozy", "color": 0xF8C471},
+          #  {"text": "🧸 Pluszak jako moderator dnia", "query": "teddy+bear+cozy", "color": 0xAF601A},
+         #   {"text": "📺 Telewizor włączony, odpowiedzi minimalne", "query": "tv+living+room+cozy", "color": 0x566573},
+        #    {"text": "🛋️ Fotel wygodniejszy niż każda komenda", "query": "armchair+cozy+home", "color": 0x7DCEA0},
+       #     {"text": "🍪 Przerwa na ciasteczko = wymówka", "query": "cookies+home+cozy", "color": 0xD35400},
+      #      {"text": "🐶 Pies blokuje kanał, ja pod kocem", "query": "dog+blanket+cozy", "color": 0x52BE80},
+     #       {"text": "🏡 Widok z okna = śnieg i cisza", "query": "winter+window+snow", "color": 0x85C1E9},
+    #        {"text": "🎶 Muzyka nastrojowa = serwer chill", "query": "music+cozy+home", "color": 0x76448A},
+   #         {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home", "color": 0xA93226},
+  #      ],
+ #   },
+#
+#    "winter_survival": {
+  #      "name": "Planowanie i przetrwanie zimy",
+ #       "items": [
+#            {"text": "📝 Listy rzeczy do zrobienia ignorowane", "query": "to+do+list+desk", "color": 0x5D6D7E},
+           # {"text": "📅 Kalendarz mówi „odpocznij”", "query": "calendar+relax", "color": 0x1F618D},
+          #  {"text": "🕰️ Czas leci, a ja nadal pod kocem", "query": "clock+time+waiting", "color": 0x7B7D7D},
+         #   {"text": "🔥 Ogień w kominku = plan na dzisiaj: nic", "query": "fireplace+relax", "color": 0xCB4335},
+        #    {"text": "🎯 Cel dnia: nie zamarznąć", "query": "winter+goal+survival", "color": 0x2874A6},
+       #     {"text": "🧭 Kompas pokazuje kierunek do herbaty", "query": "compass+direction", "color": 0x1ABC9C},
+      #      {"text": "🏔️ Zimowa wyprawa: do kuchni po czekoladę", "query": "winter+mountains+funny", "color": 0x5DADE2},
+    #        {"text": "⏳ Odpowiedzi przyjdą… może", "query": "hourglass+time+waiting", "color": 0x95A5A6},
+   #         {"text": "🥶 Przetrwać mróz = sztuka dnia", "query": "cold+winter+survival", "color": 0x5499C7},
+  #          {"text": "💡 Pomysł: minimalne działania, maksymalny chill", "query": "minimalism+relax+cozy", "color": 0xF7DC6F},
+ #       ],
+ #   },
+#}
 
 # ---- Tematy świąteczne ----
 # CHRISTMAS_THEMES = {
@@ -415,6 +513,119 @@ async def on_disconnect():
         await session.close()
         print("🌐 Globalna sesja aiohttp została zamknięta.")
 
+
+DEAF_PROPHECIES = [
+    "Przeznaczenie spojrzało… i przewróciło oczami.",
+    "Los uznał, że to nie ta linia czasowa.",
+    "Kosmos mówi: „meh” nie tym razem.",
+    "Gwiazdy się ustawiły… przeciwko tobie.",
+    "Dziś nie wygrywasz. Nawet w Monopoly.",
+    "Masz szczęście. Tylko nie dziś.",
+    "Wszechświat nacisnął „pomiń”, więc zagraj jeszcze raz..",
+    "System wykrył brak aury zwycięzcy.",
+    "Automat stwierdził: próbuj później."
+]
+
+MINI_PROPHECIES = [
+    "Ktoś dziś zapyta o coś oczywistego.",
+    "Twój czajnik będzie działał z determinacją.",
+    "Za godzinę przypomnisz sobie coś żenującego.",
+    "Jutro też będzie jutro.",
+    "Twoja lodówka otworzy się przynajmniej raz.",
+    "O 3:17 przypomnisz sobie coś żenującego z 2014.",
+    "Ktoś dziś zapyta „co robicie”.",
+    "Twoje WiFi przetrwa kolejny dzień.",
+    "Herbata wystygnie szybciej niż planowałeś.",
+    "Zobaczysz powiadomienie, które nie jest do ciebie.",
+    "Twój telefon będzie w twojej kieszeni. Prawdopodobnie.",
+    "Ktoś powie „to tylko 5 minut” i nie będzie to 5 minut.",
+    "Dziś zjesz coś. To będzie jedzenie."
+]
+
+JACKPOT_PROPHECIES = [
+    "Dziś w nocy będzie ciemno.",
+    "Twoje skarpetki nie będą parą. I nigdy nie były.",
+    "Klikniesz coś, czego nie trzeba było klikać.",
+    "Wiosna przyniesie… więcej wiosny.",
+    "Za 6 godzin powiesz „nie no, serio?”.",
+    "Jesteś główną postacią… w czyjejś historii pobocznej.",
+    "Przyszłość przewiduje… więcej przyszłości.",
+    "Jutro wstaniesz. To nie groźba.",
+    "Twoje przeznaczenie ma opóźnienie.",
+    "W tym tygodniu powiesz „dobra, od jutra”.",
+    "Wszechświat mrugnął. Nikt nie wie czemu.",
+    "Dziś unikniesz jednej drobnej katastrofy. Nie dowiesz się której.",
+    "Masz w sobie potencjał. Leży gdzieś pod kanapą.",
+    "Twoja legenda zacznie się… kiedyś.",
+    "Serwer będzie dziś działał. Szokujące.",
+    "Twój przyszły „ja” mówi: ogarnij się.",
+    "Wszechświat wyśle Ci tajemniczy znak."
+]
+
+
+class CasinoView(discord.ui.View):
+    def __init__(self, author):
+        super().__init__(timeout=60)
+        self.author = author
+
+    @discord.ui.button(label="🎰 ZAKRĘĆ", style=discord.ButtonStyle.primary)
+    async def spin(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user != self.author:
+            await interaction.response.send_message(
+                "To nie twoje kasyno. Nie dotykaj cudzej ruletki.",
+                ephemeral=True
+            )
+            return
+
+        roll = random.randint(1, 100)
+
+        if roll <= 50:  # 50% porażka
+            prophecy = random.choice(DEAF_PROPHECIES)
+            result_text = f"💀 **{interaction.user.mention}, tym razem porażka!**\n: {prophecy} ❌"
+        elif roll <= 80:  # 30% mini
+            prophecy = random.choice(MINI_PROPHECIES)
+            result_text = f"✨ **{interaction.user.mention} wygrał!**\nOto twoja przepowiednia! Przepowiadam, że:\n🔮 {prophecy} 🌟"
+        else:  # 20% jackpot
+            prophecy = random.choice(JACKPOT_PROPHECIES)
+            result_text = f"💥 **JACKPOT!!! {interaction.user.mention}** 💥\nGratulacje! Oto twoja przepowiednia premium! Przepowiadam, że: \n🎇🔮 {prophecy} 🎇"
+
+        button.disabled = True
+        await interaction.response.edit_message(content=result_text, view=self)
+        self.stop()
+
+
+@bot.command(name="kasyno")
+async def kasyno(ctx):
+    view = CasinoView(ctx.author)
+    embed = discord.Embed(
+        title="🎰 Wiosenne Kasyno Chaosu",
+        description=f"@{ctx.author.display_name} – kliknij przycisk i sprawdź, czy los ma dziś dobry humor.",
+        color=0xF1C40F
+    )
+    await ctx.send(embed=embed, view=view)
+
+PING_REPLIES = [
+    "Pong! Ale czy naprawdę tego chciałeś?",
+    "Twój ping został odnotowany przez Wszechświat. On też się zdziwił.",
+    "Pong… ale serwer mówi „meh”",
+    "Ping przyjęty. Twoje WiFi odetchnęło.",
+    "Pong! Czy to znaczy, że jesteś produktywny? Nie sądzę.",
+    "Twój ping odbił się echem w próżni. Pong!",
+    "Otrzymano ping. Karma zareagowała obojętnie.",
+    "Pong! Ale kot w biurze ignoruje cię.",
+    "Serwer mrugnął. Ping zaliczony.",
+    "Pong… a w twoim telefonie nic się nie zmieniło."
+]
+
+@bot.command()
+async def ping(ctx):
+    try:
+        reply = random.choice(PING_REPLIES)
+        await ctx.send(f"{ctx.author.mention} – {reply}")
+    except Exception as e:
+        print(f"[ping] {e}")
+        await ctx.send("Wystąpił błąd podczas pingowania bota.")
+        
 # -------- Komendy moderacji i narzędzi --------
 @bot.command()
 async def warn(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
@@ -744,13 +955,6 @@ async def kontrlist(ctx):
     )
     await ctx.send(embed=embed)
 
-@bot.command()
-async def ping(ctx):
-    try:
-        await ctx.send("Pong! Bot działa poprawnie.")
-    except Exception as e:
-        print(f"[ping] {e}")
-        await ctx.send("Wystąpił błąd podczas pingowania bota.")
 
 @bot.command()
 async def specjal(ctx):
@@ -760,6 +964,7 @@ ACTIVE_THEMES = CHRISTMAS_THEMES
 
 # Uruchomienie bota
 bot.run(TOKEN)
+
 
 
 
