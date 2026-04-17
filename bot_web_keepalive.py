@@ -572,16 +572,14 @@ async def kasyno(ctx):
         "🎰 **Kasyno zostało aktywowane!**\n\n"
         "Zagraj o tajemniczą przepowiednię przyszłości!.\n\n"
         f"Wybierz **3 emotki** z tej puli:\n{' '.join(EMOJI_POOL)}\n\n"
-        "Jeśli **min. 2 będą takie same** – wygrywasz.\n"
-        "Jeśli **3 takie same** – JACKPOT.\n"
+        "Jeśli **min. 2 będą takie same (trafione)** – wygrywasz.\n"
+        "Jeśli **3 takie same (trafione)** – JACKPOT.\n"
         "Wszystkie różne – kasyno nawet nie udaje współczucia.\n\n"
-        "⏳ Masz **1 minutę **. Wyślij emotki w **jednej wiadomości**."
+        "⏳ Masz **1 minutę**. Wyślij emotki w **jednej wiadomości**."
     )
-
 
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel
-
 
     try:
         msg = await bot.wait_for("message", check=check, timeout=60)
@@ -589,33 +587,33 @@ async def kasyno(ctx):
         await ctx.send("⏳ Kasyno się zamknęło. Los nie lubi niezdecydowanych.")
         return
 
-
     user_emojis = [c for c in msg.content if c in EMOJI_POOL]
-
 
     if len(user_emojis) != 3:
         await ctx.send("❌ Miały być **dokładnie 3 emotki**. Automat nie interpretuje chaosu.")
         return
 
+    # losowanie bota (z powtórzeniami, jak w prawdziwym slocie)
+    bot_emojis = [random.choice(EMOJI_POOL) for _ in range(3)]
 
-    bot_emojis = random.sample(EMOJI_POOL, 3)
-    outcome = result_type(user_emojis)
+    # --- KLUCZOWA POPRAWKA ---
+    # liczymy trafienia na tych samych pozycjach
+    matches = sum(1 for u, b in zip(user_emojis, bot_emojis) if u == b)
 
-
-    if outcome == "jackpot":
+    if matches == 3:
         prophecy = random.choice(JACKPOT_PROPHECIES)
         verdict = "💥 **JACKPOT!!!** 💥"
-    elif outcome == "win":
+    elif matches == 2:
         prophecy = random.choice(MINI_PROPHECIES)
         verdict = "✨ **WYGRANA!**"
     else:
         prophecy = random.choice(DEAF_PROPHECIES)
         verdict = "💀 **PRZEGRANA.**"
 
-
     await ctx.send(
         f"🎲 **Twoje emotki:** {' '.join(user_emojis)}\n"
         f"🎰 **Kasyno wylosowało:** {' '.join(bot_emojis)}\n\n"
+        f"🎯 Trafienia: **{matches}/3**\n\n"
         f"{verdict}\n"
         f"🔮 {prophecy}"
     )
@@ -630,7 +628,51 @@ PING_REPLIES = [
     "Otrzymano ping. Karma zareagowała obojętnie.",
     "Pong! Ale kot w biurze ignoruje cię.",
     "Serwer mrugnął. Ping zaliczony.",
-    "Pong… a w twoim telefonie nic się nie zmieniło."
+    "Pong… a w twoim telefonie nic się nie zmieniło.",
+
+    "Ping dotarł. Sens życia nadal nie.",
+    "Pong! Serwer sprawdził – nadal żyjesz.",
+    "Twoje kliknięcie miało konsekwencje. Oto one: Pong.",
+    "Ping zaakceptowany. Wszechświat wzruszył ramionami.",
+    "Pong! Zero nagród, zero emocji, czysta forma.",
+    "Serwer odpowiedział. Ty dalej tutaj.",
+    "Ping wykonany poprawnie. Gratulacje, to było łatwe.",
+    "Pong! Twój router przez chwilę poczuł się potrzebny.",
+    "Odebrano ping. Nic się nie zapaliło. Szkoda.",
+    "Pong… ktoś gdzieś przewrócił oczami.",
+
+    "Ping przeszedł. Twój plan na dzień nadal nie istnieje.",
+    "Pong! System potwierdza: kliknąłeś przycisk.",
+    "Twój ping został przetworzony z pełnym brakiem emocji.",
+    "Pong! Serwer nawet nie udawał entuzjazmu.",
+    "Ping dotarł szybciej niż twoje postanowienia.",
+    "Pong! To było absolutnie konieczne, prawda?",
+    "System zauważył ping. I tyle.",
+    "Pong… echo odpowiedziało bardziej entuzjastycznie.",
+    "Ping zaliczony. Wszechświat kontynuuje ignorowanie.",
+    "Pong! Twój czas właśnie zniknął i nikt go nie widział.",
+
+    "Ping dotarł. Odpowiedź była nieunikniona.",
+    "Pong! Nic się nie zmieniło, ale przynajmniej próbowałeś.",
+    "Twój ping został zaakceptowany przez rzeczywistość.",
+    "Pong! Nawet serwer nie wie, po co to było.",
+    "Ping wysłany. Sens nie dołączony.",
+    "Pong! W tle coś się przeliczyło. Bez znaczenia.",
+    "Ping odebrany. Cisza pozostała.",
+    "Pong… system działa, ty też jakoś.",
+    "Ping zaliczony. Motywacja nie.",
+    "Pong! Serwer uznał to za wydarzenie dnia.",
+
+    "Ping dotarł. Wszechświat nadal w trybie oszczędzania energii.",
+    "Pong! Twój przycisk został naciśnięty z przekonaniem.",
+    "Ping zaakceptowany. Logika nie zadawała pytań.",
+    "Pong! Nawet bity się nie ucieszyły.",
+    "Ping przeszedł. Historia tego nie zapamięta.",
+    "Pong! Serwer przez sekundę udawał, że to ważne.",
+    "Ping wykonany. Efekt: symboliczny.",
+    "Pong… coś się wydarzyło. Technicznie.",
+    "Ping dotarł. Twój dzień pozostaje taki sam.",
+    "Pong! Minimum wysiłku, maksimum konsekwencji (czyli brak)."
 ]
 
 @bot.command()
@@ -646,6 +688,16 @@ async def ping(ctx):
 @bot.command()
 async def warn(ctx, member: discord.Member, *, reason: str = "Brak powodu"):
 
+    # --- sprawdzenie uprawnień ---
+    if ctx.author.id not in MODERATORS:
+        embed = discord.Embed(
+            description="Nie masz uprawnień do użycia tej komendy.",
+            color=0x95A5A6
+        )
+        await ctx.send(embed=embed)
+        return
+
+    # --- właściwa logika ---
     message_text = f"Gracz {member.mention} został ostrzeżony.\n{reason}"
 
     embed = discord.Embed(
@@ -692,13 +744,13 @@ async def unmute(ctx, member: discord.Member):
 @bot.command()
 async def kick(ctx, member: discord.Member, *, reason: str = "No reason provided"):
     if ctx.author.id not in MODERATORS:
-        await ctx.send("Nie wolno używać tego polecenia!")
+        await ctx.send("Nie masz wymaganych uprawień!")
         return
     try:
         await member.kick(reason=reason)
         await ctx.send(f"{member.name} został wyrzucony. ({reason})")
     except discord.Forbidden:
-        await ctx.send("Nie mam uprawnień, by wyrzucić tego użytkownika.")
+        await ctx.send("Nie mam uprawnień, by wyrzucić tego użytkownika. Ma za wysoką rangę.")
     except discord.HTTPException:
         await ctx.send("Nie udało się wyrzucić tego użytkownika.")
 
