@@ -824,17 +824,26 @@ def result_type(emojis):
 
 
 
-
 @bot.command(name="kasyno")
 async def kasyno(ctx):
+    user_id = ctx.author.id
+
+    # 🔒 LIMIT 2 DZIENNIE
+    count = get_casino_count(user_id)
+    if count >= 2:
+        await ctx.send(f"⏳ {ctx.author.mention}, wykorzystałeś już 2 wejścia do kasyna dziś.")
+        return
+
+    set_casino_count(user_id, count + 1)
+
     await ctx.send(
         "🎰 **Kasyno zostało aktywowane!**\n\n"
-        "Zagraj o tajemniczą przepowiednię przyszłości!.\n\n"
+        "Zagraj o tajemniczą przepowiednię przyszłości!\n\n"
         f"Wybierz **3 emotki** z tej puli:\n{' '.join(EMOJI_POOL)}\n\n"
-        "Jeśli **min. 2 będą takie same (trafione)** – wygrywasz.\n"
-        "Jeśli **3 takie same (trafione)** – JACKPOT.\n"
-        "Wszystkie różne – kasyno nawet nie udaje współczucia.\n\n"
-        "⏳ Masz **1 minutę**. Wyślij emotki w **jednej wiadomości**."
+        "2 takie same = wygrana\n"
+        "3 takie same = JACKPOT\n"
+        "0 trafień = smutek\n\n"
+        "⏳ Masz 1 minutę. Wyślij 3 emotki w jednej wiadomości."
     )
 
     def check(msg):
@@ -843,37 +852,48 @@ async def kasyno(ctx):
     try:
         msg = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
-        await ctx.send("⏳ Kasyno się zamknęło. Los nie lubi niezdecydowanych.")
+        await ctx.send("⏳ Kasyno się zamknęło. Los nie czeka na spóźnialskich.")
         return
 
     user_emojis = [c for c in msg.content if c in EMOJI_POOL]
 
     if len(user_emojis) != 3:
-        await ctx.send("❌ Miały być **dokładnie 3 emotki**. Automat nie interpretuje chaosu.")
+        await ctx.send("❌ Dokładnie 3 emotki. Kasyno nie negocjuje.")
         return
 
-    # losowanie bota (z powtórzeniami, jak w prawdziwym slocie)
     bot_emojis = [random.choice(EMOJI_POOL) for _ in range(3)]
 
-    # --- KLUCZOWA POPRAWKA ---
-    # liczymy trafienia na tych samych pozycjach
-    matches = sum(1 for u, b in zip(user_emojis, bot_emojis) if u == b)
+    from collections import Counter
+    user_count = Counter(user_emojis)
+    bot_count = Counter(bot_emojis)
+
+    matches = 0
+    for emoji in EMOJI_POOL:
+        matches = max(matches, min(user_count[emoji], bot_count[emoji]))
 
     if matches == 3:
+        reward = 500
         prophecy = random.choice(JACKPOT_PROPHECIES)
         verdict = "💥 **JACKPOT!!!** 💥"
+
     elif matches == 2:
+        reward = 100
         prophecy = random.choice(MINI_PROPHECIES)
         verdict = "✨ **WYGRANA!**"
+
     else:
+        reward = -10
         prophecy = random.choice(DEAF_PROPHECIES)
         verdict = "💀 **PRZEGRANA.**"
 
+    add_balance(user_id, reward)
+
     await ctx.send(
         f"🎲 **Twoje emotki:** {' '.join(user_emojis)}\n"
-        f"🎰 **Kasyno wylosowało:** {' '.join(bot_emojis)}\n\n"
+        f"🎰 **Kasyno:** {' '.join(bot_emojis)}\n\n"
         f"🎯 Trafienia: **{matches}/3**\n\n"
         f"{verdict}\n"
+        f"💰 Zmiana balansu: **{reward:+} Monet Reputacji**\n"
         f"🔮 {prophecy}"
     )
     
