@@ -357,6 +357,200 @@ CHRISTMAS_THEMES = {
  #   }
 #}
 
+
+#CHRISTMAS_THEMES = {
+  #  "summer_weather": {
+ #       "name": "Słońce i pogoda",
+#        "items": [
+            #{"text": "🌞 Słońce praży, serwer działa w trybie slow-motion", "query": "summer+sun+heat+bright", "color": 0xF4D03F},
+           # {"text": "🌤️ Chmurka raz na kilka dni – jako niespodzianka", "query": "summer+sky+clouds", "color": 0xD6EAF8},
+          #  {"text": "🌴 Palmy w tle, odpowiedzi w cieniu", "query": "palm+trees+summer", "color": 0x52BE80},
+         #   {"text": "🌊 Fale uderzają, powiadomienia leniwie spływają", "query": "ocean+waves+summer", "color": 0x5DADE2},
+        #    {"text": "⛱️ Leżak gotowy, ping ignorowany", "query": "beach+chair+umbrella", "color": 0xF7DC6F},
+       #     {"text": "🌻 Słoneczniki patrzą, użytkownicy nie", "query": "sunflower+field+summer", "color": 0xF1C40F},
+      #      {"text": "🌈 Po deszczu memy wychodzą żywsze", "query": "rainbow+summer+rain", "color": 0xBB8FCE},
+     #       {"text": "🌬️ Lekki wiatr = minimalna motywacja", "query": "summer+breeze", "color": 0x7FB3D5},
+    #        {"text": "☀️ Okulary przeciwsłoneczne obowiązkowe przy tagach", "query": "sunglasses+summer+sun", "color": 0xF39C12},
+   #         {"text": "🌅 Zachód słońca = czas refleksji nad Discordem", "query": "sunset+summer+beach", "color": 0xF5B041},
+  #      ],
+ #   },
+#
+   # "summer_chill": {
+  #      "name": "Wakacje / chill",
+ #       "items": [
+#            {"text": "🏖️ Plaża w tle, powiadomień brak", "query": "beach+summer+relax", "color": 0x85C1E9},
+           # {"text": "🍹 Koktajl w ręku, chaos na czacie", "query": "cocktail+summer+drink", "color": 0xEB984E},
+          #  {"text": "🛶 Kajak gotowy, serwer w tle", "query": "kayak+lake+summer", "color": 0x5DADE2},
+         #   {"text": "🎶 Muzyka wakacyjna = odpowiedzi minimalne", "query": "summer+music+vibes", "color": 0xAF7AC5},
+        #    {"text": "🏄 Fala przychodzi, ping nie", "query": "surfing+wave+summer", "color": 0x48C9B0},
+       #     {"text": "🌴 W cieniu palmy = tryb relaks", "query": "palm+shade+summer", "color": 0x52BE80},
+      #      {"text": "🐚 Muszelki liczą powiadomienia, ja nie", "query": "seashells+beach", "color": 0xFAD7A0},
+     #       {"text": "🕶️ Chill w pełnej krasie", "query": "summer+relax+sunglasses", "color": 0x566573},
+    #        {"text": "🐠 Woda chłodzi, serwer też", "query": "underwater+fish+summer", "color": 0x5DADE2},
+   #         {"text": "🌊 Szum morza = wymówka do braku aktywności", "query": "sea+waves+relax", "color": 0x3498DB},
+  #      ],
+ #   },
+#
+    #"summer_memes": {
+   #     "name": "Humor / memy",
+  #      "items": [
+            #{"text": "🐳 Ping jak wieloryb – czasem dociera", "query": "whale+ocean+funny", "color": 0x5DADE2},
+           # {"text": "🦀 Krab blokuje kanał, ja pod parasolem", "query": "crab+beach+funny", "color": 0xE74C3C},
+          #  {"text": "🏖️ Plaża mówi: „Nie taguj mnie”", "query": "beach+funny+summer", "color": 0x85C1E9},
+         #   {"text": "🐠 Ryba przemyka, powiadomień brak", "query": "fish+underwater+summer", "color": 0x5DADE2},
+        #    {"text": "🌴 Palma przewraca memy na bok", "query": "palm+tree+funny", "color": 0x52BE80},
+       #     {"text": "🐚 Muszle komentują w ciszy", "query": "seashell+macro+beach", "color": 0xFAD7A0},
+      #      {"text": "🌊 Fala humoru rozbija powiadomienia", "query": "wave+ocean+funny", "color": 0x3498DB},
+     #       {"text": "🐬 Delfin taguje przypadkowych użytkowników", "query": "dolphin+funny+ocean", "color": 0x85C1E9},
+    #        {"text": "🐞 Biedronka wakacyjna = dopisek dnia", "query": "ladybug+summer", "color": 0xE74C3C},
+   #         {"text": "🌞 Słońce świeci, chaos trwa", "query": "sunny+summer+chaos", "color": 0xF4D03F},
+  #      ],
+ #   },
+#
+#    "summer_food": {
+     #   "name": "Lody / jedzenie letnie",
+      #  "items": [
+            #{"text": "🍉 Arbuz = obowiązkowy ping-break", "query": "watermelon+summer", "color": 0xE74C3C},
+           # {"text": "🥤 Koktajl owocowy = minimalna produktywność", "query": "fruit+smoothie+summer", "color": 0xEB984E},
+          #  {"text": "🌽 Grill gotowy, serwer w tle", "query": "bbq+grill+summer", "color": 0xDC7633},
+         #   {"text": "🍍 Ananas patrzy na czat, ja nie", "query": "pineapple+summer", "color": 0xF4D03F},
+        #    {"text": "🥪 Kanapka w ręku = wymówka do lenistwa", "query": "sandwich+summer+lunch", "color": 0xD5DBDB},
+       #     {"text": "🧃 Sok z cytryny = detox powiadomień", "query": "lemon+juice+summer", "color": 0xF7DC6F},
+      #      {"text": "🍓 Truskawki sezonowe = sezonowe dopiski", "query": "strawberries+summer", "color": 0xC0392B},
+     #       {"text": "🍹 Drink w tle = serwer chill", "query": "summer+drink+cocktail", "color": 0xAF601A},
+    #        {"text": "🥗 Sałatka w ręku, memy w tle", "query": "salad+healthy+summer", "color": 0x52BE80},
+   #     ],
+  #  },
+
+ #   "summer_activity": {
+#        "name": "Aktywność / ruch",
+      #  "items": [
+     #       {"text": "🏊 Basen gotowy, ping się kąpie", "query": "swimming+pool+summer", "color": 0x5DADE2},
+    #        {"text": "🚴 Rower wyjechał, użytkownicy w trybie offline", "query": "cycling+summer", "color": 0x52BE80},
+   #         {"text": "🏋️ Siłownia = wymówka do ignorowania tagów", "query": "gym+workout+summer", "color": 0x566573},
+  #          {"text": "🛶 Kajak w ruchu, serwer w spokoju", "query": "kayak+river+summer", "color": 0x5DADE2},
+          #  {"text": "🏖️ Spacer po plaży = minimalne działania", "query": "beach+walk+summer", "color": 0xFAD7A0},
+         #   {"text": "🏌️ Golf + powiadomienia ignorowane", "query": "golf+field+summer", "color": 0x27AE60},
+        #    {"text": "🏄 Surfing = chaos kontrolowany", "query": "surfing+wave", "color": 0x48C9B0},
+       #     {"text": "🤸 Gimnastyka = codzienny dopisek", "query": "gymnastics+summer", "color": 0xAF7AC5},
+      #      {"text": "🏹 Strzały w powietrzu = tagi nie dochodzą", "query": "archery+summer", "color": 0x935116},
+     #       {"text": "🧗 Wspinaczka = mało powiadomień, dużo humoru", "query": "climbing+mountain+summer", "color": 0x7DCEA0},
+    #    ],
+   # },
+
+  #  "summer_productivity": {
+ #       "name": "Planowanie / produktywność w lato",
+#        "items": [
+         #   {"text": "📝 Lista rzeczy do zrobienia: wakacje trwają", "query": "to+do+list+summer", "color": 0x5D6D7E},
+        #    {"text": "📅 Kalendarz mówi: „odpoczywaj”", "query": "calendar+summer+planning", "color": 0x5499C7},
+       #     {"text": "🔄 Rotacja dopisków w trybie wakacyjnym", "query": "refresh+cycle+summer", "color": 0x48C9B0},
+      #      {"text": "🏝️ Cel dnia: chill + minimalne działania", "query": "island+relax+summer", "color": 0x76D7C4},
+     #       {"text": "💡 Pomysł: przerwa na drinka = obowiązkowa", "query": "summer+idea+drink", "color": 0xF8C471},
+    #        {"text": "⏳ Czas płynie, serwer powoli", "query": "time+slow+summer", "color": 0x95A5A6},
+   #         {"text": "🧭 Kompas pokazuje kierunek do basenu", "query": "compass+direction+pool", "color": 0x1ABC9C},
+  #          {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "summer+window+view", "color": 0x52BE80},
+ #           {"text": "🥶 Lód w drinku = produktywność schłodzona", "query": "ice+drink+summer", "color": 0x85C1E9},
+        #    {"text": "🎯 Cel: przeżyć lato i nie odpowiadać na wszystko", "query": "summer+goal+relax", "color": 0x2874A6},
+ #       ],
+  #  },
+#}
+
+# CHRISTMAS_THEMES = {
+ #   "autumn_nature": {
+       # "name": "Liście i natura",
+      #  "items": [
+      #      {"text": "🍁 Liście spadają, a serwer w trybie chill", "query": "autumn+leaves+fall", "color": 0xD35400},
+     #       {"text": "🌳 Drzewa patrzą, użytkownicy nie", "query": "autumn+trees+forest", "color": 0x196F3D},
+    #        {"text": "🌬️ Wiatr przerzuca memy jak liście", "query": "wind+autumn+leaves", "color": 0x7D6608},
+           # {"text": "🌰 Orzechy spadają, chaos rośnie", "query": "nuts+autumn+forest", "color": 0x6E2C00},
+          #  {"text": "🍂 Dywan liści = naturalny filtr pingów", "query": "fallen+leaves+ground", "color": 0xBA4A00},
+         #   {"text": "🌾 Mgła nad polem = mgła w powiadomieniach", "query": "fog+field+autumn", "color": 0xAAB7B8},
+        #    {"text": "🌿 Zielono-żółto, serwer spokojny", "query": "autumn+green+yellow+leaves", "color": 0x7DCEA0},
+       #     {"text": "🍁 Jesienne porządki = dopisek dnia", "query": "autumn+cleaning+yard", "color": 0xCA6F1E},
+      #      {"text": "🌳 Widok z okna = spokój i refleksja", "query": "autumn+window+view", "color": 0x1E8449},
+     #   ],
+    #},
+
+   # "autumn_weather": {
+      #  "name": "Pogoda / chłód",
+       # "items": [
+      #      {"text": "🌧️ Deszcz uderza, powiadomienia spadają", "query": "rain+window+autumn", "color": 0x5DADE2},
+     #       {"text": "🌬️ Wiatr hula, ja pod kocem", "query": "windy+autumn+weather", "color": 0x7FB3D5},
+           # {"text": "🌫️ Mgła zakrywa odpowiedzi", "query": "fog+autumn+morning", "color": 0x95A5A6},
+          #  {"text": "🧥 Kurtka gotowa, serwer w tle", "query": "jacket+autumn+outfit", "color": 0x566573},
+         #   {"text": "☁️ Chmury = wymówka do minimalnej aktywności", "query": "cloudy+autumn+sky", "color": 0xD6EAF8},
+        #    {"text": "🌦️ Płaszcz + parasol = produktywność w trybie slow", "query": "raincoat+umbrella+autumn", "color": 0x5DADE2},
+       #     {"text": "🌂 Krople na szybie = naturalny alert", "query": "raindrops+window", "color": 0x3498DB},
+      #      {"text": "🌨️ Pierwszy mróz = powód do kawy", "query": "frost+morning+autumn", "color": 0xAED6F1},
+     #       {"text": "🍂 Liście wirują, memy też", "query": "leaves+falling+wind", "color": 0xCA6F1E},
+    #        {"text": "🌫️ Cisza w kanałach = jesienny spokój", "query": "foggy+quiet+autumn", "color": 0x7B7D7D},
+   #     ],
+  #  },
+
+ #   "autumn_memes": {
+    #    "name": "Humor / memy",
+        #"items": [
+       #     {"text": "🎃 Halloween minęło, memy pozostały", "query": "halloween+after+party", "color": 0xAF601A},
+      #      {"text": "🦉 Sowa patrzy, użytkownicy znikli", "query": "owl+night+autumn", "color": 0x5D6D7E},
+     #       {"text": "🍁 Liść taguje przypadkowych ludzi", "query": "leaf+falling+funny", "color": 0xD35400},
+            #{"text": "🐿️ Wiewiórka kradnie ping", "query": "squirrel+autumn+funny", "color": 0x6E2C00},
+           # {"text": "🦇 Nietoperz = nieoczekiwany dopisek", "query": "bat+dark+autumn", "color": 0x17202A},
+          #  {"text": "🥶 Mróz lekki, humor silny", "query": "cold+autumn+funny", "color": 0x85C1E9},
+         #   {"text": "🐾 Zwierzak blokuje kanał, ja czekam", "query": "pet+autumn+funny", "color": 0x52BE80},
+        #    {"text": "🌰 Orzechy lecą, powiadomienia wolno", "query": "nuts+falling+autumn", "color": 0x873600},
+       #     {"text": "🕸️ Pajęczyna = filtr chaosu", "query": "spiderweb+autumn", "color": 0x7B7D7D},
+      #      {"text": "☕ Kawa rozwiązuje większość dram", "query": "coffee+autumn+cozy", "color": 0x6E2C00},
+     #   ],
+    #},
+
+   # "autumn_chill": {
+      #  "name": "Chill / odpoczynek",
+     #   "items": [
+           # {"text": "🛋️ Kanapa w trybie jesienny relaks", "query": "cozy+sofa+autumn", "color": 0xA04000},
+          #  {"text": "☕ Gorąca kawa w ręku, serwer w tle", "query": "coffee+cozy+autumn", "color": 0x6E2C00},
+         #   {"text": "📖 Książka + koc = idealny dopisek", "query": "reading+book+blanket", "color": 0x5B2C6F},
+        #    {"text": "🎶 Muzyka nastrojowa = powiadomienia ignorowane", "query": "music+cozy+autumn", "color": 0xAF7AC5},
+       #     {"text": "🐶 Pies obok, chaos minimalny", "query": "dog+cozy+autumn", "color": 0x52BE80},
+      #      {"text": "🧸 Pluszak w roli moderatora", "query": "teddy+bear+cozy", "color": 0xAF7AC5},
+     #       {"text": "🌅 Zachód słońca = minimalna aktywność", "query": "autumn+sunset", "color": 0xF5B041},
+    #        {"text": "🕯️ Światło świec = codzienny chill", "query": "candles+cozy+autumn", "color": 0xF8C471},
+   #         {"text": "🏡 Widok z okna inspiruje, powiadomienia nie", "query": "window+autumn+cozy", "color": 0x52BE80},
+  #          {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home", "color": 0xA93226},
+ #       ],
+#    },
+
+    #"autumn_food": {
+   #     "name": "Jedzenie / ciepłe napoje",
+  #      "items": [
+ #           {"text": "☕ Herbata obowiązkowa przy pingach", "query": "tea+autumn+cozy", "color": 0xA569BD},
+#            {"text": "🍫 Gorąca czekolada = produktywność schłodzona", "query": "hot+chocolate+autumn", "color": 0x6E2C00},
+           # {"text": "🥧 Ciasto dyniowe = codzienny dopisek", "query": "pumpkin+pie+autumn", "color": 0xDC7633},
+          #  {"text": "🍂 Jabłka pieczone w tle", "query": "baked+apples+autumn", "color": 0xCA6F1E},
+         #   {"text": "🥪 Kanapka w ręku, memy w tle", "query": "sandwich+cozy+autumn", "color": 0xD5DBDB},
+        #    {"text": "🥤 Gorący napój = wymówka do lenistwa", "query": "warm+drink+autumn", "color": 0xF8C471},
+       #     {"text": "🍵 Matcha dla relaksu, powiadomienia ignorowane", "query": "matcha+tea+cozy", "color": 0x27AE60},
+      #      {"text": "🥐 Śniadanie w tle = spokój w kanałach", "query": "breakfast+cozy+autumn", "color": 0xF5CBA7},
+     #       {"text": "🍪 Ciasteczka = motywator dnia", "query": "cookies+autumn+cozy", "color": 0xB9770E},
+    #        {"text": "🥛 Mleko + memy = combo jesieni", "query": "milk+cozy+autumn", "color": 0xFDFEFE},
+   #     ],
+  #  },
+
+   # "autumn_productivity": {
+  #      "name": "Planowanie / produktywność",
+ #       "items": [
+#            {"text": "📝 Lista rzeczy do zrobienia = minimalna aktywność", "query": "to+do+list+autumn", "color": 0x5D6D7E},
+           # {"text": "📅 Kalendarz mówi: „jesień = wolniej”", "query": "calendar+autumn", "color": 0x5499C7},
+          #  {"text": "🧭 Kompas pokazuje kierunek do kawy", "query": "compass+coffee", "color": 0x1ABC9C},
+         #   {"text": "⏳ Czas leci, powiadomienia powoli", "query": "time+slow+autumn", "color": 0x95A5A6},
+        #    {"text": "🔄 Rotacja dopisków w trybie spokojnym", "query": "refresh+cycle+calm", "color": 0x48C9B0},
+       #     {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "window+autumn+view", "color": 0x52BE80},
+      #      {"text": "💡 Pomysł dnia: chill + małe kroki", "query": "minimal+idea+autumn", "color": 0xF7DC6F},
+     #       {"text": "🎯 Cel dnia: przetrwać jesień bez dram", "query": "goal+focus+autumn", "color": 0x2874A6},
+    #        {"text": "🕰️ Plan dnia: kawa, książka, powiadomienia później", "query": "clock+coffee+book", "color": 0x7B7D7D},
+   #         {"text": "🍁 Zbieranie liści = zbieranie energii na zimę", "query": "raking+leaves+autumn", "color": 0xCA6F1E},
+  #      ],
+ #   },
+#}
 session: aiohttp.ClientSession = None  # globalna sesja HTTP
 
 async def send_christmas_embed(channel):
