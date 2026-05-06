@@ -103,3 +103,16 @@ def set_reflex_used(user_id: int, value: int):
     supabase.table("users").update({
         "reflex_used": value
     }).eq("user_id", str(user_id)).execute()
+
+def get_roll_count(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("roll_count").eq("user_id", str(user_id)).execute()
+    return res.data[0]["roll_count"] or 0
+
+
+def set_roll_count(user_id: int, value: int):
+    supabase.table("users").update({
+        "roll_count": value
+    }).eq("user_id", str(user_id)).execute()
+
+
