@@ -4,6 +4,7 @@ import random
 import io
 import asyncio
 import aiohttp
+import time
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
@@ -57,6 +58,32 @@ def run_flask():
     app.run(host="0.0.0.0", port=port)
 
 Thread(target=run_flask, daemon=True).start()
+
+def reset_daily_limits():
+    while True:
+        now = time.localtime()
+
+        # 00:00 reset
+        if now.tm_hour == 0 and now.tm_min == 0:
+            print("[CRON] Reset dziennych limitów...")
+
+            # tu reset wszystkich userów (Supabase)
+            supabase.table("users").update({
+                "casino_count": 0,
+                "rps_count": 0,
+                "crime_count": 0,
+                "reflex_used": 0
+            }).neq("user_id", "-1").execute()
+
+            time.sleep(61)  # żeby nie odpaliło 10 razy
+
+        time.sleep(30)
+
+
+def start_cron():
+    t = Thread(target=reset_daily_limits)
+    t.daemon = True
+    t.start()
 
 CHRISTMAS_THEMES = {
     "spring_awakening": {
@@ -1133,11 +1160,44 @@ async def shield(ctx, member: discord.Member):
     except discord.Forbidden:
         await ctx.send("Nie mogę wysłać PW do tego użytkownika.")
 
-
 @bot.command()
-async def coinflip(ctx):
+async def coinflip(ctx, choice: str):
+    user_id = ctx.author.id
+
+    choice = choice.lower()
+
+    if choice not in ["orzeł", "reszka"]:
+        await ctx.send("❌ Użyj: `?coinflip orzeł` albo `?coinflip reszka`.")
+        return
+
+    # limit 2 gry dziennie
+    count = get_coinflip_count(user_id)
+    if count >= 2:
+        await ctx.send(f"⏳ {ctx.author.mention}, wykorzystałeś już 2 coinflipy dziś.")
+        return
+
+    set_coinflip_count(user_id, count + 1)
+
     result = random.choice(["orzeł", "reszka"])
-    await ctx.send(f"{ctx.author.name} rzucił monetą: **{result}**")
+
+    await ctx.send(f"🪙 Wypadło: **{result}**")
+
+    if choice == result:
+        reward = 30
+        add_balance(user_id, reward)
+
+        await ctx.send(
+            f"🎉 WYGRAŁEŚ!\n"
+            f"+30 Monet Reputacji 💰"
+        )
+    else:
+        reward = -30
+        add_balance(user_id, reward)
+
+        await ctx.send(
+            f"💀 PRZEGRANA.\n"
+            f"{reward} Monet Reputacji"
+        )
 
 SARCASM_RESPONSES = [
     "✅ Tak — ale nie licz na to bez cudu.",
@@ -1589,6 +1649,7 @@ async def specjal(ctx):
     
 ACTIVE_THEMES = CHRISTMAS_THEMES
 
+start_cron()
 # Uruchomienie bota
 bot.run(TOKEN)
 
