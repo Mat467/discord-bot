@@ -13,7 +13,9 @@ from db import (
     add_balance,
     set_balance,
     can_claim_daily,
-    claim_daily
+    claim_daily,
+    get_crime_count,
+    add_crime_count
 )
 
 DEFAULT_EMBED_COLOUR = 0x2ECC71
@@ -1147,6 +1149,108 @@ SARCASM_RESPONSES = [
     "🕹️ Gra mówi nie: resetuj i spróbuj ponownie."
 ]
 
+
+DAILY_MESSAGES = [
+    "💸 Odbierasz wypłatę za bycie obecnym. Imponujące.",
+    "🪙 System nagradza twoją egzystencję. Gratulacje.",
+    "💰 Dostajesz monety za… no, oddychanie chyba.",
+    "📦 Dzienna paczka odebrana. Nie pytaj skąd to się bierze.",
+    "🤑 Kapitalizm działa nawet na Discordzie.",
+    "🎁 Kolejna nagroda. Nadal nie wiadomo za co.",
+    "💸 10 monet wpada. Nie przyzwyczajaj się.",
+    "🏦 System uznał, że zasługujesz. Dziwne, ale ok.",
+    "💰 Monety dodane. Twoje życie ma sens. Przynajmniej tutaj.",
+    "🎉 Daily odebrane. Możesz wrócić jutro po więcej złudzeń.",
+
+    "🪙 Gratulacje, system cię zauważył. Rzadkie zjawisko.",
+    "💸 Dostajesz kasę za logowanie. Brzmi jak sen, co?",
+    "📅 Kolejny dzień, kolejne monety. Rutyna piękna rzecz.",
+    "💰 +10 monet. System wierzy w ciebie bardziej niż ty.",
+    "🎁 Prezent dzienny. Bez okazji, bez sensu, ale jest.",
+    "🤑 Twoje konto właśnie utyło o 10 monet.",
+    "🏦 Wpłata przyjęta. Bank nie pyta o źródło.",
+    "💸 Odbierasz nagrodę. Minimalny wysiłek, maksymalny efekt.",
+    "🎉 System mówi: dobra robota. Za co? Nie wiadomo.",
+    "💰 Monety przyznane. Kontynuuj… cokolwiek robisz.",
+
+    "🪙 Oto twoje codzienne złudzenie progresu.",
+    "💸 Dostajesz kasę za obecność. Bare minimum zaliczone.",
+    "📦 Paczka dnia dostarczona. Bez podpisu.",
+    "💰 +10 monet. Twój wkład pozostaje tajemnicą.",
+    "🎁 Daily drop. RNG sprzyja… zawsze.",
+    "🤑 Wpływ środków od nieznanego sponsora.",
+    "🏦 System działa. Ty też jakoś działasz.",
+    "💸 Nagroda odebrana. Możesz udawać produktywność dalej.",
+    "🎉 Kolejny dzień przeżyty. System to docenia.",
+    "💰 Monety dodane. Inflacja nadchodzi.",
+
+    "🪙 Twoje daily. Bez fajerwerków, ale działa.",
+    "💸 System rzucił ci 10 monet. Łap.",
+    "📅 Logowanie zaliczone. Nagroda przyznana.",
+    "💰 +10 monet. W sam raz na złe decyzje.",
+    "🎁 Paczka odebrana. Zawartość: rozczarowanie i monety.",
+    "🤑 Konto rośnie. Ego zaraz też.",
+    "🏦 Bank znowu cię nie zignorował.",
+    "💸 Odbiór nagrody zakończony sukcesem.",
+    "🎉 System: 'proszę bardzo'.",
+    "💰 Monety wpłynęły. Użyj ich źle.",
+
+    "🪙 Gratulacje. Nadal tu jesteś.",
+    "💸 Odbierasz wypłatę za konsekwencję. Szokujące.",
+    "📦 Kolejna skrzynka dnia. Bez lootboxów, przykro mi.",
+    "💰 +10 monet. Minimalizm finansowy.",
+    "🎁 Daily claim complete. Achievement unlocked: rutyna.",
+    "🤑 Pieniądze pojawiły się magicznie. Nie pytaj.",
+    "🏦 System nie zapomniał o tobie. Jeszcze.",
+    "💸 Nagroda przyznana. Idź ją stracić.",
+    "🎉 Kolejny checkpoint życia zaliczony.",
+    "💰 Monety dodane. Czas je przepalić.",
+
+    "🪙 Dzienna dawka dopaminy dostarczona.",
+    "💸 Odbierasz swoje 10 monet. Klasyka gatunku.",
+    "📅 System odnotował twoje istnienie.",
+    "💰 +10 monet. Ekonomia rośnie, sens maleje.",
+    "🎁 Nagroda dnia. Nic specjalnego, ale działa.",
+    "🤑 Konto powoli puchnie. Nie ekscytuj się.",
+    "🏦 Wpłata zatwierdzona. Bez pytań.",
+    "💸 Kolejna wypłata. Nadal za darmo.",
+    "🎉 System nagradza lojalność. Albo nudę.",
+    "💰 Monety przyznane. Witaj w pętli."
+]
+
+CRIME_LIST = [
+    "Okraść sklep spożywczy",
+    "Zhakować bank",
+    "Ukraść pizzę z dostawy",
+    "Podmienić ceny w supermarkecie",
+    "Przejąć konto influencera",
+    "Oszukać automat z napojami",
+    "Włamać się do sejfu w biurze",
+    "Zwinąć rower bez właściciela",
+    "Przechytrzyć kasyno online",
+    "Podszyć się pod urzędnika",
+    "Wyłudzić darmową kebabową promocję",
+    "Złamać system lojalnościowy sklepu",
+    "Ukraść hot-doga z imprezy",
+    "Zamienić etykiety produktów",
+    "Oszukać bankomat na 10 zł",
+    "Włamać się do lodówki sąsiada",
+    "Przechwycić przesyłkę kurierską",
+    "Zhakować system punktów w grze",
+    "Podmienić playlistę w radiu",
+    "Zrobić fake refund w sklepie",
+    "Przejąć automat vendingowy",
+    "Oszukać kasę samoobsługową",
+    "Zwinąć ciasteczka z kuchni NPC",
+    "Włamać się do systemu pizzy",
+    "Podrobić kupon rabatowy",
+    "Zhakować skrzynkę mailową (legalnie w grze oczywiście)",
+    "Przechytrzyć ochronę sklepu",
+    "Ukraść paczkę przed drzwiami",
+    "Zamienić portfel NPC",
+    "Zorganizować 'legalnie nielegalny' deal"
+]
+
 @bot.command(
     name="8ballfun",
     aliases=["ballfun", "🎱fun"]
@@ -1156,6 +1260,29 @@ async def eightballfun(ctx, *, question: str):
     answer = random.choice(SARCASM_RESPONSES)
     await ctx.send(f"**{ctx.author.display_name} pyta:** {question}\n{answer}")
 
+@bot.command(name="daily")
+async def daily(ctx):
+    user_id = ctx.author.id
+
+    if not can_claim_daily(user_id):
+        await ctx.send(f"⏳ {ctx.author.mention}, już odebrałeś daily. Spróbuj jutro.")
+        return
+
+    reward = 10
+    claim_daily(user_id, reward)
+
+    message = random.choice(DAILY_MESSAGES)
+
+    await ctx.send(f"{message}\n\n💰 +{reward} Monet Reputacji dla {ctx.author.mention}")
+    
+@bot.command(name="saldo")
+async def saldo(ctx):
+    user_id = ctx.author.id
+
+    balance = get_balance(user_id)
+
+    await ctx.send(f"💰 {ctx.author.mention}, masz **{balance} Monet Reputacji**.")
+    
 @bot.command()
 async def rps(ctx, choice: str):
     choices = ["kamień", "papier", "nożyce"]
@@ -1200,6 +1327,43 @@ async def echo(ctx, *, text: str):
     except discord.Forbidden:
         pass
     await ctx.send(text)
+
+@bot.command(name="crime")
+async def crime(ctx):
+    user_id = ctx.author.id
+
+    count = get_crime_count(user_id)
+
+    if count >= 3:
+        await ctx.send(f"🚔 {ctx.author.mention}, dziś już 3 przestępstwa. Policja mówi: idź spać.")
+        return
+
+    mission = random.choice(CRIME_LIST)
+
+    add_crime_count(user_id)
+
+    await ctx.send(
+        f"🕵️ **Otrzymałeś zlecenie:**\n"
+        f"👉 {mission}\n\n"
+        f"⏳ Wynik za 1 minutę..."
+    )
+
+    await asyncio.sleep(60)
+
+    success = random.choice([True, False])
+
+    if success:
+        add_balance(user_id, 100)
+        await ctx.send(
+            f"✅ **Misja zakończona... SUKCESEM**\n"
+            f"+100 Monet Reputacji 💰"
+        )
+    else:
+        add_balance(user_id, -100)
+        await ctx.send(
+            f"💀 **Misja zakończona... PORAŻKĄ**\n"
+            f"-100 Monet Reputacji"
+        )
 
 @bot.command()
 async def rules(ctx):
