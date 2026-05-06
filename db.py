@@ -126,4 +126,15 @@ def set_rps_count(user_id: int, value: int):
         "rps_count": value
     }).eq("user_id", str(user_id)).execute()
 
+def get_casino_count(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("casino_count").eq("user_id", str(user_id)).execute()
+    return res.data[0]["casino_count"] or 0
+
+
+def set_casino_count(user_id: int, value: int):
+    supabase.table("users").update({
+        "casino_count": value
+    }).eq("user_id", str(user_id)).execute()
+
 
