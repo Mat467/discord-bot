@@ -85,6 +85,105 @@ def start_cron():
     t.daemon = True
     t.start()
 
+def get_ladder(balance: int):
+    for name, min_v, max_v in LADDERS:
+        if min_v <= balance <= max_v:
+            return name, f"{min_v}-{max_v}"
+    return LADDERS[0][0], "0-5000"
+
+def ladder_system():
+    while True:
+        now = time.localtime()
+
+        # 00:05 codziennie
+        if now.tm_hour == 0 and now.tm_min == 5:
+            print("[LADDER] Aktualizacja lig...")
+
+            users = supabase.table("users").select("*").execute().data
+
+            for user in users:
+                user_id = int(user["user_id"])
+                balance = user["balance"]
+
+                new_ladder, _ = get_ladder(balance)
+
+                old_ladder = user.get("ladder")
+
+                # update DB
+                supabase.table("users").update({
+                    "ladder": new_ladder
+                }).eq("user_id", str(user_id)).execute()
+
+                guild = bot.guilds[0]
+                member = guild.get_member(user_id)
+
+                if not member:
+                    continue
+
+                role = discord.utils.get(guild.roles, name=new_ladder)
+
+                if role and role not in member.roles:
+                    # usuń stare role ladder
+                    for r, _, _, _ in LADDERS:
+                        old_role = discord.utils.get(guild.roles, name=r)
+                        if old_role in member.roles:
+                            await member.remove_roles(old_role)
+
+                    await member.add_roles(role)
+
+                    # wiadomości
+                    if old_ladder is None:
+                        msg = f"🪙 Gracz {member.name} dołączył do ligi {new_ladder}!"
+                    else:
+                        old_index = [x[0] for x in LADDERS].index(old_ladder)
+                        new_index = [x[0] for x in LADDERS].index(new_ladder)
+
+                        if new_index < old_index:
+                            msg = f"📉 Niestety! Gracz {member.name} spadł do niższej ligi! {new_ladder} – {LADDERS[new_index][3]}"
+                        else:
+                            msg = f"📈 Gratulacje! Gracz {member.name} awansował do wyższej ligi! {new_ladder} – {LADDERS[new_index][3]}"
+
+                    channel = discord.utils.get(guild.text_channels, name="general")
+                    if channel:
+                        asyncio.run_coroutine_threadsafe(channel.send(msg), bot.loop)
+
+            time.sleep(60)
+
+        time.sleep(30)
+
+
+def start_ladder_system():
+    import threading
+    t = threading.Thread(target=ladder_system)
+    t.daemon = True
+    t.start()
+
+LADDERS = [
+    ("Nowicjusze Systemu", 0, 5000,
+     "Czyli oficjalnie: dopiero uczysz się klikać. Nieoficjalnie: serwer jeszcze nie wie, czy masz ambicje czy tylko Wi-Fi."),
+
+    ("Rekruci Obiecanek", 5001, 15000,
+     "Zaczynasz udawać, że to dopiero początek. System już cię rozpoznaje, ale nadal nie szanuje."),
+
+    ("Zbieracze Okruszków", 15001, 30000,
+     "Pierwszy moment, kiedy ktoś mówi 'o, ma coś tam'. Nadal karmisz się resztkami systemu."),
+
+    ("Lokalni Gracze", 30001, 60000,
+     "Masz już pewną pozycję. Czy to imponujące? Nie. Czy przestajesz scrollować? Też nie."),
+
+    ("Operujący Kapitałem", 60001, 100000,
+     "Brzmi jak ktoś, kto wie co robi. W praktyce: nie wydajesz wszystkiego na głupoty (jeszcze)."),
+
+    ("Architekci Ekonomii", 100001, 150000,
+     "Iluzja władzy. Ludzie patrzą jakbyś miał plan. Ty też udajesz."),
+
+    ("Elita Systemu", 150001, 200000,
+     "System działa bardziej dla ciebie niż przeciwko tobie. I to jest niebezpieczne."),
+
+    ("Legendary Bilansu", 200001, 10**18,
+     "Nie grasz już w grę. Ty jesteś bugiem ekonomii, który ktoś zostawił, bo nie miał siły go naprawić.")
+]
+
 CHRISTMAS_THEMES = {
     "spring_awakening": {
         "name": "Wiosenne przebudzenie / natura",
@@ -736,6 +835,24 @@ async def on_message(message):
         return
     await bot.process_commands(message)
 
+
+from discord.ext import commands
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        responses = [
+            "🚫 Nie. Ta komenda nie istnieje.",
+            "🤖 Przestań pisać losowe rzeczy.",
+            "📵 Idź na spacer. Serio.",
+            "🧠 To nie Minecraft, nie craftujesz komend.",
+            "💀 Ta komenda nie żyje i nigdy nie istniała."
+        ]
+        await ctx.send(random.choice(responses))
+        return
+
+    print(f"[ERROR] {error}")
+    
 # --- Bezpieczne zamknięcie globalnej sesji aiohttp przy wyłączeniu bota ---
 @bot.event
 async def on_disconnect():
@@ -1451,6 +1568,26 @@ async def cat(ctx):
         print(f"[cat] {e}")
         await ctx.send("😿 Wystąpił błąd podczas pobierania zdjęcia kota.")
 
+@bot.command()
+async def dog(ctx):
+    url = "https://dog.ceo/api/breeds/image/random"
+    try:
+        async with aiohttp.ClientSession() as temp_session:
+            async with temp_session.get(url) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    image_url = data["message"]
+
+                    embed = discord.Embed(title="🐶 Proszę, pies!", color=0x00AAFF)
+                    embed.set_image(url=image_url)
+
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send("🐶 Pies się schował. Klasyka.")
+    except Exception as e:
+        print(f"[dog] {e}")
+        await ctx.send("🐶 Coś się zepsuło przy pobieraniu psa.")
+
 # --- Komendy pomocy i informacyjne ---
 @bot.command(name="print")
 async def echo(ctx, *, text: str):
@@ -1566,51 +1703,83 @@ async def crime(ctx):
 @bot.command()
 async def rules(ctx):
     rules_text = """
-**Zasady serwera:**
+📜 **REGULAMIN SERWERA (wersja: „nie rób dramy”)**
 
-1️⃣ Szanuj innych – zero obrażania i wyzwisk.  
-2️⃣ Brak polityki i religii – nie miejsce na takie dyskusje.  
-3️⃣ Nie spamuj i nie flooduj wiadomości.  
-4️⃣ Zakaz reklamowania innych serwerów/stron.  
-5️⃣ Nie używaj cheatów ani exploitów w grach.  
-6️⃣ Trzymaj się tematów kanałów.  
-7️⃣ Słuchaj administracji i moderatorów.  
-8️⃣ Zakaz udostępniania treści NSFW i nielegalnych.  
-9️⃣ Używaj języka polskiego lub angielskiego (jeśli ustalono).  
-🔟 Pamiętaj – baw się dobrze i wspieraj klimat serwera!
+🧍‍♂️ 1️⃣ Szanuj innych. Tak, serio. Nie jesteś głównym bohaterem internetu.
+
+🧠 2️⃣ Polityka i religia są zakazane. Ten serwer nie jest telewizją śniadaniową.
+
+🚫 3️⃣ Spam i flood = szybka podróż poza serwer. Bez biletu powrotnego.
+
+📢 4️⃣ Reklamy innych serwerów? Nie. To nie tablica ogłoszeń z 2008.
+
+🎮 5️⃣ Cheatowanie w grach? Jeśli musisz oszukiwać, to może nie graj.
+
+📌 6️⃣ Trzymaj się tematów kanałów. Chaos jest fajny… ale nie tutaj.
+
+🛡️ 7️⃣ Administracja nie jest twoim wrogiem. Ale też nie twoim terapeutą.
+
+☠️ 8️⃣ NSFW i rzeczy nielegalne? Nie. Internet już ma wystarczająco problemów.
+
+🌍 9️⃣ Język: polski lub angielski. Inaczej wygląda to jak przypadkowe klikanie klawiatury.
+
+🤖 🔟 I najważniejsze:
+Nie rób rzeczy, przez które bot musi udawać, że jest rozczarowany ludzkością.
 """
     await ctx.send(rules_text)
-
+    
 @bot.command()
 async def help(ctx):
     help_text = """
-**Lista komend bota**
+🤖 **LISTA KOMEND BOTA (wersja: „ten serwer żyje własnym życiem”)**
 
-__Moderacja:__  
-• `?warn @user [powód]` – wysyła ostrzeżenie  
-• `?mute @user [powód]` – wycisza użytkownika  
-• `?unmute @user` – cofa wyciszenie  
-• `?kick @user [powód]` – usuwa z serwera  
+---
 
-__Informacyjne:__  
-• `?important @user/rola [wiadomość]` – wysyła ważną wiadomość (DM)  
-• `?rules` – pokazuje zasady serwera  
-• `?shield @user` – informuje o braku tarczy (DM)  
-• `?spamshield @user [ilość, max 10]` – spam DM z tarczami  
-• `?kontrlist` – wysyła listę konter jako embed  
-• `?print [wiadomość]` – bot powtórzy wiadomość  
+🛡️ **MODERACJA**
+🚨 `?warn @user [powód]` – ostrzeżenie  
+🔇 `?mute @user [powód]` – wyciszenie  
+🔊 `?unmute @user` – cofnięcie mute  
+👢 `?kick @user [powód]` – wyrzucenie z serwera  
 
-__Zabawa:__  
-• `?roll [sides]` – rzut kostką (domyślnie 1–100)  
-• `?coinflip` – rzut monetą  
-• `?8ball [pytanie]` – magiczna kula (prosta)  
-• `?8ballfun [pytanie]` – rozbudowana magiczna kula  
-• `?cat` – losowy kotek (embed)  
-• `?rps [kamień/papier/nożyce]` – gra Kamień/Papier/Nożyce  
-• `?specjal` – wysyła obrazek tematyczny
-__Narzędzia:__  
-• `?ping` – sprawdza czy bot działa  
+---
+
+ℹ️ **INFORMACYJNE**
+📢 `?important @user/rola [wiadomość]` – DM ważna wiadomość  
+📜 `?rules` – regulamin (bot ma już dość ludzi)  
+🛡️ `?shield @user` – brak tarczy (DM)  
+📨 `?spamshield @user [ilość]` – spam DM (max 10)  
+📊 `?kontrlist` – lista konter (tworzona przez LW)  
+🖨️ `?print [wiadomość]` – bot powtarza  
+
+---
+
+🎮 **OBRAZKI I PRZEPOWIEDNIE**
+❓ `?8ball` / `?8ballfun` – odpowiedzi na pytania TAK/NIE 
+🐱 `?cat` – kotek  
+🐶 `?dog` – piesek  
+🖼️ `?specjal` – losowy obrazek tematyczny
+
+---
+
+💰 **EKONOMIA I SYSTEM ZABAWY**
+💰 `?saldo` – Pokazuje Twoje monety Reputacji ♾️  
+🎁 `?daily` – 💰 +10  ⏳ 1x/dzień  
+🕵️ `?crime` – ryzyko 💰 +100 / 💸 -100 ⏳ 3x/dzień  
+⚡ `?reflex` – event 💰 +100 (kto pierwszy) ⏳ 1x/dzień  
+⚡ `?caim reflex` – kto pierwszy wbije po haśle TERAZ 💰 +100  
+🎰 `?kasyno` – hazard 💸 +100 💰 +500 / 💸 -10 ⏳ 2x/dzień  
+
+🎲 `?roll` – 💰 +1000 / 💸 -50 ⏳ 4x/dzień  
+✊ `?rps` – 💰 +30 / 0 / 💸 -10 ⏳ 5x/dzień  
+🪙 `?coinflip` – 💰 +30 / 💸 -30 ⏳ 2x/dzień  
+
+---
+
+📌 **PING**
+🏓 `?ping` – sprawdza czy bot żyje ♾️  
+
 """
+
     await ctx.send(help_text)
 
 @bot.command()
@@ -1650,6 +1819,7 @@ async def specjal(ctx):
 ACTIVE_THEMES = CHRISTMAS_THEMES
 
 start_cron()
+start_ladder_system()
 # Uruchomienie bota
 bot.run(TOKEN)
 
