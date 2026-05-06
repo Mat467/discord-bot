@@ -90,3 +90,16 @@ def reset_crime(user_id: int):
     supabase.table("users").update({
         "crime_count": 0
     }).eq("user_id", str(user_id)).execute()
+
+# === REFLEX SYSTEM ===
+
+def get_reflex_used(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("reflex_used").eq("user_id", str(user_id)).execute()
+    return res.data[0]["reflex_used"] or 0
+
+
+def set_reflex_used(user_id: int, value: int):
+    supabase.table("users").update({
+        "reflex_used": value
+    }).eq("user_id", str(user_id)).execute()
