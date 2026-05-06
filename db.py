@@ -69,3 +69,24 @@ def claim_daily(user_id: int, reward: int = 10):
         "balance": current + reward,
         "last_daily": now
     }).eq("user_id", str(user_id)).execute()
+
+# === CRIME SYSTEM ===
+
+def get_crime_count(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("crime_count").eq("user_id", str(user_id)).execute()
+    return res.data[0]["crime_count"] or 0
+
+
+def add_crime_count(user_id: int):
+    current = get_crime_count(user_id)
+
+    supabase.table("users").update({
+        "crime_count": current + 1
+    }).eq("user_id", str(user_id)).execute()
+
+
+def reset_crime(user_id: int):
+    supabase.table("users").update({
+        "crime_count": 0
+    }).eq("user_id", str(user_id)).execute()
