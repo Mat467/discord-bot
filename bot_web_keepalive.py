@@ -1309,21 +1309,49 @@ async def saldo(ctx):
     
 @bot.command()
 async def rps(ctx, choice: str):
+    user_id = ctx.author.id
+
     choices = ["kamień", "papier", "nożyce"]
-    bot_choice = random.choice(choices)
+
     choice = choice.lower()
+
     if choice not in choices:
         await ctx.send("Użyj: `?rps kamień`, `?rps papier` albo `?rps nożyce`.")
         return
+
+    # limit 5 gier dziennie
+    count = get_rps_count(user_id)
+    if count >= 5:
+        await ctx.send(f"⏳ {ctx.author.mention}, wykorzystałeś już 5 gier RPS dziś.")
+        return
+
+    set_rps_count(user_id, count + 1)
+
+    bot_choice = random.choice(choices)
+
+    # wynik
     if choice == bot_choice:
-        result = "Remis!"
+        result_text = "Remis!"
+        delta = 0
+
     elif (choice == "kamień" and bot_choice == "nożyce") or \
          (choice == "papier" and bot_choice == "kamień") or \
          (choice == "nożyce" and bot_choice == "papier"):
-        result = "Wygrałeś! 🎉"
+        result_text = "Wygrałeś! 🎉"
+        delta = 30
+
     else:
-        result = "Przegrałeś! 😢"
-    await ctx.send(f"Ty: **{choice}** | Bot: **{bot_choice}** → {result}")
+        result_text = "Przegrałeś! 😢"
+        delta = -10
+
+    # ekonomia
+    add_balance(user_id, delta)
+
+    await ctx.send(
+        f"✊ Ty: **{choice}** | Bot: **{bot_choice}**\n"
+        f"👉 {result_text}\n"
+        f"{'💰 +' if delta > 0 else '💸 ' if delta < 0 else '➖ '} {abs(delta)} Monet Reputacji"
+    )
 
 @bot.command()
 async def cat(ctx):
