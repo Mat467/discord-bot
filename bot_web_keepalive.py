@@ -1113,15 +1113,6 @@ async def shield(ctx, member: discord.Member):
     except discord.Forbidden:
         await ctx.send("Nie mogę wysłać PW do tego użytkownika.")
 
-# --- Zabawa ---
-@bot.command()
-async def roll(ctx, sides: int = 100):
-    try:
-        result = random.randint(1, sides)
-        await ctx.send(f"🎲 {ctx.author.name} rzucił kostką (1–{sides}) i wypadło **{result}**")
-    except Exception as e:
-        print(f"[roll] {e}")
-        await ctx.send("Wystąpił błąd podczas rzutu kostką.")
 
 @bot.command()
 async def coinflip(ctx):
