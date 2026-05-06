@@ -1328,6 +1328,72 @@ async def echo(ctx, *, text: str):
         pass
     await ctx.send(text)
 
+# === REFLEX STATE ===
+reflex_active = False
+reflex_winner = None
+
+
+@bot.command(name="reflex")
+async def reflex(ctx):
+    global reflex_active, reflex_winner
+
+    user_id = ctx.author.id
+
+    used = get_reflex_used(user_id)
+    if used >= 1:
+        await ctx.send(f"⏳ {ctx.author.mention}, już dziś grałeś w reflex.")
+        return
+
+    set_reflex_used(user_id, 1)
+
+    await ctx.send(
+        "⚡ **REFLEX STARTOWANY**\n"
+        "Za chwilę (do 1h) pojawi się: **TERAZ!**\n"
+        "Kto pierwszy wpisze `?caim reflex` zgarnia 100 Monet Reputacji 💰"
+    )
+
+    delay = random.randint(10, 3600)
+
+    asyncio.create_task(reflex_task(ctx, delay))
+
+
+async def reflex_task(ctx, delay):
+    global reflex_active, reflex_winner
+
+    reflex_active = False
+    reflex_winner = None
+
+    await asyncio.sleep(delay)
+
+    reflex_active = True
+
+    await ctx.send("⚡ **TERAZ!**")
+
+
+@bot.command(name="caim")
+async def caim(ctx, arg=None):
+    global reflex_active, reflex_winner
+
+    if arg != "reflex":
+        return
+
+    if not reflex_active:
+        await ctx.send("❌ Za wcześnie albo po evencie.")
+        return
+
+    if reflex_winner is not None:
+        await ctx.send("❌ Ktoś był szybszy.")
+        return
+
+    reflex_winner = ctx.author.id
+    reflex_active = False
+
+    add_balance(ctx.author.id, 100)
+
+    await ctx.send(
+        f"🏆 **Gratulacje! {ctx.author.mention} zgarnął 100 Monet Reputacji! 💰**"
+    )
+
 @bot.command(name="crime")
 async def crime(ctx):
     user_id = ctx.author.id
