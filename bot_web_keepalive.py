@@ -8,6 +8,13 @@ from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
 from collections import Counter
+from db import (
+    get_balance,
+    add_balance,
+    set_balance,
+    can_claim_daily,
+    claim_daily
+)
 
 DEFAULT_EMBED_COLOUR = 0x2ECC71
 ORIGINAL_CTX_SEND = commands.Context.send
