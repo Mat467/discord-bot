@@ -1014,6 +1014,39 @@ async def kick(ctx, member: discord.Member, *, reason: str = "No reason provided
         await ctx.send("Nie udało się wyrzucić tego użytkownika.")
 
 @bot.command()
+async def roll(ctx, guess: int):
+    user_id = ctx.author.id
+
+    # limit 4 dziennie
+    count = get_roll_count(user_id)
+    if count >= 4:
+        await ctx.send(f"⏳ {ctx.author.mention}, wykorzystałeś już 4 rzuty dziś.")
+        return
+
+    set_roll_count(user_id, count + 1)
+
+    # K20
+    result = random.randint(1, 20)
+
+    # trafienie
+    if guess == result:
+        add_balance(user_id, 1000)
+
+        await ctx.send(
+            f"🎲 Wybrałeś **{guess}**.\n"
+            f"🧠 Wyrzuciłem **{result}**.\n\n"
+            f"🏆 TRAFIŁEŚ! +1000 Monet Reputacji 💰"
+        )
+    else:
+        add_balance(user_id, -50)
+
+        await ctx.send(
+            f"🎲 Wybrałeś **{guess}**.\n"
+            f"🧠 Wyrzuciłem **{result}**.\n\n"
+            f"💀 Pudło. -50 Monet Reputacji."
+        )
+
+@bot.command()
 async def spamshield(ctx, member: discord.Member, times: int = 5):
     """Spamuje DM o tarczy do wskazanego gracza (domyślnie 5 razy, max 10)."""
     times = max(1, min(times, 10))
