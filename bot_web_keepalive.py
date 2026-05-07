@@ -32,6 +32,9 @@ from db import (
     supabase
 )
 
+# Python
+session = None  # DODAJ przed jakąkolwiek funkcją
+
 
 DEFAULT_EMBED_COLOUR = 0x2ECC71
 ORIGINAL_CTX_SEND = commands.Context.send
@@ -68,8 +71,11 @@ def home():
     return "Bot alive"
 
 def run_flask():
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    try:
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host="0.0.0.0", port=port)
+    except Exception as e:
+        print(f"Flask error: {e}")
 
 Thread(target=run_flask, daemon=True).start()
 
@@ -77,18 +83,16 @@ Thread(target=run_flask, daemon=True).start()
 async def on_ready():
     global session
     print(f'Bot uruchomiony jako {bot.user}')
-
-
     if session is None or session.closed:
         session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
-
-
     if not christmas_loop.is_running():
         christmas_loop.start()
-
-
     if not daily_reset_loop.is_running():
         daily_reset_loop.start()
+    if not hasattr(bot, '_ladder_started'):
+        bot._ladder_started = True
+        asyncio.create_task(ladder_system_task())
+
 
 @tasks.loop(time=datetime.time(hour=0, minute=0))  # dokładnie północ UTC
 async def daily_reset_loop():
@@ -955,7 +959,7 @@ JACKPOT_PROPHECIES = [
 
 
 
-@bot.command(name="kasyno")
+@bot.command(name="casino")
 async def kasyno(ctx):
     user_id = ctx.author.id
 
@@ -1766,7 +1770,7 @@ async def help(ctx):
 🕵️ `?crime` – ryzyko 💰 +100 / 💸 -100 ⏳ 3x/dzień  
 ⚡ `?reflex` – event 💰 +100 (kto pierwszy) ⏳ 1x/dzień  
 ⚡ `?caim reflex` – kto pierwszy wbije po haśle TERAZ 💰 +100  
-🎰 `?kasyno` – hazard 💸 +100 💰 +500 / 💸 -10 ⏳ 2x/dzień  
+🎰 `?casino` – hazard 💸 +100 💰 +500 / 💸 -10 ⏳ 2x/dzień  
 
 🎲 `?roll` – 💰 +1000 / 💸 -50 ⏳ 4x/dzień  
 ✊ `?rps` – 💰 +30 / 0 / 💸 -10 ⏳ 5x/dzień  
@@ -1814,15 +1818,6 @@ async def kontrlist(ctx):
 async def specjal(ctx):
     await send_christmas_embed(ctx.channel)
     
-
-@bot.event
-async def on_ready():
-    # ... istniejący kod ...
-    if not hasattr(bot, '_ladder_started'):
-        bot._ladder_started = True
-        asyncio.create_task(ladder_system_task())
-
-
 bot.run(TOKEN)
 
 
