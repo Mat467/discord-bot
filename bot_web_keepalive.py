@@ -54,6 +54,9 @@ PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")
 TOKEN = os.environ.get("DISCORD_TOKEN")
 MODERATORS = [int(x) for x in os.environ.get("MODERATORS", "").split(",") if x.strip()]
 
+
+ALLOWED_GUILD_ID = 1352031903322210456
+
 if not TOKEN:
     raise RuntimeError("Brak DISCORD_TOKEN w zmiennych środowiskowych")
 
@@ -62,6 +65,12 @@ intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
+
+@bot.check
+def globally_block_other_servers(ctx):
+    return ctx.guild and ctx.guild.id == ALLOWED_GUILD_ID
+
+
 
 # ---- Flask ping ----
 app = Flask("")
@@ -93,6 +102,11 @@ async def on_ready():
         bot._ladder_started = True
         asyncio.create_task(ladder_system_task())
 
+@bot.event
+async def on_guild_join(guild):
+    if guild.id != ALLOWED_GUILD_ID:
+        print(f"Leaving guild: {guild.name} ({guild.id})")
+        await guild.leave()
 
 @tasks.loop(time=datetime.time(hour=0, minute=0))  # dokładnie północ UTC
 async def daily_reset_loop():
