@@ -1,6 +1,22 @@
 import os
 import time
+import asyncio
 from supabase import create_client
+from functools import partial
+
+async def async_get_balance(user_id: int):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, get_balance, user_id)
+
+
+async def async_add_balance(user_id: int, amount: int):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, add_balance, user_id, amount)
+
+
+async def async_can_claim_daily(user_id: int):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, can_claim_daily, user_id)
 
 # === SUPABASE CONFIG (z ENV na Renderze) ===
 url = os.getenv("SUPABASE_URL")
@@ -40,12 +56,11 @@ def get_balance(user_id: int):
 # === ADD MONETY ===
 def add_balance(user_id: int, amount: int):
     ensure_user(user_id)
-
-    current = get_balance(user_id)
-
-    supabase.table("users").update({
-        "balance": current + amount
-    }).eq("user_id", str(user_id)).execute()
+    # Atomowy increment przez RPC lub raw SQL
+    supabase.rpc("increment_balance", {
+        "p_user_id": str(user_id),
+        "p_amount": amount
+    }).execute()
 
 # === SET BALANCE (opcjonalne) ===
 def set_balance(user_id: int, amount: int):
