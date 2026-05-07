@@ -5,6 +5,7 @@ import io
 import asyncio
 import aiohttp
 import time
+import datetime
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
@@ -27,7 +28,8 @@ from db import (
     set_coinflip_count,
     get_reflex_used,
     set_reflex_used,
-    reset_all_daily_limits
+    reset_all_daily_limits,
+    supabase
 )
 
 
@@ -71,20 +73,28 @@ def run_flask():
 
 Thread(target=run_flask, daemon=True).start()
 
+@bot.event
+async def on_ready():
+    global session
+    print(f'Bot uruchomiony jako {bot.user}')
 
 
-@tasks.loop(hours=24)
+    if session is None or session.closed:
+        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
+
+
+    if not christmas_loop.is_running():
+        christmas_loop.start()
+
+
+    if not daily_reset_loop.is_running():
+        daily_reset_loop.start()
+
+@tasks.loop(time=datetime.time(hour=0, minute=0))  # dokładnie północ UTC
 async def daily_reset_loop():
     print("[CRON] Reset dziennych limitów...")
     await asyncio.get_event_loop().run_in_executor(None, reset_all_daily_limits)
 
-
-# w on_ready:
-@bot.event
-async def on_ready():
-    ...
-    if not daily_reset_loop.is_running():
-        daily_reset_loop.start()
 
 
 def get_ladder(balance: int):
@@ -690,9 +700,7 @@ session: aiohttp.ClientSession = None  # globalna sesja HTTP
 
 async def send_christmas_embed(channel):
     """Wysyła losowy embed świąteczny do danego kanału z Pexels."""
-    global session
-    if session is None or session.closed:
-        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
+    async with aiohttp.ClientSession(timeout=HTTP_TIMEOUT) as local_session:
         
     key, category = random.choice(list(CHRISTMAS_THEMES.items()))
     item = random.choice(category["items"])
@@ -786,9 +794,7 @@ async def send_christmas_embed(channel):
         file = discord.File(fp=io.BytesIO(image_data), filename="swieta.jpg")
         embed.set_image(url="attachment://swieta.jpg")
         await channel.send(embed=embed, file=file)
-        await session.close()
-        session = None
-        return  # sukces, kończymy pętlę
+        return  
 
 # ---- Pętla świąteczna co 8 godzin ----
 CHANNEL_ID = 1437924798645928106  # <-- podaj ID swojego kanału
@@ -804,21 +810,12 @@ async def christmas_loop():
     except Exception as e:
         print("❌ BŁĄD W christmas_loop:", repr(e))
 
-@bot.event
-async def on_ready():
-    global session
-    print(f'Bot uruchomiony jako {bot.user}')
 
-    if session is None or session.closed:
-        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
-    # Uruchamiamy pętlę tylko raz (on_ready może być wywołane wiele razy przy re-connect)
-    if not christmas_loop.is_running():
-        christmas_loop.start()
 
 @bot.event
 async def on_member_join(member):
     # Wysyła powitanie na kanale o nazwie "powitania"
-    channel = discord.utils.get(member.guild.text_channels, name="powitania")
+    channel = discord.utils.get(member.guild.text_channels, name="rozmowy")
     if channel:
         await channel.send(f"🎉 Witamy nowego członka: {member.mention}! Dajcie mu serduszko ❤️")
 
@@ -967,15 +964,13 @@ async def kasyno(ctx):
         await ctx.send(f"⏳ {ctx.author.mention}, wykorzystałeś już 2 wejścia do kasyna dziś.")
         return
 
-    set_casino_count(user_id, count + 1)
-
     await ctx.send(
         "🎰 **Kasyno zostało aktywowane!**\n\n"
         "Zagraj o tajemniczą przepowiednię przyszłości!\n\n"
         f"Wybierz **3 emotki** z tej puli:\n{' '.join(EMOJI_POOL)}\n\n"
         "2 takie same = wygrana\n"
         "3 takie same = JACKPOT\n"
-        "0 trafień = smutek\n\n"
+        "0 trafień = Kasyno nawet nie udaje współczucia\n\n"
         "⏳ Masz 1 minutę. Wyślij 3 emotki w jednej wiadomości."
     )
 
@@ -1188,7 +1183,9 @@ async def roll(ctx, guess: int):
 
     # K20
     result = random.randint(1, 20)
-
+    if not (1 <= guess <= 20):
+        await ctx.send("❌ Podaj liczbę od 1 do 20.")
+        return
     # trafienie
     if guess == result:
         add_balance(user_id, 1000)
@@ -1227,6 +1224,7 @@ async def important(ctx, *, message: str):
     if not ctx.message.mentions and not ctx.message.role_mentions and "@everyone" not in content:
         await ctx.send("Musisz oznaczyć gracza, rolę lub użyć @everyone.")
         return
+        
 
     notified = set()
 
@@ -1239,6 +1237,7 @@ async def important(ctx, *, message: str):
             notified.add(member)
         except discord.Forbidden:
             await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
+            
 
     # Użytkownicy z oznaczonych ról
     for role in ctx.message.role_mentions:
@@ -1251,7 +1250,7 @@ async def important(ctx, *, message: str):
             except discord.Forbidden:
                 await ctx.send(f"Nie mogę wysłać wiadomości do {member.name}.")
 
-    # @everyone
+                # @everyone
     if "@everyone" in content:
         for member in ctx.guild.members:
             if member.bot:
@@ -1482,7 +1481,7 @@ async def eightballfun(ctx, *, question: str):
 async def daily(ctx):
     user_id = ctx.author.id
 
-    if not can_claim_daily(user_id):
+    if not await async_can_claim_daily(user_id):
         await ctx.send(f"⏳ {ctx.author.mention}, już odebrałeś daily. Spróbuj jutro.")
         return
 
@@ -1595,46 +1594,78 @@ async def cmd_print(ctx, *, text: str):
         pass
     await ctx.send(text)
 
-# === REFLEX STATE ===
-reflex_active = False
-reflex_winner = None
+reflex_state = {
+    "active": False,
+    "winner": None,
+    "running": False  # czy task już istnieje
+}
 
 
 @bot.command(name="reflex")
 async def reflex(ctx):
-    global reflex_active, reflex_winner
-
     user_id = ctx.author.id
+
 
     used = get_reflex_used(user_id)
     if used >= 1:
         await ctx.send(f"⏳ {ctx.author.mention}, już dziś grałeś w reflex.")
         return
 
-    set_reflex_used(user_id, 1)
 
+    if reflex_state["running"]:
+        await ctx.send("⚡ Event reflex już jest aktywny. Czekaj na sygnał!")
+        return  # nie zużywa daily
+
+
+    set_reflex_used(user_id, 1)
+    reflex_state["running"] = True
+    reflex_state["active"] = False
+    reflex_state["winner"] = None
+
+
+    delay = random.randint(10, 3600)
     await ctx.send(
         "⚡ **REFLEX STARTOWANY**\n"
         "Za chwilę (do 1h) pojawi się: **TERAZ!**\n"
         "Kto pierwszy wpisze `?caim reflex` zgarnia 100 Monet Reputacji 💰"
     )
-
-    delay = random.randint(10, 3600)
-
-    asyncio.create_task(reflex_task(ctx, delay))
+    asyncio.create_task(reflex_task(ctx.channel, delay))
 
 
-async def reflex_task(ctx, delay):
-    global reflex_active, reflex_winner
+async def reflex_task(channel, delay):
+    try:
+        await asyncio.sleep(delay)
+        reflex_state["active"] = True
+        await channel.send("⚡ **TERAZ!**")
+    except Exception as e:
+        print(f"[reflex_task] {e}")
+        reflex_state["running"] = False
+        reflex_state["active"] = False
 
-    reflex_active = False
-    reflex_winner = None
 
-    await asyncio.sleep(delay)
+@bot.command(name="caim")
+async def caim(ctx, arg=None):
+    if arg != "reflex":
+        return
 
-    reflex_active = True
 
-    await ctx.send("⚡ **TERAZ!**")
+    if not reflex_state["active"]:
+        await ctx.send("❌ Za wcześnie albo po evencie.")
+        return
+
+
+    if reflex_state["winner"] is not None:
+        await ctx.send("❌ Ktoś był szybszy.")
+        return
+
+
+    reflex_state["winner"] = ctx.author.id
+    reflex_state["active"] = False
+    reflex_state["running"] = False
+
+
+    add_balance(ctx.author.id, 100)
+    await ctx.send(f"🏆 **{ctx.author.mention} zgarnął 100 Monet Reputacji! 💰**")
 
 
 @bot.command(name="caim")
@@ -1688,21 +1719,16 @@ async def crime(ctx):
     )
 
     await asyncio.sleep(60)
-
+    try:
     success = random.choice([True, False])
-
     if success:
         add_balance(user_id, 100)
-        await ctx.send(
-            f"✅ **Misja zakończona... SUKCESEM**\n"
-            f"+100 Monet Reputacji 💰"
-        )
+        await ctx.send("✅ **Misja zakończona... SUKCESEM**\n+100 Monet Reputacji 💰")
     else:
         add_balance(user_id, -100)
-        await ctx.send(
-            f"💀 **Misja zakończona... PORAŻKĄ**\n"
-            f"-100 Monet Reputacji"
-        )
+        await ctx.send("💀 **Misja zakończona... PORAŻKĄ**\n-100 Monet Reputacji")
+except discord.HTTPException as e:
+    print(f"[crime] Nie można wysłać wyniku: {e}")
 
 @bot.command()
 async def rules(ctx):
@@ -1821,7 +1847,6 @@ async def specjal(ctx):
     await send_christmas_embed(ctx.channel)
     
 
-start_cron()
 start_ladder_system()
 # Uruchomienie bota
 bot.run(TOKEN)
