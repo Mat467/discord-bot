@@ -118,7 +118,7 @@ def get_ladder(balance: int):
     for name, min_v, max_v, _desc in LADDERS:
         if min_v <= balance <= max_v:
             return name, f"{min_v}-{max_v}"
-    return LADDERS[0][0], "0-5000”
+    return LADDERS[0][0], "0-5000"
 
 async def ladder_system_task():
     while True:
