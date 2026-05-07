@@ -860,15 +860,16 @@ from discord.ext import commands
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        responses = [...]
+        responses = [
+            "🚫 Nie. Ta komenda nie istnieje.",
+            "🤖 Przestań pisać losowe rzeczy.",
+            "📵 Idź na spacer. Serio.",
+            "🧠 To nie Minecraft, nie craftujesz komend.",
+            "💀 Ta komenda nie żyje i nigdy nie istniała."
+        ]
         await ctx.send(random.choice(responses))
         return
-    # Pokaż błąd użytkownikowi (i loguj)
-    print(f"[ERROR] {type(error).__name__}: {error}")
-    await ctx.send(f"❌ Wystąpił błąd: `{type(error).__name__}`. Sprawdź logi.")
-
-    print(f"[ERROR] {error}")
-
+        
 async def reflex_task(channel, delay: int):
     await asyncio.sleep(delay)
     reflex_state["active"] = True
@@ -1780,6 +1781,7 @@ async def help(ctx):
 
 💰 **EKONOMIA I SYSTEM ZABAWY**
 💰 `?saldo` – Pokazuje Twoje monety Reputacji ♾️  
+💰 `?rank` – Pokazuje dostępne ligi ♾️  
 🎁 `?daily` – 💰 +10  ⏳ 1x/dzień  
 🕵️ `?crime` – ryzyko 💰 +100 / 💸 -100 ⏳ 3x/dzień  
 ⚡ `?reflex` – event 💰 +100 (kto pierwszy) ⏳ 1x/dzień  
@@ -1827,6 +1829,78 @@ async def kontrlist(ctx):
         color=discord.Color.blue()
     )
     await ctx.send(embed=embed)
+
+@bot.command()
+async def rank(ctx):
+    text = """
+🏆 **SYSTEM LIG MONET REPUTACJI**
+
+Im więcej Monet Reputacji zdobywasz, tym wyższą ligę osiągasz.
+Bot codziennie sprawdza saldo i automatycznie przyznaje odpowiednią rangę 🪙
+
+🎨 Wyższe ligi:
+• dają kolor nicku
+• zwiększają widoczność na serwerze
+• pokazują status społeczny
+• sprawiają, że ludzie zaczynają traktować cię podejrzanie poważnie
+
+⚔️ Rywalizuj ze znajomymi i wspinaj się po drabinie ekonomicznego chaosu.
+
+---
+
+🪙 **Liga I – Nowicjusze Systemu**
+💰 0 – 5 000
+„Serwer nadal nie wie, czy masz ambicje czy tylko Wi-Fi.”
+
+---
+
+🪙 **Liga II – Rekruci Obiecanek**
+💰 5 001 – 15 000
+„System cię rozpoznaje, ale nadal ci nie ufa.”
+
+---
+
+🪙 **Liga III – Zbieracze Okruszków**
+💰 15 001 – 30 000
+„Masz już coś. Nadal jednak żywisz się resztkami ekonomii.”
+
+---
+
+🪙 **Liga IV – Lokalni Gracze**
+💰 30 001 – 60 000
+„Masz pozycję. Czy imponującą? Dyskusyjne.”
+
+---
+
+🪙 **Liga V – Operujący Kapitałem**
+💰 60 001 – 100 000
+„Brzmisz jak ktoś kompetentny. To jeszcze niczego nie dowodzi.”
+
+---
+
+🪙 **Liga VI – Architekci Ekonomii**
+💰 100 001 – 150 000
+„Ludzie zaczynają wierzyć, że masz plan.”
+
+---
+
+🪙 **Liga VII – Elita Systemu**
+💰 150 001 – 200 000
+„System działa bardziej dla ciebie niż przeciwko tobie.”
+
+---
+
+🪙 **Liga VIII – Legendy Bilansu**
+💰 200 000+
+„Nie grasz już w grę. Ty jesteś błędem ekonomii.”
+
+---
+
+🤖 Awans lub degradacja odbywa się automatycznie raz dziennie.
+💀 Tak, możesz spaść z ligi. System pamięta wszystko.
+"""
+    
+    await ctx.send(text)
 
 @bot.command()
 async def specjal(ctx):
