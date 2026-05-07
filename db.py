@@ -8,6 +8,14 @@ key = os.getenv("SUPABASE_KEY")
 
 supabase = create_client(url, key)
 
+def _get_user_row(user_id: int) -> dict:
+    ensure_user(user_id)
+    res = supabase.table("users").select("*").eq("user_id", str(user_id)).execute()
+    if not res.data:
+        raise RuntimeError(f"Brak użytkownika {user_id} po ensure_user – błąd Supabase?")
+    return res.data[0]
+
+
 # === INIT USER (tworzy konto jeśli nie istnieje) ===
 def ensure_user(user_id: int):
     res = supabase.table("users").select("*").eq("user_id", str(user_id)).execute()
@@ -147,4 +155,14 @@ def set_coinflip_count(user_id: int, value: int):
     supabase.table("users").update({
         "coinflip_count": value
     }).eq("user_id", str(user_id)).execute()
-
+    
+# db.py - dodaj funkcję
+def reset_all_daily_limits():
+    supabase.table("users").update({
+        "casino_count": 0,
+        "rps_count": 0,
+        "crime_count": 0,
+        "reflex_used": 0,
+        "roll_count": 0,
+        "coinflip_count": 0,
+    }).neq("user_id", "-1").execute()
