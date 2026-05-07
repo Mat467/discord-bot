@@ -16,8 +16,20 @@ from db import (
     can_claim_daily,
     claim_daily,
     get_crime_count,
-    add_crime_count
+    add_crime_count,
+    get_casino_count,
+    set_casino_count,
+    get_roll_count,
+    set_roll_count,
+    get_rps_count,
+    set_rps_count,
+    get_coinflip_count,
+    set_coinflip_count,
+    get_reflex_used,
+    set_reflex_used,
+    reset_all_daily_limits
 )
+
 
 DEFAULT_EMBED_COLOUR = 0x2ECC71
 ORIGINAL_CTX_SEND = commands.Context.send
@@ -59,31 +71,21 @@ def run_flask():
 
 Thread(target=run_flask, daemon=True).start()
 
-def reset_daily_limits():
-    while True:
-        now = time.localtime()
-
-        # 00:00 reset
-        if now.tm_hour == 0 and now.tm_min == 0:
-            print("[CRON] Reset dziennych limitów...")
-
-            # tu reset wszystkich userów (Supabase)
-            supabase.table("users").update({
-                "casino_count": 0,
-                "rps_count": 0,
-                "crime_count": 0,
-                "reflex_used": 0
-            }).neq("user_id", "-1").execute()
-
-            time.sleep(61)  # żeby nie odpaliło 10 razy
-
-        time.sleep(30)
 
 
-def start_cron():
-    t = Thread(target=reset_daily_limits)
-    t.daemon = True
-    t.start()
+@tasks.loop(hours=24)
+async def daily_reset_loop():
+    print("[CRON] Reset dziennych limitów...")
+    await asyncio.get_event_loop().run_in_executor(None, reset_all_daily_limits)
+
+
+# w on_ready:
+@bot.event
+async def on_ready():
+    ...
+    if not daily_reset_loop.is_running():
+        daily_reset_loop.start()
+
 
 def get_ladder(balance: int):
     for name, min_v, max_v in LADDERS:
@@ -91,72 +93,70 @@ def get_ladder(balance: int):
             return name, f"{min_v}-{max_v}"
     return LADDERS[0][0], "0-5000"
 
-def ladder_system():
+async def ladder_system_task():
     while True:
         now = time.localtime()
-
-        # 00:05 codziennie
         if now.tm_hour == 0 and now.tm_min == 5:
             print("[LADDER] Aktualizacja lig...")
-
             users = supabase.table("users").select("*").execute().data
+
+
+            guild = bot.guilds[0] if bot.guilds else None
+            if not guild:
+                await asyncio.sleep(60)
+                continue
+
 
             for user in users:
                 user_id = int(user["user_id"])
                 balance = user["balance"]
-
                 new_ladder, _ = get_ladder(balance)
-
                 old_ladder = user.get("ladder")
 
-                # update DB
-                supabase.table("users").update({
-                    "ladder": new_ladder
-                }).eq("user_id", str(user_id)).execute()
 
-                guild = bot.guilds[0]
+                supabase.table("users").update({"ladder": new_ladder}).eq("user_id", str(user_id)).execute()
+
+
                 member = guild.get_member(user_id)
-
                 if not member:
                     continue
 
-                role = discord.utils.get(guild.roles, name=new_ladder)
 
+                role = discord.utils.get(guild.roles, name=new_ladder)
                 if role and role not in member.roles:
-                    # usuń stare role ladder
                     for r, _, _, _ in LADDERS:
                         old_role = discord.utils.get(guild.roles, name=r)
-                        if old_role in member.roles:
+                        if old_role and old_role in member.roles:
                             await member.remove_roles(old_role)
-
                     await member.add_roles(role)
 
-                    # wiadomości
+
+                    ladder_names = [x[0] for x in LADDERS]
                     if old_ladder is None:
                         msg = f"🪙 Gracz {member.name} dołączył do ligi {new_ladder}!"
                     else:
-                        old_index = [x[0] for x in LADDERS].index(old_ladder)
-                        new_index = [x[0] for x in LADDERS].index(new_ladder)
-
+                        old_index = ladder_names.index(old_ladder) if old_ladder in ladder_names else 0
+                        new_index = ladder_names.index(new_ladder)
                         if new_index < old_index:
-                            msg = f"📉 Niestety! Gracz {member.name} spadł do niższej ligi! {new_ladder} – {LADDERS[new_index][3]}"
+                            msg = f"📉 Niestety! Gracz {member.name} spadł do {new_ladder}!"
                         else:
-                            msg = f"📈 Gratulacje! Gracz {member.name} awansował do wyższej ligi! {new_ladder} – {LADDERS[new_index][3]}"
+                            msg = f"📈 Gratulacje! Gracz {member.name} awansował do {new_ladder}!"
+
 
                     channel = discord.utils.get(guild.text_channels, name="general")
                     if channel:
-                        asyncio.run_coroutine_threadsafe(channel.send(msg), bot.loop)
+                        await channel.send(msg)
 
-            time.sleep(60)
 
-        time.sleep(30)
+            await asyncio.sleep(60)
+        await asyncio.sleep(30)
+
+
 
 
 def start_ladder_system():
-    import threading
-    t = threading.Thread(target=ladder_system)
-    t.daemon = True
-    t.start()
+    bot.loop.create_task(ladder_system_task())
+
 
 LADDERS = [
     ("Nowicjusze Systemu", 0, 5000,
@@ -957,17 +957,6 @@ JACKPOT_PROPHECIES = [
 
 
 
-
-def result_type(emojis):
-    counts = Counter(emojis).values()
-    if 3 in counts:
-        return "jackpot"
-    if 2 in counts:
-        return "win"
-    return "lose"
-
-
-
 @bot.command(name="kasyno")
 async def kasyno(ctx):
     user_id = ctx.author.id
@@ -993,17 +982,25 @@ async def kasyno(ctx):
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel
 
+
     try:
         msg = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
         await ctx.send("⏳ Kasyno się zamknęło. Los nie czeka na spóźnialskich.")
         return
 
+
     user_emojis = [c for c in msg.content if c in EMOJI_POOL]
+
 
     if len(user_emojis) != 3:
         await ctx.send("❌ Dokładnie 3 emotki. Kasyno nie negocjuje.")
         return
+
+
+    # Dopiero tutaj – po udanej walidacji
+    set_casino_count(user_id, count + 1)
+
 
     bot_emojis = [random.choice(EMOJI_POOL) for _ in range(3)]
 
@@ -1589,8 +1586,9 @@ async def dog(ctx):
         await ctx.send("🐶 Coś się zepsuło przy pobieraniu psa.")
 
 # --- Komendy pomocy i informacyjne ---
+
 @bot.command(name="print")
-async def echo(ctx, *, text: str):
+async def cmd_print(ctx, *, text: str):
     try:
         await ctx.message.delete()
     except discord.Forbidden:
@@ -1650,12 +1648,18 @@ async def caim(ctx, arg=None):
         await ctx.send("❌ Za wcześnie albo po evencie.")
         return
 
+
+# Atomowe sprawdzenie przez porównanie i natychmiastowe zajęcie
     if reflex_winner is not None:
         await ctx.send("❌ Ktoś był szybszy.")
         return
 
+
+    # ustaw przed jakimkolwiek await
     reflex_winner = ctx.author.id
     reflex_active = False
+    # teraz bezpiecznie rób async operacje
+
 
     add_balance(ctx.author.id, 100)
 
@@ -1816,7 +1820,6 @@ async def kontrlist(ctx):
 async def specjal(ctx):
     await send_christmas_embed(ctx.channel)
     
-ACTIVE_THEMES = CHRISTMAS_THEMES
 
 start_cron()
 start_ladder_system()
