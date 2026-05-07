@@ -801,8 +801,7 @@ async def send_christmas_embed(channel):
         await channel.send(embed=embed, file=file)
         return  
 
-# ---- Pętla świąteczna co 8 godzin ----
-CHANNEL_ID = 1437924798645928106  # <-- podaj ID swojego kanału
+CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 
 @tasks.loop(hours=8)
 async def christmas_loop():
@@ -816,13 +815,16 @@ async def christmas_loop():
         print("❌ BŁĄD W christmas_loop:", repr(e))
 
 
+WELCOME_CHANNEL_ID = int(os.environ["WELCOME_CHANNEL_ID"])
 
 @bot.event
 async def on_member_join(member):
-    # Wysyła powitanie na kanale o nazwie "powitania"
-    channel = discord.utils.get(member.guild.text_channels, name="rozmowy")
+    channel = member.guild.get_channel(WELCOME_CHANNEL_ID)
+
     if channel:
-        await channel.send(f"🎉 Witamy nowego członka: {member.mention}! Dajcie mu serduszko ❤️")
+        await channel.send(
+            f"🎉 Witamy nowego członka: {member.mention}! Dajcie mu serduszko ❤️"
+        )
 
 @bot.event
 async def on_message(message):
