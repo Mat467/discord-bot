@@ -16,6 +16,7 @@ from db import (
     set_balance,
     can_claim_daily,
     claim_daily,
+    async_can_claim_daily,
     get_crime_count,
     add_crime_count,
     get_casino_count,
@@ -859,17 +860,24 @@ from discord.ext import commands
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        responses = [
-            "🚫 Nie. Ta komenda nie istnieje.",
-            "🤖 Przestań pisać losowe rzeczy.",
-            "📵 Idź na spacer. Serio.",
-            "🧠 To nie Minecraft, nie craftujesz komend.",
-            "💀 Ta komenda nie żyje i nigdy nie istniała."
-        ]
+        responses = [...]
         await ctx.send(random.choice(responses))
         return
+    # Pokaż błąd użytkownikowi (i loguj)
+    print(f"[ERROR] {type(error).__name__}: {error}")
+    await ctx.send(f"❌ Wystąpił błąd: `{type(error).__name__}`. Sprawdź logi.")
 
     print(f"[ERROR] {error}")
+
+async def reflex_task(channel, delay: int):
+    await asyncio.sleep(delay)
+    reflex_state["active"] = True
+    await channel.send("⚡ **TERAZ!** Pierwszy, kto wpisze `?caim reflex`, zgarnął 100 monet! 💰")
+    await asyncio.sleep(30)
+    if reflex_state["winner"] is None:
+        reflex_state["active"] = False
+        reflex_state["running"] = False
+        await channel.send("⏳ Nikt nie zdążył. Event wygasł.")
     
 # --- Bezpieczne zamknięcie globalnej sesji aiohttp przy wyłączeniu bota ---
 @bot.event
@@ -1649,16 +1657,6 @@ async def reflex(ctx):
     )
     asyncio.create_task(reflex_task(ctx.channel, delay))
 
-def claim_daily(user_id: int, reward: int = 10):
-    ensure_user(user_id)
-    now = int(time.time())
-    supabase.rpc("increment_balance", {
-        "p_user_id": str(user_id),
-        "p_amount": reward
-    }).execute()
-    supabase.table("users").update({
-        "last_daily": now
-    }).eq("user_id", str(user_id)).execute()
 
 
 @bot.command(name="caim")
