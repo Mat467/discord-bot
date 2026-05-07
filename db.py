@@ -34,15 +34,11 @@ def _get_user_row(user_id: int) -> dict:
 
 # === INIT USER (tworzy konto jeśli nie istnieje) ===
 def ensure_user(user_id: int):
-    res = supabase.table("users").select("*").eq("user_id", str(user_id)).execute()
-
-
-    if not res.data:
-        supabase.table("users").insert({
-            "user_id": str(user_id),
-            "balance": 0,
-            "last_daily": 0
-        }).execute()
+    supabase.table("users").upsert({
+        "user_id": str(user_id),
+        "balance": 0,
+        "last_daily": 0
+    }, on_conflict="user_id", ignore_duplicates=True).execute()
 
 
 # === BALANCE ===
@@ -81,15 +77,15 @@ def can_claim_daily(user_id: int):
     return now - last >= 86400
 
 # === CLAIM DAILY ===
+
 def claim_daily(user_id: int, reward: int = 10):
     ensure_user(user_id)
-
     now = int(time.time())
-
-    current = get_balance(user_id)
-
+    supabase.rpc("increment_balance", {
+        "p_user_id": str(user_id),
+        "p_amount": reward
+    }).execute()
     supabase.table("users").update({
-        "balance": current + reward,
         "last_daily": now
     }).eq("user_id", str(user_id)).execute()
 
