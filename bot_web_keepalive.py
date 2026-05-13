@@ -6,6 +6,10 @@ import asyncio
 import aiohttp
 import time
 import datetime
+import logging
+import traceback
+import sys
+import faulthandler
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
@@ -33,6 +37,60 @@ from db import (
     supabase
 )
 
+faulthandler.enable()
+
+
+# ---------------- LOGGING ----------------
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("bot.log", encoding="utf-8")
+    ],
+    force=True
+)
+
+
+logger = logging.getLogger("discord_bot")
+
+
+# Discord.py logs
+discord.utils.setup_logging(level=logging.INFO)
+
+
+# asyncio debug
+asyncio.get_event_loop().set_debug(True)
+
+
+# Globalne wyjątki asyncio
+def handle_async_exception(loop, context):
+    logger.error("ASYNCIO EXCEPTION:")
+    logger.error(context)
+
+
+    exc = context.get("exception")
+    if exc:
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+
+loop = asyncio.get_event_loop()
+loop.set_exception_handler(handle_async_exception)
+
+
+# Globalne wyjątki Pythona
+def global_exception_hook(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+
+    logger.critical("GLOBAL EXCEPTION", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+sys.excepthook = global_exception_hook
 # Python
 session = None  # DODAJ przed jakąkolwiek funkcją
 
@@ -78,7 +136,9 @@ app = Flask("")
 
 @app.route("/")
 def home():
-    return "Bot alive"
+    logger.info("FLASK PING RECEIVED")
+    return "Bot alive”
+
 
 def run_flask():
     try:
@@ -92,16 +152,57 @@ Thread(target=run_flask, daemon=True).start()
 @bot.event
 async def on_ready():
     global session
-    print(f'Bot uruchomiony jako {bot.user}')
-    if session is None or session.closed:
-        session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
-    if not christmas_loop.is_running():
-        christmas_loop.start()
-    if not daily_reset_loop.is_running():
-        daily_reset_loop.start()
-    if not hasattr(bot, '_ladder_started'):
-        bot._ladder_started = True
-        asyncio.create_task(ladder_system_task())
+
+
+    logger.info(f'BOT READY: {bot.user} ({bot.user.id})')
+
+
+    try:
+        if session is None or session.closed:
+            logger.info("Creating aiohttp session")
+            session = aiohttp.ClientSession(timeout=HTTP_TIMEOUT)
+
+
+        if not christmas_loop.is_running():
+            logger.info("Starting christmas_loop")
+            christmas_loop.start()
+
+
+        if not daily_reset_loop.is_running():
+            logger.info("Starting daily_reset_loop")
+            daily_reset_loop.start()
+
+        if not watchdog_loop.is_running():
+            logger.info("Starting watchdog_loop")
+            watchdog_loop.start()
+
+        if not hasattr(bot, '_ladder_started'):
+            logger.info("Starting ladder_system_task")
+            bot._ladder_started = True
+            asyncio.create_task(ladder_system_task())
+
+
+    except Exception:
+        logger.exception("ERROR INSIDE on_ready")
+
+@bot.event
+async def on_disconnect():
+    logger.warning("DISCORD DISCONNECTED")
+
+
+@bot.event
+async def on_resumed():
+    logger.info("DISCORD SESSION RESUMED")
+
+
+@bot.event
+async def on_connect():
+    logger.info("DISCORD CONNECTED")
+
+
+@bot.event
+async def on_error(event, *args, **kwargs):
+    logger.exception(f"DISCORD EVENT ERROR: {event}")
 
 @bot.event
 async def on_guild_join(guild):
@@ -114,6 +215,31 @@ async def daily_reset_loop():
     print("[CRON] Reset dziennych limitów...")
     await asyncio.get_event_loop().run_in_executor(None, reset_all_daily_limits)
 
+@tasks.loop(minutes=1)
+async def watchdog_loop():
+    try:
+        latency = bot.latency
+
+
+        logger.info(
+            f"WATCHDOG | latency={latency:.3f}s | "
+            f"closed={bot.is_closed()} | "
+            f"ready={bot.is_ready()}"
+        )
+
+
+        # Jeśli websocket zdechł
+        if bot.is_closed():
+            logger.critical("BOT CLOSED - EXITING PROCESS")
+            os._exit(1)
+
+
+        # absurdalny ping = loop problem
+        if latency > 10:
+            logger.critical(f"EXTREME LATENCY DETECTED: {latency}")
+            
+    except Exception:
+        logger.exception("WATCHDOG ERROR")
 
 def get_ladder(balance: int):
     for name, min_v, max_v, _desc in LADDERS:
