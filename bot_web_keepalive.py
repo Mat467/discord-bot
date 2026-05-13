@@ -137,7 +137,7 @@ app = Flask("")
 @app.route("/")
 def home():
     logger.info("FLASK PING RECEIVED")
-    return "Bot alive”
+    return "Bot alive"
 
 
 def run_flask():
