@@ -10,6 +10,7 @@ import logging
 import traceback
 import sys
 import faulthandler
+import math
 from discord.ext import commands, tasks
 from flask import Flask
 from threading import Thread
@@ -1871,7 +1872,221 @@ async def rules(ctx):
 Nie rób rzeczy, przez które bot musi udawać, że jest rozczarowany ludzkością.
 """
     await ctx.send(rules_text)
-    
+
+#  PULE KOMENTARZY
+
+
+INF_HIGH = [
+    "INF przejął dowodzenie i nikt nie miał odwagi zapytać dlaczego.",
+    "INF wygląda jakby reszta statystyk była tylko statystami w jego filmie.",
+    "INF: \"ja tu jestem main character\", reszta: NPC confirmation.",
+    "INF zdominował układ tak mocno, że balans gry wyszedł na papierosa i nie wrócił.",
+    "INF nie jest statystyką. INF jest stanem zagrożenia.",
+    "INF tak wysoki, że RANG i CAV zaczynają się zastanawiać nad zmianą zawodu.",
+    "INF przejął kontrolę i nie odda jej nawet po patchu.",
+    "INF wygląda jak exploit, ale dev udaje że to feature.",
+    "INF robi za tank, DPS i moral support jednocześnie.",
+    "INF powiedział \"ja tu prowadzę\" i system się zgodził.",
+    "INF tak wysoki, że wykres przestał być legalny w 3 krajach.",
+    "INF nie potrzebuje wsparcia. To wsparcie potrzebuje INF.",
+    "INF wygrał zanim zaczęła się symulacja.",
+    "INF to nie liczba. To ostrzeżenie.",
+    "INF tak mocny, że logika poszła się przejść.",
+]
+
+
+INF_LOW = [
+    "INF tak niski, że nawet kalkulator go ignoruje.",
+    "INF w tej formie pełni funkcję dekoracyjną.",
+    "INF istnieje bardziej jako sugestia niż realna statystyka.",
+    "INF oddał rolę lidera i poszedł się schować.",
+    "INF jest tu tylko dlatego, że system nie pozwala mu zniknąć.",
+    "INF ma siłę oddziaływania jak mokra kartka papieru.",
+    "INF nie prowadzi armii. INF obserwuje jak inni ją prowadzą.",
+    "INF tak niski, że nawet RNG się nad nim lituje.",
+    "INF jest w trybie oszczędzania energii.",
+    "INF nie generuje presji, tylko zawód.",
+    "INF został zredukowany do komentarza w patch notes.",
+    "INF: \"ja tu jestem\"… nikt nie potwierdza.",
+    "INF nie walczy, INF negocjuje porażkę.",
+    "INF działa jak tutorial boss — szybko znika.",
+    "INF to symbol pokory systemu.",
+]
+
+
+RANG_HIGH = [
+    "RANG nie walczy z bliska, bo nie uznaje takich kontaktów.",
+    "RANG gra w inną grę niż reszta.",
+    "RANG ustawia się tak daleko, że serwer renderuje go w DLC.",
+    "RANG nie potrzebuje ochrony, bo nikt nie dobiega.",
+    "RANG zamienił mapę w symulator punktów obserwacyjnych.",
+    "RANG nie atakuje. RANG kasuje decyzje wroga.",
+    "RANG ma zasięg moralnie nielegalny.",
+    "RANG stoi tak daleko, że INF zaczyna się denerwować.",
+    "RANG nie celuje. RANG przewiduje przyszłość.",
+    "RANG zamienia walkę w test reakcji CPU.",
+    "RANG to argument przeciwko melee.",
+    "RANG ma własny adres IP poza mapą.",
+    "RANG nie jest wsparciem. RANG jest wyrokiem.",
+    "RANG sprawia, że przeciwnik zastanawia się nad życiem.",
+    "RANG: \"close combat? nie znam\".",
+]
+
+
+RANG_LOW = [
+    "RANG jest blisko, bo nie miał wyboru.",
+    "RANG próbował dystansu, ale dystans go nie chciał.",
+    "RANG walczy jakby mapa była małym pokojem.",
+    "RANG ma zasięg emocjonalny, nie bojowy.",
+    "RANG istnieje w strefie ryzyka.",
+    "RANG strzela i modli się o synchronizację.",
+    "RANG to melee z ambicjami.",
+    "RANG nie kontroluje dystansu. dystans kontroluje RANG.",
+    "RANG: \"snajper\" — według CV.",
+    "RANG trafia głównie w wspomnienia.",
+    "RANG jest zawsze o krok za logiką walki.",
+    "RANG działa jak broń jednorazowa, ale używana wielokrotnie.",
+    "RANG ma kontakt z wrogiem częściej niż powinien.",
+    "RANG nie supportuje dystansu. RANG go ignoruje.",
+    "RANG: bliżej = szybciej kończy się nadzieja.",
+]
+
+
+CAV_HIGH = [
+    "CAV wjeżdża zanim ktoś zdąży zrozumieć sytuację.",
+    "CAV traktuje mapę jak parking.",
+    "CAV nie flankuje. CAV demoluje kierunek.",
+    "CAV to argument fizyczny, nie taktyczny.",
+    "CAV ma subtelność młota pneumatycznego.",
+    "CAV przyspiesza i problem przestaje istnieć.",
+    "CAV ignoruje teren, bo teren i tak się dostosuje.",
+    "CAV: \"strategia?\" — i tak jadę.",
+    "CAV kończy dyskusje zanim się zaczną.",
+    "CAV nie atakuje. CAV przejeżdża.",
+    "CAV powoduje, że INF i RANG przestają się kłócić.",
+    "CAV to decyzja \"tak\" napisana wielkimi literami.",
+    "CAV nie potrzebuje planu. CAV jest planem.",
+    "CAV zmienia walkę w katastrofę logistyczną.",
+    "CAV wchodzi i system prosi o reset.",
+]
+
+
+CAV_LOW = [
+    "CAV stoi, bo jeszcze nie dostał zgody na ruch.",
+    "CAV ma ambicje, ale nie ma paliwa.",
+    "CAV próbuje flankować, ale zapomniał jak się jeździ.",
+    "CAV istnieje głównie w teorii.",
+    "CAV to dekoracja pola bitwy.",
+    "CAV nie przyspiesza. CAV rozważa przyspieszenie.",
+    "CAV jest bardziej koncepcją niż jednostką.",
+    "CAV boi się własnego cienia.",
+    "CAV w trybie \"może później\".",
+    "CAV próbuje być groźny, ale stoi w miejscu.",
+    "CAV to backup plan, który nie został wdrożony.",
+    "CAV: \"zaraz ruszam\" — od 3 tur.",
+    "CAV nie flankuje, CAV czeka na inspirację.",
+    "CAV to ruch w kolejce, który nigdy nie nadchodzi.",
+    "CAV jest obecny, ale nie aktywny.",
+]
+
+
+@bot.command(name="gear")
+async def gear(ctx, *args):
+
+
+    # brak argumentów → instrukcja
+    if len(args) == 0:
+        await ctx.send(
+            "🛡️ **GEAR ANALYZER 9000**\n\n"
+            "Wrzuć swoje `%` w kolejności:\n"
+            "`INF / RANG / CAV`\n\n"
+            "Przykład:\n"
+            "`?gear 130 50 20`\n\n"
+            "⚠️ Liczy się **CAŁKOWITY ATK**.\n"
+            "Czyli:\n"
+            "- talenty mix\n"
+            "- gear\n"
+            "- bonusy\n"
+            "- wszystko co naklikałeś o 3 nad ranem i już nie pamiętasz po co\n\n"
+            "Masz 60 sekund zanim bot uzna cię za zaginionego w menu ekwipunku."
+        )
+        return
+
+
+    # zła liczba argumentów lub nie-liczby → komunikat
+    if len(args) != 3:
+        await ctx.send("❌ Podaj dokładnie 3 wartości. Przykład: `?gear 130 50 20`")
+        return
+
+
+    try:
+        a, b, c = map(float, args)
+    except ValueError:
+        await ctx.send("❌ Tylko liczby, nie słowa. Bot nie jest tłumaczem.")
+        return
+
+
+    # walidacja ujemnych
+    if a < 0 or b < 0 or c < 0:
+        await ctx.send("❌ Wartości nie mogą być ujemne. Nawet twój gear ma swoje granice.")
+        return
+
+
+    input_vals = [a, b, c]
+    total_attack = sum(input_vals)
+
+
+    if total_attack == 0:
+        await ctx.send(
+            "📊 **Wynik analizy**\n\n"
+            "Formacja: `0 / 0 / 0`\n"
+            "Łączny atak: `0%`\n\n"
+            "🛡️ INF nie istnieje. INF jest ideą.\n"
+            "🏹 RANG nie trafia, bo nie ma w co.\n"
+            "🐎 CAV stoi i zastanawia się nad sensem bytu."
+        )
+        return
+
+
+    # ── algorytm skalowania──
+    exact = [(v / total_attack) * 20.0 for v in input_vals]
+    result = [math.floor(x) for x in exact]
+
+
+    used = sum(result)
+    remaining = int(20 - used)
+
+
+    fractions = [(exact[i] - result[i], i) for i in range(3)]
+    fractions.sort(reverse=True, key=lambda x: x[0])
+
+
+    for i in range(remaining):
+        result[fractions[i][1]] += 1
+
+
+    inf_val  = result[0]
+    rang_val = result[1]
+    cav_val  = result[2]
+
+
+    # ── losowanie komentarzy ──
+    comment_inf  = random.choice(INF_HIGH  if inf_val  > 5 else INF_LOW)
+    comment_rang = random.choice(RANG_HIGH if rang_val > 5 else RANG_LOW)
+    comment_cav  = random.choice(CAV_HIGH  if cav_val  > 5 else CAV_LOW)
+
+
+    # ── odpowiedź ──
+    await ctx.send(
+        f"📊 **Wynik analizy**\n\n"
+        f"Formacja: `{inf_val} / {rang_val} / {cav_val}`\n"
+        f"Łączny atak: `{int(total_attack)}%`\n\n"
+        f"🛡️ {comment_inf}\n"
+        f"🏹 {comment_rang}\n"
+        f"🐎 {comment_cav}"
+    )
+
+
 @bot.command()
 async def help(ctx):
     help_text = """
