@@ -35,6 +35,12 @@ from db import (
     get_reflex_used,
     set_reflex_used,
     reset_all_daily_limits,
+    set_jackpot_pool,
+    get_jackpot_pool,
+    set_cards_count,
+    get_cards_count,
+    set_roulette_count,
+    get_roulette_count,
     supabase
 )
 
