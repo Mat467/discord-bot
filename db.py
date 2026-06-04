@@ -217,4 +217,6 @@ def reset_all_daily_limits():
         "reflex_used": 0,
         "roll_count": 0,
         "coinflip_count": 0,
+        "roulette_count": 0,
+        "roulette_count": 0,
     }).neq("user_id", "-1").execute()
