@@ -166,6 +166,47 @@ def set_coinflip_count(user_id: int, value: int):
     supabase.table("users").update({
         "coinflip_count": value
     }).eq("user_id", str(user_id)).execute()
+
+# === ROULETTE COUNT ===
+def get_roulette_count(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("roulette_count").eq("user_id", str(user_id)).execute()
+    return res.data[0]["roulette_count"] or 0
+
+
+def set_roulette_count(user_id: int, value: int):
+    supabase.table("users").update({
+        "roulette_count": value
+    }).eq("user_id", str(user_id)).execute()
+
+def get_cards_count(user_id: int):
+    ensure_user(user_id)
+    res = supabase.table("users").select("cards_count").eq("user_id", str(user_id)).execute()
+    return res.data[0]["cards_count"] or 0
+
+
+def set_cards_count(user_id: int, value: int):
+    supabase.table("users").update({
+        "cards_count": value
+    }).eq("user_id", str(user_id)).execute()
+
+# === JACKPOT POOL (wiersz "global" w tabeli users) ===
+def get_jackpot_pool() -> int:
+    res = supabase.table("users").select("jackpot_pool").eq("user_id", "global").execute()
+    if not res.data or res.data[0]["jackpot_pool"] is None:
+        supabase.table("users").upsert({
+            "user_id": "global",
+            "balance": 0,
+            "jackpot_pool": 10000
+        }, on_conflict="user_id").execute()
+        return 10000
+    return res.data[0]["jackpot_pool"]
+
+
+def set_jackpot_pool(value: int):
+    supabase.table("users").update({
+        "jackpot_pool": value
+    }).eq("user_id", "global").execute()
     
 # db.py - dodaj funkcję
 def reset_all_daily_limits():
