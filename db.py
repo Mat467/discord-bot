@@ -20,9 +20,10 @@ async def async_can_claim_daily(user_id: int):
 
 # === SUPABASE CONFIG (z ENV na Renderze) ===
 url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
+Key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase = create_client(url, key)
+
 
 def _get_user_row(user_id: int) -> dict:
     ensure_user(user_id)
