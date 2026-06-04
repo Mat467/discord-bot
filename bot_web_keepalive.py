@@ -1640,6 +1640,111 @@ async def coinflip(ctx, choice: str):
             f"{reward} Monet Reputacji"
         )
 
+
+FAIL_RESPONSES = [
+    "Fortuna ślepa, ty głuchy. Tragiczne połączenie.",
+    "Ruletka cię nie lubi. Szczerze mówiąc, ja też trochę nie.",
+    "Statystyki mówią: następnym razem też przegrasz. Ale próbuj.",
+    "Koło się kręci, monety lecą. Twoje monety. Cudzym kierunku.",
+    "Może następnym razem postaw na modlitwę zamiast zakładu.",
+    "Matematyka: nieubłagana jak twoja przegrana.",
+    "Kasjer ruletki śmieje się cicho. Bardzo cicho.",
+
+
+    "To nie pech. To konsekwencja wyborów o wątpliwej jakości.",
+    "Koło nie oszukuje. Ono tylko nie współpracuje z tobą.",
+    "Wynik zapisany, zanim zdążyłeś mieć nadzieję.",
+    "Ruletka zrobiła swoje. Ty zrobiłeś resztę błędów.",
+    "Przegrana wpisana w model. Ty właśnie ją zainicjowałeś.",
+    "Szczęście dziś nie loguje się na twoje konto.",
+    "Monety właśnie zmieniły właściciela. Bez zgody.",
+    "System działa poprawnie. Dla wszystkich oprócz ciebie.",
+    "Nie przegrałeś z grą. Przegrałeś z matematyką.",
+    "Koło uznało, że nie jesteś w jego planie wypłat.",
+    "Zbyt pewny ruch. Zbyt przewidywalny wynik.",
+    "Los odczytał twoją decyzję i się nie przejął.",
+    "Ruletka nie ma emocji. Ty właśnie miałeś ich za dużo.",
+    "Próbowałeś wygrać z rozkładem prawdopodobieństwa. Odważnie.",
+    "To była krótka historia twoich monet.",
+    "Zegar szczęścia cofnął się o kilka złych decyzji.",
+    "Koło kręci się dalej. Ty już trochę mniej.",
+    "Wynik: zgodny z oczekiwaniami systemu. Nie twoimi.",
+    "Monety nie znikają. One zmieniają adres.",
+    "Ruletka zanotowała twoją stratę bez emocji.",
+    "Zbyt wiele nadziei jak na jeden spin.",
+    "To był klasyczny przypadek 'prawie się udało'. Tyle że nie.",
+    "System nie bugował się. Niestety.",
+    "Zagrane. Rozliczone. Zapomniane przez saldo.",
+    "Twoje monety właśnie przeszły na stronę ciemną.",
+    "Niektóre wyniki są nieuniknione. Ten był jednym z nich.",
+    "Ruletka nie potrzebuje szczęścia. Ty tak.",
+    "Wynik nie był personalny. Ale wyglądał.",
+    "Monety: -1. Wiara: też w dół.",
+    "Koło zakończyło dyskusję zanim się zaczęła.",
+    "Nie ma tu miejsca na negocjacje z losem.",
+    "Przegrana tak czysta, że aż matematyczna.",
+    "Szczęście dziś było w trybie offline.",
+    "To nie dramat. To statystyka w ruchu.",
+]
+
+
+
+
+WIN_RESPONSES = [
+    "Przypadek? Talent? Głównie przypadek.",
+    "Wygrałeś. Ruletka jest w szoku. My też.",
+    "Koło łaskawe dziś. Nie przyzwyczajaj się.",
+    "Monety wróciły. Jak pies do pana, tylko lepiej.",
+    "Szczęście uśmiechnęło się. Brzydko, ale jednak.",
+    "Wygrałeś. Statystyk płacze w kącie.",
+
+
+    "Ruletka popełniła błąd i właśnie na nim zarobiłeś.",
+    "Los spojrzał na ciebie i mrugnął. Raz. Nie licz na więcej.",
+    "Monety wróciły z wycieczki. Wszystkie raczej niechętnie.",
+    "To jeden z tych dni, gdy matematyka na chwilę odwraca wzrok.",
+    "Koło wykonało obrót godny pochwały. Ty niekoniecznie.",
+    "Szczęście przybyło. Prawdopodobnie pomyliło adres.",
+    "Wygrana odnotowana. Świadków brak.",
+    "Ruletka uznała, że wystarczająco już cierpiałeś.",
+    "Wynik dodatni. Rzadkie zjawisko, warto zanotować.",
+    "Twoje saldo właśnie odzyskało oddech.",
+    "Monety wracają. Nie pytaj skąd wiedzą drogę.",
+    "Koło miało dziś lepszy humor niż zwykle.",
+    "Przez chwilę wyglądało, jakbyś wiedział co robisz.",
+    "Wszechświat wysłał drobną rekompensatę za wcześniejsze decyzje.",
+    "Trafienie. Czyste, legalne i wyjątkowo podejrzane.",
+    "Ruletka skinęła głową z uznaniem. Nie powtórzy tego.",
+    "Dzisiejsza porcja szczęścia została właśnie wykorzystana.",
+    "Wygrana zaakceptowana przez system. Trudno uwierzyć.",
+    "Monety zmieniły kierunek lotu. Wreszcie właściwy.",
+    "Przez moment byłeś po właściwej stronie statystyki.",
+]
+
+
+
+
+
+
+JACKPOT_RESPONSES = [
+    "JACKPOT. Zielone pole. Jeden na trzydzieści siedem. DLACZEGO TY.",
+    "Zero. ZERO. Cała pula twoja. Ruletka chyba się zepsuła.",
+    "Wygrałeś jackpota. Proszę nie mówić innym graczom, bo będą płakać.",
+    "🟩 Zero. Złoty los. Astronomiczna głupota losu na twoją korzyść.",
+
+
+    "Koło zatrzymało się na zerze i wszyscy obecni stracili mowę.",
+    "Gratulacje. Właśnie obrabowałeś jackpot zgodnie z regulaminem.",
+    "To nie był spin. To było zdarzenie astronomiczne.",
+    "Statystyka właśnie dostała ataku paniki.",
+    "Pula zniknęła szybciej niż zdrowy rozsądek przy kasynie.",
+    "Ruletka oddała wszystko. Prawdopodobnie pod przymusem.",
+    "Trafiłeś zero. Matematyka żąda ponownego przeliczenia.",
+    "Jackpot zdobyty. Reszta graczy właśnie sprawdza, czy system nie oszukuje.",
+    "Los wykonał salto w tył i wylądował na twoim koncie.",
+    "Niektórym trafia piorun. Tobie trafiło zero.",
+]
+
 SARCASM_RESPONSES = [
     "✅ Tak — ale nie licz na to bez cudu.",
     "❌ Nie — chyba że znajdziesz jednorożca.",
@@ -2529,7 +2634,7 @@ async def roulette(ctx):
     all_numbers = list(range(0, 37))
 
 
-    spin_msg = await ctx.send("🎡 **Kręcę ruletką...**\n\n⬛ ...")
+    spin_msg = await ORIGINAL_CTX_SEND(ctx, "🎡 **Kręcę ruletką...**\n\n⬛ ...")
 
 
     final = random.choice(all_numbers)
@@ -2592,7 +2697,7 @@ async def roulette(ctx):
         if not free_spin:
             set_jackpot_pool(jackpot + 10)
         comment = random.choice(FAIL_RESPONSES)
-        result_line = "💀 **PRZEGRANA.**"
+        result_line = "💀 **Nic nie wygrywasz.**"
 
 
     new_jackpot = get_jackpot_pool()
