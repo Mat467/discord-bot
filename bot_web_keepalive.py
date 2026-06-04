@@ -2468,7 +2468,7 @@ async def roulette(ctx):
             and not msg.embeds
         )
 
-active_games.add(user_id)
+    active_games.add(user_id)
     try:
         response = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
@@ -2480,8 +2480,8 @@ active_games.add(user_id)
     active_games.add(user_id)
 
 
-
-raw = response.content.strip().lower()
+    
+    raw = response.content.strip().lower()
 
 
     # Wymaga prefiksu ?
