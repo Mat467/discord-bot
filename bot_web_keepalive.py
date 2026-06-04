@@ -952,6 +952,8 @@ async def send_christmas_embed(channel):
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 
 
+active_games = set()
+
 # Prawdziwa mapa kolorów ruletki amerykańskiej
 RED_NUMBERS = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
 BLACK_NUMBERS = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
@@ -1081,6 +1083,8 @@ from discord.ext import commands
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
+        if ctx.author.id in active_games:
+            return
         responses = [
             "🚫 Nie. Ta komenda nie istnieje.",
             "🤖 Przestań pisać losowe rzeczy.",
@@ -1090,7 +1094,8 @@ async def on_command_error(ctx, error):
         ]
         await ctx.send(random.choice(responses))
         return
-        
+
+
 async def reflex_task(channel, delay: int):
     await asyncio.sleep(delay)
     reflex_state["active"] = True
@@ -2455,10 +2460,15 @@ async def roulette(ctx):
     )
 
 
+    
     def check(msg):
-        return msg.author == ctx.author and msg.channel == ctx.channel
+        return (
+            msg.author == ctx.author
+            and msg.channel == ctx.channel
+            and not msg.embeds
+        )
 
-
+active_games.add(user_id)
     try:
         response = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
@@ -2467,16 +2477,27 @@ async def roulette(ctx):
             f"Koło nie czeka na niezdecydowanych."
         )
         return
+    active_games.add(user_id)
 
 
-    raw_bet = response.content.strip().lower()
+
+raw = response.content.strip().lower()
+
+
+    # Wymaga prefiksu ?
+    if not raw.startswith("?"):
+        await ctx.send(
+            f"❌ Zakład musi zaczynać się od `?`. Np. `?czerwone`, `?17`, `?parzyste`."
+        )
+        return
+
+
+    raw_bet = raw[1:].strip()  # odcinamy ?
 
 
     # Obsługa "?roulette [zakład]" zamiast samego zakładu
-    if raw_bet.startswith("?roulette "):
-        raw_bet = raw_bet[len("?roulette "):].strip()
-    elif raw_bet.startswith("?roulette"):
-        raw_bet = raw_bet[len("?roulette"):].strip()
+    if raw_bet.startswith("roulette "):
+        raw_bet = raw_bet[len("roulette "):].strip()
 
 
     is_number = raw_bet.isdigit() and 0 <= int(raw_bet) <= 36
@@ -2484,7 +2505,7 @@ async def roulette(ctx):
 
     if raw_bet not in ALLOWED_BETS and not is_number:
         await ctx.send(
-            f"❌ **'{raw_bet}'** nie jest poprawnym zakładem. "
+            f"❌ **'?{raw_bet}'** nie jest poprawnym zakładem. "
             f"Ruletka nie obsługuje improwizacji."
         )
         return
@@ -2582,7 +2603,7 @@ async def roulette(ctx):
             f"🎡 Wypadło...\n\n"
             f"{final_color} **{final}**\n\n"
             f"{result_line}\n\n"
-            f"💎 Jackpot: **{new_jackpot}**\n"
+            f"💎 Aktualna pula wynosi: **{new_jackpot}**\n"
             f"_{comment}_"
         )
     )
@@ -2642,14 +2663,18 @@ async def three_cards(ctx):
         )
 
 
+active_games.add(user_id)
     try:
         choice_msg = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
+        active_games.discard(user_id)
         await ctx.send(
             f"⏳ {ctx.author.mention}, karty obróciły się w proch. "
             f"Monety zostają — okazja nie."
         )
         return
+    active_games.discard(user_id)
+
 
 
     # ✅ WALIDACJA OK — dopiero teraz pobieramy opłatę
