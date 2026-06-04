@@ -945,6 +945,94 @@ async def send_christmas_embed(channel):
 
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 
+
+# Prawdziwa mapa kolorów ruletki amerykańskiej
+RED_NUMBERS = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
+BLACK_NUMBERS = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
+
+
+def get_roulette_color(n: int) -> str:
+    if n == 0:
+        return "🟩"
+    elif n in RED_NUMBERS:
+        return "🟥"
+    else:
+        return "⬛"
+
+
+ROULETTE_COST = 40
+JACKPOT_RESET = 10000
+
+
+FAIL_RESPONSES = [
+    "Fortuna ślepa, ty głuchy. Tragiczne połączenie.",
+    "Ruletka cię nie lubi. Szczerze mówiąc, ja też trochę nie.",
+    "Statystyki mówią: następnym razem też przegrasz. Ale próbuj.",
+    "Koło się kręci, monety lecą. Twoje monety. Cudzym kierunku.",
+    "Może następnym razem postaw na modlitwę zamiast zakładu.",
+    "Matematyka: nieubłagana jak twoja przegrana.",
+    "Kasjer ruletki śmieje się cicho. Bardzo cicho.",
+
+
+    "To nie pech. To konsekwencja wyborów o wątpliwej jakości.",
+    "Koło nie oszukuje. Ono tylko nie współpracuje z tobą.",
+    "Wynik zapisany, zanim zdążyłeś mieć nadzieję.",
+    "Ruletka zrobiła swoje. Ty zrobiłeś resztę błędów.",
+    "Przegrana wpisana w model. Ty właśnie ją zainicjowałeś.",
+    "Szczęście dziś nie loguje się na twoje konto.",
+    "Monety właśnie zmieniły właściciela. Bez zgody.",
+    "System działa poprawnie. Dla wszystkich oprócz ciebie.",
+    "Nie przegrałeś z grą. Przegrałeś z matematyką.",
+    "Koło uznało, że nie jesteś w jego planie wypłat.",
+    "Zbyt pewny ruch. Zbyt przewidywalny wynik.",
+    "Los odczytał twoją decyzję i się nie przejął.",
+    "Ruletka nie ma emocji. Ty właśnie miałeś ich za dużo.",
+    "Próbowałeś wygrać z rozkładem prawdopodobieństwa. Odważnie.",
+    "To była krótka historia twoich monet.",
+    "Zegar szczęścia cofnął się o kilka złych decyzji.",
+    "Koło kręci się dalej. Ty już trochę mniej.",
+    "Wynik: zgodny z oczekiwaniami systemu. Nie twoimi.",
+    "Monety nie znikają. One zmieniają adres.",
+    "Ruletka zanotowała twoją stratę bez emocji.",
+    "Zbyt wiele nadziei jak na jeden spin.",
+    "To był klasyczny przypadek 'prawie się udało'. Tyle że nie.",
+    "System nie bugował się. Niestety.",
+    "Zagrane. Rozliczone. Zapomniane przez saldo.",
+    "Twoje monety właśnie przeszły na stronę ciemną.",
+    "Niektóre wyniki są nieuniknione. Ten był jednym z nich.",
+    "Ruletka nie potrzebuje szczęścia. Ty tak.",
+    "Wynik nie był personalny. Ale wyglądał.",
+    "Monety: w dół. Wiara: też w dół.",
+    "Koło zakończyło dyskusję zanim się zaczęła.",
+    "Nie ma tu miejsca na negocjacje z losem.",
+    "Przegrana tak czysta, że aż matematyczna.",
+    "Szczęście dziś było w trybie offline.",
+    "To nie dramat. To statystyka w ruchu.",
+]
+
+
+WIN_RESPONSES = [
+    "Przypadek? Talent? Głównie przypadek.",
+    "Wygrałeś. Ruletka jest w szoku. My też.",
+    "Koło łaskawe dziś. Nie przyzwyczajaj się.",
+    "Monety wróciły. Jak pies do pana, tylko lepiej.",
+    "Szczęście uśmiechnęło się. Brzydko, ale jednak.",
+    "Wygrałeś. Statystyk płacze w kącie.",
+]
+
+
+JACKPOT_RESPONSES = [
+    "JACKPOT. Zielone pole. Jeden na trzydzieści siedem. DLACZEGO TY.",
+    "Zero. ZERO. Cała pula twoja. Ruletka chyba się zepsuła.",
+    "Wygrałeś jackpota. Proszę nie mówić innym graczom, bo będą płakać.",
+    "🟩 Zero. Złoty los. Astronomiczna głupota losu na twoją korzyść.",
+]
+
+
+ALLOWED_BETS = ["czerwone", "czarne", "zielone", "parzyste", "nieparzyste"]
+
+
+
 @tasks.loop(hours=8)
 async def christmas_loop():
     try:
@@ -1160,9 +1248,11 @@ async def kasyno(ctx):
     user_count = Counter(user_emojis)
     bot_count = Counter(bot_emojis)
 
-    matches = 0
-    for emoji in EMOJI_POOL:
-        matches = max(matches, min(user_count[emoji], bot_count[emoji]))
+
+    matches = sum(
+        min(user_count[emoji], bot_count[emoji])
+        for emoji in EMOJI_POOL
+    )
 
     if matches == 3:
         reward = 500
@@ -1246,6 +1336,76 @@ PING_REPLIES = [
     "Ping dotarł. Twój dzień pozostaje taki sam.",
     "Pong! Minimum wysiłku, maksimum konsekwencji (czyli brak)."
 ]
+
+CARDS_LIMIT = 3
+CARDS_ENTRY_FEE = 30
+
+
+# ===== PULE KART =====
+
+
+BAD_CARDS = [
+    {"name": "Złodziej", "emoji": "🦹", "val_range": (-90, -40), "desc": "Zniknąłeś na chwilę w tłumie. Twoja sakiewka też."},
+    {"name": "Wielki Złodziej", "emoji": "🧛", "val_range": (-90, -40), "desc": "Zostałeś profesjonalnie oskubany w biały dzień."},
+    {"name": "Kieszonkowiec", "emoji": "🤏", "val_range": (-90, -40), "desc": "Drobna ręka, duże ambicje. Twoje monety potwierdzają."},
+    {"name": "Hazardzista", "emoji": "🎲", "val_range": (-90, -40), "desc": "Zabrał twoje monety i powiedział że to pożyczka. Skłamał."},
+    {"name": "Fałszywy Prorok", "emoji": "🧙", "val_range": (-90, -40), "desc": "Obiecał fortunę. Dostarczył wyłącznie rozczarowanie."},
+    {"name": "Lichwiarz", "emoji": "💀", "val_range": (-90, -40), "desc": "Odsetki policzone z góry. Ty o tym nie wiedziałeś."},
+    {"name": "Demon Długów", "emoji": "😈", "val_range": (-90, -40), "desc": "Wyciągnął rachunek którego nie zamawiałeś."},
+    {"name": "Czarny Kot", "emoji": "🐈‍⬛", "val_range": (-90, -40), "desc": "Przeszedł ci przez drogę. Portfel to poczuł."},
+    {"name": "Podatek Losu", "emoji": "📜", "val_range": (-90, -40), "desc": "Universum wystawiło fakturę. Płatne natychmiast."},
+    {"name": "Fałszywy Przyjaciel", "emoji": "🤝", "val_range": (-90, -40), "desc": "Uśmiechnął się ciepło odchodząc z twoimi monetami."},
+    {"name": "Przekleństwo Wiedźmy", "emoji": "🧹", "val_range": (-90, -40), "desc": "Nie pamiętasz kiedy ją obraziłeś. Ona pamięta."},
+    {"name": "Zły Bliźniak", "emoji": "👥", "val_range": (-90, -40), "desc": "Wziął twoje pieniądze i powiedział że to ty jesteś tym złym."},
+    {"name": "Bankrut", "emoji": "📉", "val_range": (-90, -40), "desc": "Inwestycja nie wyszła. Twoja inwestycja w tę kartę."},
+    {"name": "Karczmarz", "emoji": "🍺", "val_range": (-90, -40), "desc": "Rachunek okazał się wyższy niż menu sugerowało."},
+    {"name": "Paserka", "emoji": "🛍️", "val_range": (-90, -40), "desc": "Kupiłeś coś czego nie widziałeś. Okazja stulecia. Nie."},
+    {"name": "Fałszywy Medyk", "emoji": "💊", "val_range": (-90, -40), "desc": "Diagnoza: pusta kieszeń. Lekarstwo: brak."},
+    {"name": "Pirat", "emoji": "🏴‍☠️", "val_range": (-90, -40), "desc": "Arrr. Twoje monety teraz pływają gdzie indziej."},
+    {"name": "Kolektor Dusz", "emoji": "⚰️", "val_range": (-90, -40), "desc": "Nie zabrał duszy. Tylko monety. Uznaj to za sukces."},
+    {"name": "Zły Czar", "emoji": "🌑", "val_range": (-90, -40), "desc": "Ktoś mruknął pod nosem i twój portfel odczuł konsekwencje."},
+    {"name": "Smog Pechowy", "emoji": "🌫️", "val_range": (-90, -40), "desc": "Niewidzialny, nieuchwytny. Monety jednak bardzo uchwycił."},
+    {"name": "Wróżka Bankructwa", "emoji": "🧚", "val_range": (-90, -40), "desc": "Machała różdżką radośnie. Twoje konto mniej radośnie."},
+    {"name": "Nekromanta Długów", "emoji": "💀", "val_range": (-90, -40), "desc": "Wskrzesił twoje stare błędy finansowe. Razem z odsetkami."},
+    {"name": "Kosmita Złodziej", "emoji": "👽", "val_range": (-90, -40), "desc": "Przyleciał z daleka specjalnie po twoje monety. Skuteczny."},
+    {"name": "Kapitan Pecha", "emoji": "⚓", "val_range": (-90, -40), "desc": "Zabrał cię w rejs bez powrotu. Portfela przynajmniej."},
+    {"name": "Widmo Straty", "emoji": "👻", "val_range": (-90, -40), "desc": "Niewidzialne. Bezgłośne. Bardzo kosztowne."},
+    {"name": "Karciana Pułapka", "emoji": "🪤", "val_range": (-90, -40), "desc": "Wyglądała niewinnie. Kłamała."},
+    {"name": "Zepsuty Talizman", "emoji": "🧿", "val_range": (-90, -40), "desc": "Miał chronić. Zapomniał po drodze."},
+    {"name": "Plotkarz", "emoji": "🗣️", "val_range": (-90, -40), "desc": "Rozgłosił twoje finanse. Zainteresował tym złodziei."},
+    {"name": "Zły Bard", "emoji": "🎸", "val_range": (-90, -40), "desc": "Śpiewał balladę o twojej stracie. Z wyprzedzeniem."},
+    {"name": "Fałszywy Skarbnik", "emoji": "🏦", "val_range": (-90, -40), "desc": "Powiedział że przechowa monety. Przechowuje. U siebie."},
+    {"name": "Alchemik Pecha", "emoji": "⚗️", "val_range": (-90, -40), "desc": "Zamienił twoje złoto w żal. To też jest alchemia."},
+    {"name": "Czarny Rynek", "emoji": "🖤", "val_range": (-90, -40), "desc": "Transakcja sfinalizowana. Niekorzystnie dla ciebie."},
+    {"name": "Pusty Skarb", "emoji": "📦", "val_range": (-90, -40), "desc": "Skrzynka wyglądała obiecująco. Była szczerze pusta."},
+    {"name": "Manekwi Szczęścia", "emoji": "🪆", "val_range": (-90, -40), "desc": "Każda warstwa to kolejna strata. Aż do środka."},
+    {"name": "Zły Horoskop", "emoji": "♑", "val_range": (-90, -40), "desc": "Gwiazdy powiedziały nie. Ty nie słuchałeś gwiazd."},
+    {"name": "Przekupiony Sędzia", "emoji": "⚖️", "val_range": (-90, -40), "desc": "Wyrok zapadł zanim usiadłeś. Kara finansowa."},
+    {"name": "Cień Przeszłości", "emoji": "🌘", "val_range": (-90, -40), "desc": "Dawny dług wrócił z odsetkami i złym humorem."},
+    {"name": "Fałszywy Orakul", "emoji": "🔮", "val_range": (-90, -40), "desc": "Przepowiednia była trafna. Trafnie zła."},
+    {"name": "Czarna Owca", "emoji": "🐑", "val_range": (-90, -40), "desc": "Sama obecność tej karty coś kosztuje. Właśnie zapłaciłeś."},
+    {"name": "Szalbierz", "emoji": "🎩", "val_range": (-90, -40), "desc": "Wyjął monetę z twojego ucha. Nie oddał."},
+]
+
+
+GOOD_CARDS = [
+    {"name": "Lekarz", "emoji": "🩺", "val_range": (100, 250), "desc": "Znalazł w kieszeni fartucha zapomniany banknot. Dał ci."},
+    {"name": "Szczodry Kupiec", "emoji": "🛒", "val_range": (100, 250), "desc": "Pomylił cię z kimś ważnym. Zapłacił. Nie wyprowadzaj go z błędu."},
+    {"name": "Błogosławieństwo", "emoji": "✨", "val_range": (100, 250), "desc": "Coś dobrego wydarzyło się bez wyraźnej przyczyny. Nie pytaj."},
+    {"name": "Znalezisko", "emoji": "💰", "val_range": (100, 250), "desc": "Ktoś zgubił. Ty znalazłeś. Los działa dziś na twoją korzyść."},
+    {"name": "Dobry Duch", "emoji": "👼", "val_range": (100, 250), "desc": "Zjawił się, zostawił monety, odszedł bez słowa. Klasyk."},
+    {"name": "Starożytna Moneta", "emoji": "🪙", "val_range": (100, 250), "desc": "Antykwariusz zapłacił bez targowania. Podejrzane, ale bierzesz."},
+    {"name": "Wróżka Szczęścia", "emoji": "🧚‍♀️", "val_range": (100, 250), "desc": "Machała różdżką w twoją stronę. Tym razem zadziałało."},
+    {"name": "Łut Szczęścia", "emoji": "🍀", "val_range": (100, 250), "desc": "Jeden na milion. Statystycznie powinieneś grać w totka."},
+    {"name": "Zapomniany Testament", "emoji": "📋", "val_range": (100, 250), "desc": "Ktoś o tobie pamiętał. Zaskakująco hojnie."},
+    {"name": "Dobry Omen", "emoji": "🌟", "val_range": (100, 250), "desc": "Wszechświat kiwnął głową. Twój portfel to poczuł."},
+    {"name": "Złota Rybka", "emoji": "🐟", "val_range": (100, 250), "desc": "Życzenie spełnione zanim zdążyłeś je wypowiedzieć."},
+    {"name": "Łaskawy Los", "emoji": "🎯", "val_range": (100, 250), "desc": "Trafiony. Zatopiony. Ale w pozytywnym sensie."},
+    {"name": "Dar Niebios", "emoji": "☁️", "val_range": (100, 250), "desc": "Spadło z nieba. Dosłownie nie wiesz jak. Bierz i milcz."},
+    {"name": "Sprawiedliwy Trybunał", "emoji": "⚖️", "val_range": (100, 250), "desc": "Wreszcie ktoś przyznał ci rację. I dopłacił za kłopot."},
+    {"name": "Szczęśliwy Traf", "emoji": "🎰", "val_range": (100, 250), "desc": "Jedyny raz kiedy los się pomylił na twoją korzyść."},
+]
+
 
 @bot.command()
 async def ping(ctx):
@@ -2106,8 +2266,9 @@ async def help(ctx):
 📢 `?important @user/rola [wiadomość]` – DM ważna wiadomość  
 📜 `?rules` – regulamin (bot ma już dość ludzi)  
 🛡️ `?shield @user` – brak tarczy (DM)  
+📊 `?gear` – test sprzętu pod formacje
 📨 `?spamshield @user [ilość]` – spam DM (max 10)  
-📊 `?kontrlist` – lista konter (tworzona przez LW)  
+📊 `?kontrlist` – lista konter (tworzona przez LW)
 🖨️ `?print [wiadomość]` – bot powtarza  
 
 ---
@@ -2132,7 +2293,8 @@ async def help(ctx):
 🎲 `?roll` – 💰 +1000 / 💸 -50 ⏳ 4x/dzień  
 ✊ `?rps` – 💰 +30 / 0 / 💸 -10 ⏳ 5x/dzień  
 🪙 `?coinflip` – 💰 +30 / 💸 -30 ⏳ 2x/dzień  
-
+🃏 `?3cards` – 💸 -30 /💰 +100-250 / 💸 -40-90 ⏳ 3x/dzień  
+🎡 `?roulette` – 💸 -40 /💰 +80 /💰 +<10 000 / 💸 -40-90 ⏳ 4x/dzień  
 ---
 
 📌 **PING**
@@ -2246,6 +2408,293 @@ Bot codziennie sprawdza saldo i automatycznie przyznaje odpowiednią rangę 🪙
 @bot.command()
 async def specjal(ctx):
     await send_christmas_embed(ctx.channel)
+
+
+@bot.command(name="roulette")
+async def roulette(ctx):
+    user_id = ctx.author.id
+
+
+    # 🔒 LIMIT 4 DZIENNIE
+    count = get_roulette_count(user_id)
+    if count >= 4:
+        await ctx.send(
+            f"⏳ {ctx.author.mention}, wykorzystałeś już **4 ruletki** dziś. "
+            f"Wróć jutro i znów oddaj swoje monety kołu."
+        )
+        return
+
+
+    # 💰 SPRAWDZENIE SALDA
+    balance = get_balance(user_id)
+    free_spin = balance < 0
+
+
+    jackpot = get_jackpot_pool()
+
+
+    if free_spin:
+        cost_info = "🆓 Twoje saldo jest ujemne — ten spin jest **darmowy** (do puli nic nie trafia)."
+    else:
+        cost_info = f"💰 Koszt gry: **{ROULETTE_COST} monet reputacji**."
+
+
+    await ctx.send(
+        f"🎡 {ctx.author.mention}, **ruletka uruchomiona!**\n\n"
+        f"{cost_info}\n"
+        f"💎 Aktualna pula jackpot: **{jackpot}**\n\n"
+        f"Wpisz: `?roulette [zakład]`\n"
+        f"Dostępne zakłady: `czerwone`, `czarne`, `zielone`, `parzyste`, `nieparzyste` lub **liczba 0–36**\n\n"
+        f"⏳ Masz **1 minutę**."
+    )
+
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel
+
+
+    try:
+        response = await bot.wait_for("message", check=check, timeout=60)
+    except asyncio.TimeoutError:
+        await ctx.send(
+            f"⏳ {ctx.author.mention}, ruletka się zamknęła. "
+            f"Koło nie czeka na niezdecydowanych."
+        )
+        return
+
+
+    raw_bet = response.content.strip().lower()
+
+
+    # Obsługa "?roulette [zakład]" zamiast samego zakładu
+    if raw_bet.startswith("?roulette "):
+        raw_bet = raw_bet[len("?roulette "):].strip()
+    elif raw_bet.startswith("?roulette"):
+        raw_bet = raw_bet[len("?roulette"):].strip()
+
+
+    is_number = raw_bet.isdigit() and 0 <= int(raw_bet) <= 36
+
+
+    if raw_bet not in ALLOWED_BETS and not is_number:
+        await ctx.send(
+            f"❌ **'{raw_bet}'** nie jest poprawnym zakładem. "
+            f"Ruletka nie obsługuje improwizacji."
+        )
+        return
+
+
+    # ✅ WALIDACJA OK — dopiero teraz pobieramy opłatę i liczymy spin
+    if not free_spin:
+        add_balance(user_id, -ROULETTE_COST)
+    set_roulette_count(user_id, count + 1)
+
+
+    # 🎡 ANIMACJA
+    steps = random.randint(5, 15)
+    delays = []
+    d = 0.8
+    for i in range(steps):
+        delays.append(d)
+        d = round(d + (0.6 / steps), 2)
+
+
+    all_numbers = list(range(0, 37))
+
+
+    spin_msg = await ctx.send("🎡 **Kręcę ruletką...**\n\n⬛ ...")
+
+
+    final = random.choice(all_numbers)
+    final_color = get_roulette_color(final)
+
+
+    for i, delay in enumerate(delays):
+        fake_n = random.choice(all_numbers)
+        fake_color = get_roulette_color(fake_n)
+        suffix = " ⏳ ..." if i == len(delays) - 1 else ""
+        await spin_msg.edit(
+            content=f"🎡 **Kręcę ruletką...**\n\n{fake_color} {fake_n}{suffix}"
+        )
+        await asyncio.sleep(delay)
+
+
+    # 🏆 WYNIK
+    win = False
+    jackpot_win = (final == 0)
+
+
+    if raw_bet == "czerwone" and final_color == "🟥":
+        win = True
+    elif raw_bet == "czarne" and final_color == "⬛":
+        win = True
+    elif raw_bet == "zielone" and jackpot_win:
+        win = True  # zielone = gracze obstawi 0 = jackpot i tak
+    elif raw_bet == "parzyste" and final != 0 and final % 2 == 0:
+        win = True
+    elif raw_bet == "nieparzyste" and final % 2 == 1:
+        win = True
+    elif is_number and int(raw_bet) == final:
+        win = True
+        if final == 0:
+            jackpot_win = True  # obstawi konkretnie 0
+
+
+    # Jackpot zawsze wygrywa pulę, niezależnie od zakładu
+    if jackpot_win:
+        payout = jackpot
+        add_balance(user_id, payout)
+        set_jackpot_pool(JACKPOT_RESET)
+        comment = random.choice(JACKPOT_RESPONSES)
+        result_line = (
+            f"💥 **JACKPOT!!!** 💥\n"
+            f"💰 +**{payout}** monet reputacji\n"
+            f"💎 Pula zresetowana do {JACKPOT_RESET}"
+        )
+    elif win:
+        reward = ROULETTE_COST * 2
+        add_balance(user_id, reward)
+        if not free_spin:
+            set_jackpot_pool(jackpot + 20)
+        comment = random.choice(WIN_RESPONSES)
+        result_line = (
+            f"✨ **WYGRANA!**\n"
+            f"💰 +**{reward}** monet reputacji"
+        )
+    else:
+        if not free_spin:
+            set_jackpot_pool(jackpot + 10)
+        comment = random.choice(FAIL_RESPONSES)
+        result_line = "💀 **PRZEGRANA.**"
+
+
+    new_jackpot = get_jackpot_pool()
+
+
+    await spin_msg.edit(
+        content=(
+            f"🎡 Wypadło...\n\n"
+            f"{final_color} **{final}**\n\n"
+            f"{result_line}\n\n"
+            f"💎 Jackpot: **{new_jackpot}**\n"
+            f"_{comment}_"
+        )
+    )
+
+
+@bot.command(name="3cards")
+async def three_cards(ctx):
+    user_id = ctx.author.id
+
+
+    # 🔒 LIMIT DZIENNY
+    count = get_cards_count(user_id)
+    if count >= CARDS_LIMIT:
+        await ctx.send(
+            f"⏳ {ctx.author.mention}, widziałeś już dziś **{CARDS_LIMIT} zestawy kart**. "
+            f"Karty nie chcą cię więcej widzieć. Wzajemnie."
+        )
+        return
+
+
+    # 💰 SPRAWDZENIE SALDA
+    balance = get_balance(user_id)
+    free_spin = balance < 0
+
+
+    if not free_spin and balance < CARDS_ENTRY_FEE:
+        await ctx.send(
+            f"💸 {ctx.author.mention}, nie masz **{CARDS_ENTRY_FEE} monet** na wejście. "
+            f"Masz: **{balance}**. Karty nie grają z biedakami. Chyba że jesteś w minusie — to grasz za free."
+        )
+        return
+
+
+    if free_spin:
+        cost_info = "🆓 Saldo ujemne — ten zestaw jest **darmowy**."
+    else:
+        cost_info = f"💰 Gra kosztuje **{CARDS_ENTRY_FEE} Monet**."
+
+
+    await ctx.send(
+        f"🃏 {ctx.author.mention}, {cost_info}\n\n"
+        "Karty leżą przed Tobą.\n"
+        "Każda wygląda tak samo.\n"
+        "Każda coś ukrywa.\n\n"
+        "` [ 1 ] `   ` [ 2 ] `   ` [ 3 ] `\n"
+        "     🃏            🃏            🃏\n\n"
+        "Wybierz: **?1 / ?2 / ?3**\n"
+        "⏳ Masz minutę zanim znikną bez śladu..."
+    )
+
+
+    def check(msg):
+        return (
+            msg.author == ctx.author
+            and msg.channel == ctx.channel
+            and msg.content.strip() in ["?1", "?2", "?3"]
+        )
+
+
+    try:
+        choice_msg = await bot.wait_for("message", check=check, timeout=60)
+    except asyncio.TimeoutError:
+        await ctx.send(
+            f"⏳ {ctx.author.mention}, karty obróciły się w proch. "
+            f"Monety zostają — okazja nie."
+        )
+        return
+
+
+    # ✅ WALIDACJA OK — dopiero teraz pobieramy opłatę
+    if not free_spin:
+        add_balance(user_id, -CARDS_ENTRY_FEE)
+    set_cards_count(user_id, count + 1)
+
+
+    # 🎴 LOSOWANIE KART — 1 dobra, 2 złe, z dużych pul
+    good = random.choice(GOOD_CARDS)
+    bad1 = random.choice(BAD_CARDS)
+    bad2 = random.choice([c for c in BAD_CARDS if c is not bad1])
+
+
+    good_val = random.randint(*good["val_range"])
+    bad1_val = random.randint(*bad1["val_range"])
+    bad2_val = random.randint(*bad2["val_range"])
+
+
+    cards = [
+        {**good, "val": good_val},
+        {**bad1, "val": bad1_val},
+        {**bad2, "val": bad2_val},
+    ]
+    random.shuffle(cards)
+
+
+    chosen_index = int(choice_msg.content.strip()[1]) - 1  # "?2" → 1
+    selected = cards[chosen_index]
+
+
+    add_balance(user_id, selected["val"])
+
+
+    visual = ["🃏", "🃏", "🃏"]
+    visual[chosen_index] = selected["emoji"]
+
+
+    change_text = f"+{selected['val']}" if selected["val"] > 0 else str(selected["val"])
+
+
+    await ctx.send(
+        f"Odsłaniasz kartę nr **{chosen_index + 1}**...\n\n"
+        f"` [ 1 ] `   ` [ 2 ] `   ` [ 3 ] `\n"
+        f"   {visual[0]}          {visual[1]}          {visual[2]}\n\n"
+        f"🃏 **\"{selected['name']}\"**\n"
+        f"💰 Zmiana balansu: **{change_text} Monet**\n"
+        f"🔮 *{selected['desc']}*\n\n"
+        f"*Reszta kart znika w absolutnej ciszy.*"
+    )
+
     
 bot.run(TOKEN)
 
