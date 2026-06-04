@@ -2663,7 +2663,7 @@ async def three_cards(ctx):
         )
 
 
-active_games.add(user_id)
+    active_games.add(user_id)
     try:
         choice_msg = await bot.wait_for("message", check=check, timeout=60)
     except asyncio.TimeoutError:
