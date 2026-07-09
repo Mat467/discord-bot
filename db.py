@@ -220,4 +220,5 @@ def reset_all_daily_limits():
         "coinflip_count": 0,
         "roulette_count": 0,
         "roulette_count": 0,
+        "cards_count": 0,
     }).neq("user_id", "-1").execute()
