@@ -441,7 +441,7 @@ LADDERS = [
      #       {"text": "🎯 Cel dnia: przeżyć wiosnę bez dram", "query": "spring+goal+focus", "color": 0x2874A6},
       #  ],
   #  },
-}
+#}
 
 # CHRISTMAS_THEMES = {
  #   "winter_traditions": {
