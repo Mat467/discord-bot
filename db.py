@@ -208,10 +208,9 @@ def set_jackpot_pool(value: int):
     supabase.table("users").update({
         "jackpot_pool": value
     }).eq("user_id", "global").execute()
-    
-# db.py - dodaj funkcję
+
 def reset_all_daily_limits():
-    supabase.table("users").update({
+    res = supabase.table("users").update({
         "casino_count": 0,
         "rps_count": 0,
         "crime_count": 0,
@@ -219,6 +218,7 @@ def reset_all_daily_limits():
         "roll_count": 0,
         "coinflip_count": 0,
         "roulette_count": 0,
-        "roulette_count": 0,
         "cards_count": 0,
-    }).neq("user_id", "-1").execute()
+    }).neq("user_id", "global").execute()
+
+    print("[CRON] Reset dziennych limitów OK:", res.data)
