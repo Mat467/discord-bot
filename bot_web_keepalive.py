@@ -269,12 +269,13 @@ async def ladder_system_task():
 
             for user in users:
                 raw_user_id = str(user.get("user_id", ""))
-
+            
                 if not raw_user_id.isdigit():
-                continue
+                    continue
 
                 user_id = int(raw_user_id)
                 balance = int(user.get("balance") or 0)
+
                 new_ladder, _ = get_ladder(balance)
                 old_ladder = user.get("ladder")
 
