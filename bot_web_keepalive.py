@@ -345,102 +345,102 @@ LADDERS = [
      "Nie grasz już w grę. Ty jesteś bugiem ekonomii, który ktoś zostawił, bo nie miał siły go naprawić.")
 ]
 
-CHRISTMAS_THEMES = {
-    "spring_awakening": {
-        "name": "Wiosenne przebudzenie / natura",
-        "items": [
-            {"text": "🌱 Pierwsze liście wyłażą, serwer też powoli budzi się do życia", "query": "spring+leaves+sunlight+morning", "color": 0x58D68D},
-            {"text": "🌸 Kwiaty w tle, memy w rękach", "query": "spring+flowers+bloom", "color": 0xEBDEF0},
-            {"text": "☀️ Słońce świeci, a ja dalej pod kocem", "query": "spring+sun+cozy+window", "color": 0xF4D03F},
-            {"text": "🐦 Ptaki ćwierkają, a odpowiedzi wciąż rzadkie", "query": "birds+spring+morning", "color": 0x5DADE2},
-            {"text": "🌿 Wiosenny wiatr = naturalny filtr spamu", "query": "spring+wind+trees", "color": 0x48C9B0},
-            {"text": "🌼 Pąki rosną, chaos w czacie też", "query": "flower+buds+spring", "color": 0xF7DC6F},
-            {"text": "🏡 Widok z okna: zielono, a produktywność wciąż zimowa", "query": "green+landscape+spring+window", "color": 0x52BE80},
-            {"text": "🦋 Motyl przelatuje, użytkownicy też czasem", "query": "butterfly+spring+garden", "color": 0xD7BDE2},
-            {"text": "🌳 Drzewo stoi, ja patrzę na powiadomienia", "query": "tree+spring+sunlight", "color": 0x239B56},
-            {"text": "🌞 Słońce i lekki chill – obowiązkowo", "query": "spring+sun+relax", "color": 0xF5CBA7},
-        ],
-    },
+#CHRISTMAS_THEMES = {
+#    "spring_awakening": {
+#        "name": "Wiosenne przebudzenie / natura",
+ #       "items": [
+ #           {"text": "🌱 Pierwsze liście wyłażą, serwer też powoli budzi się do życia", "query": "spring+leaves+sunlight+morning", "color": 0x58D68D},
+ #           {"text": "🌸 Kwiaty w tle, memy w rękach", "query": "spring+flowers+bloom", "color": 0xEBDEF0},
+ #           {"text": "☀️ Słońce świeci, a ja dalej pod kocem", "query": "spring+sun+cozy+window", "color": 0xF4D03F},
+ #           {"text": "🐦 Ptaki ćwierkają, a odpowiedzi wciąż rzadkie", "query": "birds+spring+morning", "color": 0x5DADE2},
+ #           {"text": "🌿 Wiosenny wiatr = naturalny filtr spamu", "query": "spring+wind+trees", "color": 0x48C9B0},
+ #           {"text": "🌼 Pąki rosną, chaos w czacie też", "query": "flower+buds+spring", "color": 0xF7DC6F},
+ #           {"text": "🏡 Widok z okna: zielono, a produktywność wciąż zimowa", "query": "green+landscape+spring+window", "color": 0x52BE80},
+ #           {"text": "🦋 Motyl przelatuje, użytkownicy też czasem", "query": "butterfly+spring+garden", "color": 0xD7BDE2},
+  #          {"text": "🌳 Drzewo stoi, ja patrzę na powiadomienia", "query": "tree+spring+sunlight", "color": 0x239B56},
+ #           {"text": "🌞 Słońce i lekki chill – obowiązkowo", "query": "spring+sun+relax", "color": 0xF5CBA7},
+  #      ],
+  #  },
 
-    "spring_cleaning": {
-        "name": "Porządki / organizacja",
-        "items": [
-            {"text": "🧹 Wiosenne sprzątanie: serwer nie umyje się sam", "query": "spring+cleaning+home", "color": 0xAAB7B8},
-            {"text": "🗂️ Foldery w porządku, a pingów nadal brak", "query": "organized+folders+desk", "color": 0x5D6D7E},
-            {"text": "📦 Porządek w chaosie = codzienna sztuka", "query": "minimalist+workspace+clean", "color": 0x85929E},
-            {"text": "🧴 Dezynfekcja kanałów w toku", "query": "cleaning+supplies+spring", "color": 0xAED6F1},
-            {"text": "📝 Plan dnia: posprzątać i zapomnieć o odpowiedziach", "query": "to+do+list+spring", "color": 0x7FB3D5},
-            {"text": "📅 Kalendarz mówi: „nie śpiesz się”", "query": "calendar+spring+planning", "color": 0x5499C7},
-            {"text": "🪴 Doniczki poukładane, memy też", "query": "potted+plants+home", "color": 0x27AE60},
-            {"text": "🔄 Rotacja dopisków w trybie czystości", "query": "refresh+cycle+clean", "color": 0x48C9B0},
-            {"text": "🛋️ Kanapa wciąż królem porządku", "query": "clean+living+room+spring", "color": 0x82E0AA},
-            {"text": "🗃️ Sortowanie pingów = minimalna motywacja", "query": "organizing+desk+workspace", "color": 0x566573},
-        ],
-    },
+   # "spring_cleaning": {
+    #    "name": "Porządki / organizacja",
+     #   "items": [
+      #      {"text": "🧹 Wiosenne sprzątanie: serwer nie umyje się sam", "query": "spring+cleaning+home", "color": 0xAAB7B8},
+#            {"text": "🗂️ Foldery w porządku, a pingów nadal brak", "query": "organized+folders+desk", "color": 0x5D6D7E},
+ #           {"text": "📦 Porządek w chaosie = codzienna sztuka", "query": "minimalist+workspace+clean", "color": 0x85929E},
+  #          {"text": "🧴 Dezynfekcja kanałów w toku", "query": "cleaning+supplies+spring", "color": 0xAED6F1},
+   #         {"text": "📝 Plan dnia: posprzątać i zapomnieć o odpowiedziach", "query": "to+do+list+spring", "color": 0x7FB3D5},
+#            {"text": "📅 Kalendarz mówi: „nie śpiesz się”", "query": "calendar+spring+planning", "color": 0x5499C7},
+ #           {"text": "🪴 Doniczki poukładane, memy też", "query": "potted+plants+home", "color": 0x27AE60},
+  #          {"text": "🔄 Rotacja dopisków w trybie czystości", "query": "refresh+cycle+clean", "color": 0x48C9B0},
+   #         {"text": "🛋️ Kanapa wciąż królem porządku", "query": "clean+living+room+spring", "color": 0x82E0AA},
+    #        {"text": "🗃️ Sortowanie pingów = minimalna motywacja", "query": "organizing+desk+workspace", "color": 0x566573},
+     #   ],
+#    },
+#
+ #   "spring_weather": {
+  #      "name": "Pogoda / słońce",
+   #     "items": [
+    #        {"text": "☀️ Słońce świeci, a ja wciąż ignoruję powiadomienia", "query": "bright+sunny+spring+day", "color": 0xF4D03F},
+     #       {"text": "🌤️ Chmury przesłaniają obowiązki", "query": "spring+clouds+sky", "color": 0xD6EAF8},
+      #      {"text": "🌦️ Deszcz? Idealny do pozostania na kanapie", "query": "spring+rain+window", "color": 0x5DADE2},
+       #     {"text": "🌈 Po deszczu memy wychodzą pięknie", "query": "rainbow+after+rain+spring", "color": 0xBB8FCE},
+        #    {"text": "🌬️ Wiatr wieje, a serwer stoi", "query": "windy+spring+trees", "color": 0x7FB3D5},
+         #   {"text": "🌞 Lekkie ocieplenie = powód do herbaty w ogrodzie", "query": "spring+garden+tea", "color": 0xF8C471},
+          #  {"text": "⛅ Chmurka = wymówka do minimalnej aktywności", "query": "partly+cloudy+spring", "color": 0xAED6F1},
+           # {"text": "🌄 Poranny widok = więcej motywacji, mniej odpowiedzi", "query": "spring+sunrise+landscape", "color": 0xF5B041},
+#            {"text": "🌱 Świeża zieleń = darmowa dekoracja czatu", "query": "fresh+green+spring+nature", "color": 0x58D68D},
+ #           {"text": "🌸 Kwiaty rosną, a ja czekam na reakcje", "query": "blooming+flowers+spring", "color": 0xF1948A},
+  #      ],
+ #   },
 
-    "spring_weather": {
-        "name": "Pogoda / słońce",
-        "items": [
-            {"text": "☀️ Słońce świeci, a ja wciąż ignoruję powiadomienia", "query": "bright+sunny+spring+day", "color": 0xF4D03F},
-            {"text": "🌤️ Chmury przesłaniają obowiązki", "query": "spring+clouds+sky", "color": 0xD6EAF8},
-            {"text": "🌦️ Deszcz? Idealny do pozostania na kanapie", "query": "spring+rain+window", "color": 0x5DADE2},
-            {"text": "🌈 Po deszczu memy wychodzą pięknie", "query": "rainbow+after+rain+spring", "color": 0xBB8FCE},
-            {"text": "🌬️ Wiatr wieje, a serwer stoi", "query": "windy+spring+trees", "color": 0x7FB3D5},
-            {"text": "🌞 Lekkie ocieplenie = powód do herbaty w ogrodzie", "query": "spring+garden+tea", "color": 0xF8C471},
-            {"text": "⛅ Chmurka = wymówka do minimalnej aktywności", "query": "partly+cloudy+spring", "color": 0xAED6F1},
-            {"text": "🌄 Poranny widok = więcej motywacji, mniej odpowiedzi", "query": "spring+sunrise+landscape", "color": 0xF5B041},
-            {"text": "🌱 Świeża zieleń = darmowa dekoracja czatu", "query": "fresh+green+spring+nature", "color": 0x58D68D},
-            {"text": "🌸 Kwiaty rosną, a ja czekam na reakcje", "query": "blooming+flowers+spring", "color": 0xF1948A},
-        ],
-    },
+  #  "spring_memes": {
+   #     "name": "Humor i memy wiosenne",
+    #    "items": [
+     #       {"text": "🐦 Ping jak ptak – czasem przylatuje", "query": "bird+spring+funny", "color": 0x5DADE2},
+      #      {"text": "🌼 Kwiat w roli moderatora dnia", "query": "flower+funny+spring", "color": 0xF7DC6F},
+       #     {"text": "🌞 Słońce świeci, a chaos żyje", "query": "sunny+spring+chaos", "color": 0xF4D03F},
+        #    {"text": "🦋 Motyl taguje przypadkowych użytkowników", "query": "butterfly+funny+spring", "color": 0xD7BDE2},
+         #   {"text": "🐝 Bzyczenie = naturalny alert", "query": "bee+spring+macro", "color": 0xF1C40F},
+          #  {"text": "🌿 Liście spadają? Nie, memy wciąż na miejscu", "query": "spring+leaves+funny", "color": 0x52BE80},
+           # {"text": "🐞 Biedronka przynosi dobre vibes", "query": "ladybug+spring+macro", "color": 0xE74C3C},
+  #          {"text": "☁️ Chmura przysłania powiadomienia", "query": "cloudy+spring+sky", "color": 0xD6EAF8},
+   #         {"text": "🌳 Drzewo patrzy na kanały, ja na kawę", "query": "tree+spring+coffee", "color": 0x239B56},
+    #        {"text": "🌸 Pąk kwiatowy = codzienny dopisek", "query": "flower+bud+spring+macro", "color": 0xF1948A},
+     #   ],
+#    },
 
-    "spring_memes": {
-        "name": "Humor i memy wiosenne",
-        "items": [
-            {"text": "🐦 Ping jak ptak – czasem przylatuje", "query": "bird+spring+funny", "color": 0x5DADE2},
-            {"text": "🌼 Kwiat w roli moderatora dnia", "query": "flower+funny+spring", "color": 0xF7DC6F},
-            {"text": "🌞 Słońce świeci, a chaos żyje", "query": "sunny+spring+chaos", "color": 0xF4D03F},
-            {"text": "🦋 Motyl taguje przypadkowych użytkowników", "query": "butterfly+funny+spring", "color": 0xD7BDE2},
-            {"text": "🐝 Bzyczenie = naturalny alert", "query": "bee+spring+macro", "color": 0xF1C40F},
-            {"text": "🌿 Liście spadają? Nie, memy wciąż na miejscu", "query": "spring+leaves+funny", "color": 0x52BE80},
-            {"text": "🐞 Biedronka przynosi dobre vibes", "query": "ladybug+spring+macro", "color": 0xE74C3C},
-            {"text": "☁️ Chmura przysłania powiadomienia", "query": "cloudy+spring+sky", "color": 0xD6EAF8},
-            {"text": "🌳 Drzewo patrzy na kanały, ja na kawę", "query": "tree+spring+coffee", "color": 0x239B56},
-            {"text": "🌸 Pąk kwiatowy = codzienny dopisek", "query": "flower+bud+spring+macro", "color": 0xF1948A},
-        ],
-    },
+ #   "spring_chill": {
+  #      "name": "Chill / odpoczynek",
+   #     "items": [
+    #        {"text": "🛋️ Kanapa w trybie „wiosenny relaks”", "query": "cozy+sofa+spring", "color": 0x82E0AA},
+     #       {"text": "☕ Herbata na świeżym powietrzu", "query": "tea+garden+spring", "color": 0xA569BD},
+      #      {"text": "🎶 Śpiew ptaków zamiast powiadomień", "query": "birds+singing+spring", "color": 0x48C9B0},
+       #     {"text": "🧸 Pluszak nadzoruje spokój czatu", "query": "teddy+bear+spring", "color": 0xAF7AC5}#,
+  #          {"text": "📖 Książka i chill = wiosenny zestaw dnia", "query": "reading+book+garden", "color": 0x5B2C6F},
+   #         {"text": "🌅 Zachód słońca = minimalne aktywności", "query": "spring+sunset+landscape", "color": 0xF5B041},
+    #        {"text": "🌞 Poranna kawa + serwer w tle", "query": "coffee+morning+spring", "color": 0xDC7633},
+     #       {"text": "🐾 Zwierzak obok, powiadomienia ignorowane", "query": "pet+spring+relax", "color": 0x52BE80},
+      #      {"text": "🪑 Fotel wygodniejszy niż każda komenda", "query": "armchair+spring+cozy", "color": 0x7DCEA0},
+#            {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home+spring", "color": 0xA93226},
+ #       ],
+  #  },
 
-    "spring_chill": {
-        "name": "Chill / odpoczynek",
-        "items": [
-            {"text": "🛋️ Kanapa w trybie „wiosenny relaks”", "query": "cozy+sofa+spring", "color": 0x82E0AA},
-            {"text": "☕ Herbata na świeżym powietrzu", "query": "tea+garden+spring", "color": 0xA569BD},
-            {"text": "🎶 Śpiew ptaków zamiast powiadomień", "query": "birds+singing+spring", "color": 0x48C9B0},
-            {"text": "🧸 Pluszak nadzoruje spokój czatu", "query": "teddy+bear+spring", "color": 0xAF7AC5},
-            {"text": "📖 Książka i chill = wiosenny zestaw dnia", "query": "reading+book+garden", "color": 0x5B2C6F},
-            {"text": "🌅 Zachód słońca = minimalne aktywności", "query": "spring+sunset+landscape", "color": 0xF5B041},
-            {"text": "🌞 Poranna kawa + serwer w tle", "query": "coffee+morning+spring", "color": 0xDC7633},
-            {"text": "🐾 Zwierzak obok, powiadomienia ignorowane", "query": "pet+spring+relax", "color": 0x52BE80},
-            {"text": "🪑 Fotel wygodniejszy niż każda komenda", "query": "armchair+spring+cozy", "color": 0x7DCEA0},
-            {"text": "🔔 Dzwonek w tle = nie moje powiadomienia", "query": "doorbell+home+spring", "color": 0xA93226},
-        ],
-    },
-
-    "spring_productivity": {
-        "name": "Planowanie i produktywność",
-        "items": [
-            {"text": "📝 Lista rzeczy do zrobienia: 10% wykonane, 90% ignorowane", "query": "to+do+list+desk+spring", "color": 0x5D6D7E},
-            {"text": "📅 Kalendarz mówi: „wiosna = powolne tempo”", "query": "calendar+spring+planning", "color": 0x5499C7},
-            {"text": "🔄 Rotacja dopisków w trybie produktywności", "query": "refresh+cycle+workspace", "color": 0x48C9B0},
-            {"text": "🏞️ Spacer = powód do przerwy", "query": "spring+walk+park", "color": 0x58D68D},
-            {"text": "💡 Pomysł dnia: minimalne działania, maksymalny chill", "query": "minimalism+spring+idea", "color": 0xF7DC6F},
-            {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "spring+window+view", "color": 0x52BE80},
-            {"text": "🌱 Zasadziłem wirtualny kwiat = progres!", "query": "planting+flower+spring", "color": 0x27AE60},
-            {"text": "⏳ Czas leci, a ja wciąż na kanapie", "query": "clock+time+relax", "color": 0x95A5A6},
-            {"text": "🧭 Kompas pokazuje kierunek do kawy", "query": "compass+direction+coffee", "color": 0x1ABC9C},
-            {"text": "🎯 Cel dnia: przeżyć wiosnę bez dram", "query": "spring+goal+focus", "color": 0x2874A6},
-        ],
-    },
+#    "spring_productivity": {
+ #       "name": "Planowanie i produktywność",
+  #      "items": [
+   #         {"text": "📝 Lista rzeczy do zrobienia: 10% wykonane, 90% ignorowane", "query": "to+do+list+desk+spring", "color": 0x5D6D7E},
+    #        {"text": "📅 Kalendarz mówi: „wiosna = powolne tempo”", "query": "calendar+spring+planning", "color": 0x5499C7},
+     #       {"text": "🔄 Rotacja dopisków w trybie produktywności", "query": "refresh+cycle+workspace", "color": 0x48C9B0},
+      #      {"text": "🏞️ Spacer = powód do przerwy", "query": "spring+walk+park", "color": 0x58D68D},
+       #     {"text": "💡 Pomysł dnia: minimalne działania, maksymalny chill", "query": "minimalism+spring+idea", "color": 0xF7DC6F},
+        #    {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "spring+window+view", "color": 0x52BE80},
+  #          {"text": "🌱 Zasadziłem wirtualny kwiat = progres!", "query": "planting+flower+spring", "color": 0x27AE60},
+   #         {"text": "⏳ Czas leci, a ja wciąż na kanapie", "query": "clock+time+relax", "color": 0x95A5A6},
+    #        {"text": "🧭 Kompas pokazuje kierunek do kawy", "query": "compass+direction+coffee", "color": 0x1ABC9C},
+     #       {"text": "🎯 Cel dnia: przeżyć wiosnę bez dram", "query": "spring+goal+focus", "color": 0x2874A6},
+      #  ],
+  #  },
 }
 
 # CHRISTMAS_THEMES = {
@@ -654,102 +654,102 @@ CHRISTMAS_THEMES = {
 #}
 
 
-#CHRISTMAS_THEMES = {
-  #  "summer_weather": {
- #       "name": "Słońce i pogoda",
-#        "items": [
-            #{"text": "🌞 Słońce praży, serwer działa w trybie slow-motion", "query": "summer+sun+heat+bright", "color": 0xF4D03F},
-           # {"text": "🌤️ Chmurka raz na kilka dni – jako niespodzianka", "query": "summer+sky+clouds", "color": 0xD6EAF8},
-          #  {"text": "🌴 Palmy w tle, odpowiedzi w cieniu", "query": "palm+trees+summer", "color": 0x52BE80},
-         #   {"text": "🌊 Fale uderzają, powiadomienia leniwie spływają", "query": "ocean+waves+summer", "color": 0x5DADE2},
-        #    {"text": "⛱️ Leżak gotowy, ping ignorowany", "query": "beach+chair+umbrella", "color": 0xF7DC6F},
-       #     {"text": "🌻 Słoneczniki patrzą, użytkownicy nie", "query": "sunflower+field+summer", "color": 0xF1C40F},
-      #      {"text": "🌈 Po deszczu memy wychodzą żywsze", "query": "rainbow+summer+rain", "color": 0xBB8FCE},
-     #       {"text": "🌬️ Lekki wiatr = minimalna motywacja", "query": "summer+breeze", "color": 0x7FB3D5},
-    #        {"text": "☀️ Okulary przeciwsłoneczne obowiązkowe przy tagach", "query": "sunglasses+summer+sun", "color": 0xF39C12},
-   #         {"text": "🌅 Zachód słońca = czas refleksji nad Discordem", "query": "sunset+summer+beach", "color": 0xF5B041},
-  #      ],
- #   },
-#
-   # "summer_chill": {
-  #      "name": "Wakacje / chill",
- #       "items": [
-#            {"text": "🏖️ Plaża w tle, powiadomień brak", "query": "beach+summer+relax", "color": 0x85C1E9},
-           # {"text": "🍹 Koktajl w ręku, chaos na czacie", "query": "cocktail+summer+drink", "color": 0xEB984E},
-          #  {"text": "🛶 Kajak gotowy, serwer w tle", "query": "kayak+lake+summer", "color": 0x5DADE2},
-         #   {"text": "🎶 Muzyka wakacyjna = odpowiedzi minimalne", "query": "summer+music+vibes", "color": 0xAF7AC5},
-        #    {"text": "🏄 Fala przychodzi, ping nie", "query": "surfing+wave+summer", "color": 0x48C9B0},
-       #     {"text": "🌴 W cieniu palmy = tryb relaks", "query": "palm+shade+summer", "color": 0x52BE80},
-      #      {"text": "🐚 Muszelki liczą powiadomienia, ja nie", "query": "seashells+beach", "color": 0xFAD7A0},
-     #       {"text": "🕶️ Chill w pełnej krasie", "query": "summer+relax+sunglasses", "color": 0x566573},
-    #        {"text": "🐠 Woda chłodzi, serwer też", "query": "underwater+fish+summer", "color": 0x5DADE2},
-   #         {"text": "🌊 Szum morza = wymówka do braku aktywności", "query": "sea+waves+relax", "color": 0x3498DB},
-  #      ],
- #   },
-#
-    #"summer_memes": {
-   #     "name": "Humor / memy",
-  #      "items": [
-            #{"text": "🐳 Ping jak wieloryb – czasem dociera", "query": "whale+ocean+funny", "color": 0x5DADE2},
-           # {"text": "🦀 Krab blokuje kanał, ja pod parasolem", "query": "crab+beach+funny", "color": 0xE74C3C},
-          #  {"text": "🏖️ Plaża mówi: „Nie taguj mnie”", "query": "beach+funny+summer", "color": 0x85C1E9},
-         #   {"text": "🐠 Ryba przemyka, powiadomień brak", "query": "fish+underwater+summer", "color": 0x5DADE2},
-        #    {"text": "🌴 Palma przewraca memy na bok", "query": "palm+tree+funny", "color": 0x52BE80},
-       #     {"text": "🐚 Muszle komentują w ciszy", "query": "seashell+macro+beach", "color": 0xFAD7A0},
-      #      {"text": "🌊 Fala humoru rozbija powiadomienia", "query": "wave+ocean+funny", "color": 0x3498DB},
-     #       {"text": "🐬 Delfin taguje przypadkowych użytkowników", "query": "dolphin+funny+ocean", "color": 0x85C1E9},
-    #        {"text": "🐞 Biedronka wakacyjna = dopisek dnia", "query": "ladybug+summer", "color": 0xE74C3C},
-   #         {"text": "🌞 Słońce świeci, chaos trwa", "query": "sunny+summer+chaos", "color": 0xF4D03F},
-  #      ],
- #   },
-#
-#    "summer_food": {
-     #   "name": "Lody / jedzenie letnie",
-      #  "items": [
-            #{"text": "🍉 Arbuz = obowiązkowy ping-break", "query": "watermelon+summer", "color": 0xE74C3C},
-           # {"text": "🥤 Koktajl owocowy = minimalna produktywność", "query": "fruit+smoothie+summer", "color": 0xEB984E},
-          #  {"text": "🌽 Grill gotowy, serwer w tle", "query": "bbq+grill+summer", "color": 0xDC7633},
-         #   {"text": "🍍 Ananas patrzy na czat, ja nie", "query": "pineapple+summer", "color": 0xF4D03F},
-        #    {"text": "🥪 Kanapka w ręku = wymówka do lenistwa", "query": "sandwich+summer+lunch", "color": 0xD5DBDB},
-       #     {"text": "🧃 Sok z cytryny = detox powiadomień", "query": "lemon+juice+summer", "color": 0xF7DC6F},
-      #      {"text": "🍓 Truskawki sezonowe = sezonowe dopiski", "query": "strawberries+summer", "color": 0xC0392B},
-     #       {"text": "🍹 Drink w tle = serwer chill", "query": "summer+drink+cocktail", "color": 0xAF601A},
-    #        {"text": "🥗 Sałatka w ręku, memy w tle", "query": "salad+healthy+summer", "color": 0x52BE80},
-   #     ],
-  #  },
+CHRISTMAS_THEMES = {
+    "summer_weather": {
+        "name": "Słońce i pogoda",
+        "items": [
+             {"text": "🌞 Słońce praży, serwer działa w trybie slow-motion", "query": "summer+sun+heat+bright", "color": 0xF4D03F},
+             {"text": "🌤️ Chmurka raz na kilka dni – jako niespodzianka", "query": "summer+sky+clouds", "color": 0xD6EAF8},
+             {"text": "🌴 Palmy w tle, odpowiedzi w cieniu", "query": "palm+trees+summer", "color": 0x52BE80},
+             {"text": "🌊 Fale uderzają, powiadomienia leniwie spływają", "query": "ocean+waves+summer", "color": 0x5DADE2},
+             {"text": "⛱️ Leżak gotowy, ping ignorowany", "query": "beach+chair+umbrella", "color": 0xF7DC6F},
+             {"text": "🌻 Słoneczniki patrzą, użytkownicy nie", "query": "sunflower+field+summer", "color": 0xF1C40F},
+             {"text": "🌈 Po deszczu memy wychodzą żywsze", "query": "rainbow+summer+rain", "color": 0xBB8FCE},
+             {"text": "🌬️ Lekki wiatr = minimalna motywacja", "query": "summer+breeze", "color": 0x7FB3D5},
+             {"text": "☀️ Okulary przeciwsłoneczne obowiązkowe przy tagach", "query": "sunglasses+summer+sun", "color": 0xF39C12},
+             {"text": "🌅 Zachód słońca = czas refleksji nad Discordem", "query": "sunset+summer+beach", "color": 0xF5B041},
+        ],
+     },
 
- #   "summer_activity": {
-#        "name": "Aktywność / ruch",
-      #  "items": [
-     #       {"text": "🏊 Basen gotowy, ping się kąpie", "query": "swimming+pool+summer", "color": 0x5DADE2},
-    #        {"text": "🚴 Rower wyjechał, użytkownicy w trybie offline", "query": "cycling+summer", "color": 0x52BE80},
-   #         {"text": "🏋️ Siłownia = wymówka do ignorowania tagów", "query": "gym+workout+summer", "color": 0x566573},
-  #          {"text": "🛶 Kajak w ruchu, serwer w spokoju", "query": "kayak+river+summer", "color": 0x5DADE2},
-          #  {"text": "🏖️ Spacer po plaży = minimalne działania", "query": "beach+walk+summer", "color": 0xFAD7A0},
-         #   {"text": "🏌️ Golf + powiadomienia ignorowane", "query": "golf+field+summer", "color": 0x27AE60},
-        #    {"text": "🏄 Surfing = chaos kontrolowany", "query": "surfing+wave", "color": 0x48C9B0},
-       #     {"text": "🤸 Gimnastyka = codzienny dopisek", "query": "gymnastics+summer", "color": 0xAF7AC5},
-      #      {"text": "🏹 Strzały w powietrzu = tagi nie dochodzą", "query": "archery+summer", "color": 0x935116},
-     #       {"text": "🧗 Wspinaczka = mało powiadomień, dużo humoru", "query": "climbing+mountain+summer", "color": 0x7DCEA0},
-    #    ],
-   # },
+    "summer_chill": {
+        "name": "Wakacje / chill",
+        "items": [
+            {"text": "🏖️ Plaża w tle, powiadomień brak", "query": "beach+summer+relax", "color": 0x85C1E9},
+            {"text": "🍹 Koktajl w ręku, chaos na czacie", "query": "cocktail+summer+drink", "color": 0xEB984E},
+            {"text": "🛶 Kajak gotowy, serwer w tle", "query": "kayak+lake+summer", "color": 0x5DADE2},
+            {"text": "🎶 Muzyka wakacyjna = odpowiedzi minimalne", "query": "summer+music+vibes", "color": 0xAF7AC5},
+            {"text": "🏄 Fala przychodzi, ping nie", "query": "surfing+wave+summer", "color": 0x48C9B0},
+            {"text": "🌴 W cieniu palmy = tryb relaks", "query": "palm+shade+summer", "color": 0x52BE80},
+            {"text": "🐚 Muszelki liczą powiadomienia, ja nie", "query": "seashells+beach", "color": 0xFAD7A0},
+            {"text": "🕶️ Chill w pełnej krasie", "query": "summer+relax+sunglasses", "color": 0x566573},
+            {"text": "🐠 Woda chłodzi, serwer też", "query": "underwater+fish+summer", "color": 0x5DADE2},
+            {"text": "🌊 Szum morza = wymówka do braku aktywności", "query": "sea+waves+relax", "color": 0x3498DB},
+        ],
+    },
 
-  #  "summer_productivity": {
- #       "name": "Planowanie / produktywność w lato",
-#        "items": [
-         #   {"text": "📝 Lista rzeczy do zrobienia: wakacje trwają", "query": "to+do+list+summer", "color": 0x5D6D7E},
-        #    {"text": "📅 Kalendarz mówi: „odpoczywaj”", "query": "calendar+summer+planning", "color": 0x5499C7},
-       #     {"text": "🔄 Rotacja dopisków w trybie wakacyjnym", "query": "refresh+cycle+summer", "color": 0x48C9B0},
-      #      {"text": "🏝️ Cel dnia: chill + minimalne działania", "query": "island+relax+summer", "color": 0x76D7C4},
-     #       {"text": "💡 Pomysł: przerwa na drinka = obowiązkowa", "query": "summer+idea+drink", "color": 0xF8C471},
-    #        {"text": "⏳ Czas płynie, serwer powoli", "query": "time+slow+summer", "color": 0x95A5A6},
-   #         {"text": "🧭 Kompas pokazuje kierunek do basenu", "query": "compass+direction+pool", "color": 0x1ABC9C},
-  #          {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "summer+window+view", "color": 0x52BE80},
- #           {"text": "🥶 Lód w drinku = produktywność schłodzona", "query": "ice+drink+summer", "color": 0x85C1E9},
-        #    {"text": "🎯 Cel: przeżyć lato i nie odpowiadać na wszystko", "query": "summer+goal+relax", "color": 0x2874A6},
- #       ],
-  #  },
-#}
+    "summer_memes": {
+        "name": "Humor / memy",
+        "items": [
+            {"text": "🐳 Ping jak wieloryb – czasem dociera", "query": "whale+ocean+funny", "color": 0x5DADE2},
+            {"text": "🦀 Krab blokuje kanał, ja pod parasolem", "query": "crab+beach+funny", "color": 0xE74C3C},
+            {"text": "🏖️ Plaża mówi: „Nie taguj mnie”", "query": "beach+funny+summer", "color": 0x85C1E9},
+            {"text": "🐠 Ryba przemyka, powiadomień brak", "query": "fish+underwater+summer", "color": 0x5DADE2},
+            {"text": "🌴 Palma przewraca memy na bok", "query": "palm+tree+funny", "color": 0x52BE80},
+            {"text": "🐚 Muszle komentują w ciszy", "query": "seashell+macro+beach", "color": 0xFAD7A0},
+            {"text": "🌊 Fala humoru rozbija powiadomienia", "query": "wave+ocean+funny", "color": 0x3498DB},
+            {"text": "🐬 Delfin taguje przypadkowych użytkowników", "query": "dolphin+funny+ocean", "color": 0x85C1E9},
+            {"text": "🐞 Biedronka wakacyjna = dopisek dnia", "query": "ladybug+summer", "color": 0xE74C3C},
+            {"text": "🌞 Słońce świeci, chaos trwa", "query": "sunny+summer+chaos", "color": 0xF4D03F},
+        ],
+    },
+
+    "summer_food": {
+        "name": "Lody / jedzenie letnie",
+        "items": [
+            {"text": "🍉 Arbuz = obowiązkowy ping-break", "query": "watermelon+summer", "color": 0xE74C3C},
+            {"text": "🥤 Koktajl owocowy = minimalna produktywność", "query": "fruit+smoothie+summer", "color": 0xEB984E},
+            {"text": "🌽 Grill gotowy, serwer w tle", "query": "bbq+grill+summer", "color": 0xDC7633},
+            {"text": "🍍 Ananas patrzy na czat, ja nie", "query": "pineapple+summer", "color": 0xF4D03F},
+            {"text": "🥪 Kanapka w ręku = wymówka do lenistwa", "query": "sandwich+summer+lunch", "color": 0xD5DBDB},
+            {"text": "🧃 Sok z cytryny = detox powiadomień", "query": "lemon+juice+summer", "color": 0xF7DC6F},
+            {"text": "🍓 Truskawki sezonowe = sezonowe dopiski", "query": "strawberries+summer", "color": 0xC0392B},
+            {"text": "🍹 Drink w tle = serwer chill", "query": "summer+drink+cocktail", "color": 0xAF601A},
+            {"text": "🥗 Sałatka w ręku, memy w tle", "query": "salad+healthy+summer", "color": 0x52BE80},
+        ],
+    },
+
+    "summer_activity": {
+        "name": "Aktywność / ruch",
+        "items": [
+            {"text": "🏊 Basen gotowy, ping się kąpie", "query": "swimming+pool+summer", "color": 0x5DADE2},
+            {"text": "🚴 Rower wyjechał, użytkownicy w trybie offline", "query": "cycling+summer", "color": 0x52BE80},
+            {"text": "🏋️ Siłownia = wymówka do ignorowania tagów", "query": "gym+workout+summer", "color": 0x566573},
+            {"text": "🛶 Kajak w ruchu, serwer w spokoju", "query": "kayak+river+summer", "color": 0x5DADE2},
+            {"text": "🏖️ Spacer po plaży = minimalne działania", "query": "beach+walk+summer", "color": 0xFAD7A0},
+            {"text": "🏌️ Golf + powiadomienia ignorowane", "query": "golf+field+summer", "color": 0x27AE60},
+            {"text": "🏄 Surfing = chaos kontrolowany", "query": "surfing+wave", "color": 0x48C9B0},
+            {"text": "🤸 Gimnastyka = codzienny dopisek", "query": "gymnastics+summer", "color": 0xAF7AC5},
+            {"text": "🏹 Strzały w powietrzu = tagi nie dochodzą", "query": "archery+summer", "color": 0x935116},
+            {"text": "🧗 Wspinaczka = mało powiadomień, dużo humoru", "query": "climbing+mountain+summer", "color": 0x7DCEA0},
+        ],
+    },
+
+    "summer_productivity": {
+        "name": "Planowanie / produktywność w lato",
+        "items": [
+            {"text": "📝 Lista rzeczy do zrobienia: wakacje trwają", "query": "to+do+list+summer", "color": 0x5D6D7E},
+            {"text": "📅 Kalendarz mówi: „odpoczywaj”", "query": "calendar+summer+planning", "color": 0x5499C7},
+            {"text": "🔄 Rotacja dopisków w trybie wakacyjnym", "query": "refresh+cycle+summer", "color": 0x48C9B0},
+            {"text": "🏝️ Cel dnia: chill + minimalne działania", "query": "island+relax+summer", "color": 0x76D7C4},
+            {"text": "💡 Pomysł: przerwa na drinka = obowiązkowa", "query": "summer+idea+drink", "color": 0xF8C471},
+            {"text": "⏳ Czas płynie, serwer powoli", "query": "time+slow+summer", "color": 0x95A5A6},
+            {"text": "🧭 Kompas pokazuje kierunek do basenu", "query": "compass+direction+pool", "color": 0x1ABC9C},
+            {"text": "🏡 Widok z okna inspiruje, odpowiedzi nie", "query": "summer+window+view", "color": 0x52BE80},
+            {"text": "🥶 Lód w drinku = produktywność schłodzona", "query": "ice+drink+summer", "color": 0x85C1E9},
+            {"text": "🎯 Cel: przeżyć lato i nie odpowiadać na wszystko", "query": "summer+goal+relax", "color": 0x2874A6},
+        ],
+   },
+}
 
 # CHRISTMAS_THEMES = {
  #   "autumn_nature": {
