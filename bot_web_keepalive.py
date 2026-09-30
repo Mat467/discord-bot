@@ -1437,6 +1437,51 @@ GOOD_CARDS = [
     {"name": "Szczęśliwy Traf", "emoji": "🎰", "val_range": (100, 250), "desc": "Jedyny raz kiedy los się pomylił na twoją korzyść."},
 ]
 
+def pl_plural(n, one, few, many):
+    """Polska odmiana: 1 dzień, 2 dni, 5 dni, 22 dni..."""
+    if n == 1:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
+
+
+def format_remaining(remaining):
+    total_seconds = max(int(remaining.total_seconds()), 0)
+
+    days = total_seconds // 86400
+    hours = (total_seconds % 86400) // 3600
+    minutes = (total_seconds % 3600) // 60
+
+    return (
+        f"{days} {pl_plural(days, 'dzień', 'dni', 'dni')}, "
+        f"{hours} {pl_plural(hours, 'godzina', 'godziny', 'godzin')}, "
+        f"{minutes} {pl_plural(minutes, 'minuta', 'minuty', 'minut')}"
+    )
+
+
+def format_date_pl(dt):
+    dt = dt.astimezone(WARSAW)
+    return f"{dt.day} {MONTHS_PL[dt.month]} {dt.year} r. o {dt:%H:%M}"
+
+
+def create_shutdown_embed():
+    now = datetime.datetime.now(WARSAW)
+    remaining_text = format_remaining(SHUTDOWN_DATE - now)
+
+    embed = discord.Embed(
+        title="⏳ Koniec pewnego rozdziału",
+        description=(
+            "Do wyłączenia serwerów pozostało:\n\n"
+            f"## {remaining_text}\n\n"
+            f"📅 **{format_date_pl(SHUTDOWN_DATE)} (czas polski)**\n\n"
+            "🔴 Po tym terminie serwery, boty i pozostała "
+            "infrastruktura zostaną wyłączone."
+        ),
+        colour=0xE74C3C,
+    )
+    embed.set_footer(text="Termin jest ostateczny.")
+    return embed
 
 class ShutdownBot(commands.Bot):
     async def setup_hook(self):
