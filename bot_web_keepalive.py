@@ -121,6 +121,16 @@ TOKEN = os.environ.get("DISCORD_TOKEN")
 MODERATORS = [int(x) for x in os.environ.get("MODERATORS", "").split(",") if x.strip()]
 
 
+# --- ustawienia w kodzie ---
+WARSAW = ZoneInfo("Europe/Warsaw")
+
+
+# Termin wyłączenia serwerów (czas polski)
+SHUTDOWN_DATE = datetime.datetime(2026, 10, 31, 23, 59, tzinfo=WARSAW)
+
+# Codzienna godzina wysyłania wiadomości (czas polski)
+SEND_TIME = datetime.time(hour=12, minute=0, tzinfo=WARSAW)
+
 ALLOWED_GUILD_ID = 1352031903322210456
 
 if not TOKEN:
@@ -132,10 +142,15 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
 
+
+MONTHS_PL = [
+    "", "stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca",
+    "lipca", "sierpnia", "września", "października", "listopada", "grudnia",
+]
+
 @bot.check
 def globally_block_other_servers(ctx):
     return ctx.guild and ctx.guild.id == ALLOWED_GUILD_ID
-
 
 
 # ---- Flask ping ----
@@ -1046,7 +1061,7 @@ ALLOWED_BETS = ["czerwone", "czarne", "zielone", "parzyste", "nieparzyste"]
 
 
 
-@tasks.loop(hours=8)
+@tasks.loop(hours=80000)
 async def christmas_loop():
     try:
         channel = bot.get_channel(CHANNEL_ID)
@@ -1423,6 +1438,84 @@ GOOD_CARDS = [
 ]
 
 
+class ShutdownBot(commands.Bot):
+    async def setup_hook(self):
+        # setup_hook działa już w uruchomionym event loopie
+        if not shutdown_countdown_loop.is_running():
+            logger.info("Starting shutdown_countdown_loop")
+            shutdown_countdown_loop.start()
+
+
+bot = ShutdownBot(command_prefix="?", intents=intents, help_command=None)
+
+
+async def get_announcement_channel():
+    channel = bot.get_channel(CHANNEL_ID)
+    if channel is None:
+        try:
+            channel = await bot.fetch_channel(CHANNEL_ID)
+        except (discord.HTTPException, discord.InvalidData):
+            return None
+    return channel
+
+
+async def send_shutdown_message():
+    """Wysyła embed na kanał ogłoszeń. Zwraca True/False."""
+    try:
+        channel = await get_announcement_channel()
+
+        if channel is None or not isinstance(channel, discord.abc.Messageable):
+            logger.error(f"Nie znaleziono kanału {CHANNEL_ID}")
+            return False
+
+        await channel.send(embed=create_shutdown_embed())
+        logger.info(f"SHUTDOWN COUNTDOWN SENT | channel={CHANNEL_ID}")
+        return True
+
+    except Exception:
+        logger.exception("Błąd podczas wysyłania shutdown countdown")
+        return False
+
+
+@tasks.loop(time=SEND_TIME)
+async def shutdown_countdown_loop():
+    if datetime.datetime.now(WARSAW) >= SHUTDOWN_DATE:
+        logger.info("Termin minął - zatrzymuję odliczanie")
+        shutdown_countdown_loop.cancel()
+        return
+
+    await send_shutdown_message()
+
+
+@shutdown_countdown_loop.before_loop
+async def before_shutdown_countdown_loop():
+    await bot.wait_until_ready()
+
+
+@bot.event
+async def on_ready():
+    logger.info(f"BOT READY: {bot.user} ({bot.user.id})")
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        return
+    logger.error(f"Błąd komendy {ctx.command}: {error}", exc_info=error)
+
+
+@bot.command(name="sendmessage")
+async def sendmessage(ctx):
+    if ctx.author.id not in MODERATORS:
+        await ctx.reply("Brak uprawnień.", delete_after=5)
+        return
+
+    ok = await send_shutdown_message()
+    if ok:
+        await ctx.reply("✅ Wysłano.", delete_after=5)
+    else:
+        await ctx.reply("❌ Nie udało się wysłać wiadomości (sprawdź logi).", delete_after=5)
+        
 @bot.command()
 async def ping(ctx):
     try:
